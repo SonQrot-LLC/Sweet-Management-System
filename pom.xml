@@ -1,44 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>Management-System</groupId>
-  <artifactId>Sweet-Management-System</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <dependencies>
-      <dependency>
-          <groupId>org.junit.jupiter</groupId>
-          <artifactId>junit-jupiter</artifactId>
-          <version>RELEASE</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-picocontainer</artifactId>
-          <version>7.18.0</version>
-      </dependency>
-      <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-java</artifactId>
-          <version>7.18.0</version>
-      </dependency>
-      <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-junit-platform-engine</artifactId>
-          <version>7.18.0</version>
-      </dependency>
-      <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-core</artifactId>
-          <version>7.18.0</version>
-      </dependency>
-      <dependency>
-          <groupId>io.cucumber</groupId>
-          <artifactId>cucumber-junit</artifactId>
-          <version>7.18.0</version>
-      </dependency>
-
-  </dependencies>
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>Management-System</groupId>
+    <artifactId>Sweet-Management-System</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>7.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>7.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>7.18.0</version>
+        </dependency>
+        <!-- MySQL Connector/J dependency -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.32</version> <!-- Use the latest version -->
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -53,7 +57,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>generate-report</id>
                         <phase>test</phase>
@@ -62,12 +65,7 @@
                         </goals>
                     </execution>
                 </executions>
-
             </plugin>
         </plugins>
     </build>
-
-
 </project>
-
-
