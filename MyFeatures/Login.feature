@@ -11,6 +11,7 @@ Feature:Login
       | momanani2017@gmail.com     | 777      |
       | n.hamfallah@gmail.com      |  777     |
 
+
   Scenario Outline: Invalid email
     Given that the user is not logged in
     When the email is invalid email is "<Email>" and password is "<Password>"

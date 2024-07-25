@@ -22,6 +22,13 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public User(String email, String password, String role, String city) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.city = city;
+    }
+
     // Getters and Setters
     public String getEmail() {
         return email;
@@ -123,6 +130,7 @@ public class User {
                     );
                 }
             }
+
         }
         return user;
     }

@@ -12,10 +12,19 @@ Feature:  Sign up
       | n.hamfallah@gmail.com       |
 
 
-  Scenario:trying to signing up with incorrect email format
+  Scenario Outline: Trying to sign up with incorrect email format
     Given that the user is not logged in
-    When the email format is incorrect
+    When the email "<email>" format is incorrect
     Then signing up fails
+
+    Examples:
+      | email                |
+      | invalid-email        |
+      | another.invalid@     |
+      | no-at-sign.com       |
+      |                      |
+      | missing-domain@.com  |
+      | missing-part@domain  |
 
 
   Scenario Outline:trying to signing up with new account
