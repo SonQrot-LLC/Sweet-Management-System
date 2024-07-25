@@ -1,45 +1,34 @@
 package sweet.management.entities;
 
 import sweet.management.DatabaseConnection;
+import sweet.management.services.DatabaseService;
 
 import java.sql.*;
 import java.util.Objects;
 
 public class User {
-    private int userId;
-    private String username;
-    private String password;
     private String email;
+    private String password;
     private String role;
     private String city;
     private Timestamp createdAt;
 
     // Constructor
-    public User(int userId, String username, String password, String email, String role, String city, Timestamp createdAt) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
+    public User(String email, String password, String role, String city, Timestamp createdAt) {
         this.email = email;
+        this.password = password;
         this.role = role;
         this.city = city;
         this.createdAt = createdAt;
     }
 
     // Getters and Setters
-    public int getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -48,14 +37,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getRole() {
@@ -103,46 +84,39 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
+                "email='" + email + '\'' +
                 ", role='" + role + '\'' +
                 ", city='" + city + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }
 
-    //-------------------USER DOA--------------------
-
     public static void createUser(User user) throws SQLException {
-        String sql = "INSERT INTO Users (username, password, email, role, city, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (email, password, role, city, created_at) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseService.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getUsername());
+            stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getPassword());
-            stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getRole());
-            stmt.setString(5, user.getCity());
-            stmt.setTimestamp(6, user.getCreatedAt());
+            stmt.setString(3, user.getRole());
+            stmt.setString(4, user.getCity());
+            stmt.setTimestamp(5, user.getCreatedAt());
             stmt.executeUpdate();
         }
     }
 
-    public User getUserById(int userId) throws SQLException {
-        String sql = "SELECT *"+" FROM Users WHERE user_id = ?";
+    public static User getUserByEmail(String email) throws SQLException {
+        String sql = "SELECT *"+" FROM Users WHERE email = ?";
         User user = null;
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseService.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
+            stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     user = new User(
-                            rs.getInt("user_id"),
-                            rs.getString("username"),
-                            rs.getString("password"),
                             rs.getString("email"),
+                            rs.getString("password"),
                             rs.getString("role"),
                             rs.getString("city"),
                             rs.getTimestamp("created_at")
@@ -153,29 +127,32 @@ public class User {
         return user;
     }
 
-    public void updateUser(User user) throws SQLException {
-        String sql = "UPDATE Users SET username = ?, password = ?, email = ?, role = ?, city = ?, created_at = ? WHERE user_id = ?";
+    public static void updateUser(User user) throws SQLException {
+        String sql = "UPDATE Users SET password = ?, role = ?, city = ?, created_at = ? WHERE email = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseService.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getRole());
-            stmt.setString(5, user.getCity());
-            stmt.setTimestamp(6, user.getCreatedAt());
-            stmt.setInt(7, user.getUserId());
+            stmt.setString(1, user.getPassword());
+            stmt.setString(2, user.getRole());
+            stmt.setString(3, user.getCity());
+            stmt.setTimestamp(4, user.getCreatedAt());
+            stmt.setString(5, user.getEmail());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteUser(int userId) throws SQLException {
-        String sql = "DELETE FROM Users WHERE user_id = ?";
+    public static void deleteUser(String email) throws SQLException {
+        String sql = "DELETE FROM Users WHERE email = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DatabaseService.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
+            stmt.setString(1, email);
             stmt.executeUpdate();
         }
     }
+
+
+
 }
+
+

@@ -24,8 +24,7 @@ public class DatabaseService {
         }
     }
 
-
-
-
-
+    public static Connection getConnection() {
+        return connection;
+    }
 }
