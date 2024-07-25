@@ -130,7 +130,7 @@ public class User {
     }
 
     public User getUserById(int userId) throws SQLException {
-        String sql = "SELECT * FROM Users WHERE user_id = ?";
+        String sql = "SELECT *"+" FROM Users WHERE user_id = ?";
         User user = null;
 
         try (Connection conn = DatabaseConnection.getConnection();

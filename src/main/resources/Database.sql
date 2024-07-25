@@ -1,30 +1,28 @@
-
 CREATE TABLE Users (
-                       user_id INT AUTO_INCREMENT PRIMARY KEY,
-                       username VARCHAR(50) NOT NULL UNIQUE,
+                       email VARCHAR(100) PRIMARY KEY,
                        password VARCHAR(255) NOT NULL,
-                       email VARCHAR(100),
                        role ENUM('admin', 'store_owner', 'raw_material_supplier', 'beneficiary_user') NOT NULL,
                        city VARCHAR(50),
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE UserProfiles (
-                              user_id INT PRIMARY KEY,
+                              email VARCHAR(100),
                               first_name VARCHAR(50),
                               last_name VARCHAR(50),
                               phone VARCHAR(20),
                               address TEXT,
-                              FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                              PRIMARY KEY (email),
+                              FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE Stores (
                         store_id INT AUTO_INCREMENT PRIMARY KEY,
-                        owner_id INT,
+                        owner_email VARCHAR(100),
                         store_name VARCHAR(100),
                         business_info TEXT,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (owner_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                        FOREIGN KEY (owner_email) REFERENCES Users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE Products (
@@ -40,12 +38,12 @@ CREATE TABLE Products (
 
 CREATE TABLE Orders (
                         order_id INT AUTO_INCREMENT PRIMARY KEY,
-                        user_id INT,
+                        user_email VARCHAR(100),
                         store_id INT,
                         order_status ENUM('pending', 'processed', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
                         total_amount DECIMAL(10, 2),
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+                        FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE,
                         FOREIGN KEY (store_id) REFERENCES Stores(store_id) ON DELETE CASCADE
 );
 
@@ -61,42 +59,42 @@ CREATE TABLE OrderItems (
 
 CREATE TABLE Feedback (
                           feedback_id INT AUTO_INCREMENT PRIMARY KEY,
-                          user_id INT,
+                          user_email VARCHAR(100),
                           product_id INT,
                           rating INT CHECK (rating BETWEEN 1 AND 5),
                           comment TEXT,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                          FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+                          FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE,
                           FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Recipes (
                          recipe_id INT AUTO_INCREMENT PRIMARY KEY,
-                         user_id INT,
+                         user_email VARCHAR(100),
                          recipe_name VARCHAR(100),
                          ingredients TEXT,
                          instructions TEXT,
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                         FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE Messages (
                           message_id INT AUTO_INCREMENT PRIMARY KEY,
-                          sender_id INT,
-                          receiver_id INT,
+                          sender_email VARCHAR(100),
+                          receiver_email VARCHAR(100),
                           content TEXT,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                          FOREIGN KEY (sender_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-                          FOREIGN KEY (receiver_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                          FOREIGN KEY (sender_email) REFERENCES Users(email) ON DELETE CASCADE,
+                          FOREIGN KEY (receiver_email) REFERENCES Users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE Notifications (
                                notification_id INT AUTO_INCREMENT PRIMARY KEY,
-                               user_id INT,
+                               user_email VARCHAR(100),
                                message TEXT,
                                is_read BOOLEAN DEFAULT FALSE,
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                               FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+                               FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE Discounts (
@@ -107,6 +105,7 @@ CREATE TABLE Discounts (
                            end_date DATE,
                            FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
 );
+
 CREATE TABLE Reports (
                          report_id INT AUTO_INCREMENT PRIMARY KEY,
                          report_type ENUM('financial', 'sales', 'user_statistics') NOT NULL,
@@ -132,12 +131,11 @@ ORDER BY
 CREATE VIEW UsersByCity AS
 SELECT
     city,
-    COUNT(user_id) AS user_count
+    COUNT(email) AS user_count
 FROM
     Users
 GROUP BY
     city;
-
 
 CREATE VIEW StoreProfits AS
 SELECT
