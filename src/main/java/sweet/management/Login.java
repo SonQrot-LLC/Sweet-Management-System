@@ -3,6 +3,7 @@ package sweet.management;
 import sweet.management.entities.User;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class Login {
     private static boolean isLoggedIn = false;
@@ -18,6 +19,19 @@ public class Login {
             }
         }
         return result;
+    }
+
+    public static boolean signUp(String email, String password, String role, String city, Timestamp createdAt) throws SQLException {
+        boolean result = false;
+        if(!isLoggedIn) {
+            if(User.getUserByEmail(email) == null) {
+                User.createUser(new User(email, password, role, city, createdAt));
+                login(email, password);
+                result = true;
+            }
+        }
+
+        return  result;
     }
 
 
