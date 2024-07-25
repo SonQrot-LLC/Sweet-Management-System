@@ -1,4 +1,4 @@
-package sweet.management.database.PremitiveObjects;
+package sweet.management.database.primitive_objects;
 import sweet.management.database.QueryResultHandler;
 
 import java.sql.ResultSet;
