@@ -7,12 +7,12 @@ Feature:  Sign up
 
     Examples:
       | Email                      |
-      | toostronkm@gmail.com       |
-      | momanani2017@gmail.com     |
-      | n.hamfallah@gmail.com      |
+      | toostronkm@gmail.com        |
+      | momanani2017@gmail.com      |
+      | n.hamfallah@gmail.com       |
 
 
-  Scenario :trying to signing up with incorrect email format
+  Scenario:trying to signing up with incorrect email format
     Given that the user is not logged in
     When the email format is incorrect
     Then signing up fails
@@ -26,5 +26,5 @@ Feature:  Sign up
     Examples:
       | Email                      |
       | tooweakm@gmail.com         |
-      |                            |
+      | momanani20011@gmail.com    |
       | momkasat2017@gmail.com     |
