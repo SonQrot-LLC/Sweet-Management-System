@@ -11,6 +11,17 @@ Feature:Login
       | momanani2017@gmail.com     | 777      |
       | n.hamfallah@gmail.com      |  777     |
 
+  Scenario Outline: invalid connection to database
+    Given that the user is not logged in
+    When The information is valid email is "<Email>" and password is "<Password>" something went wrong with the sql
+    Then user failed in log in
+
+    Examples:
+      | Email                      | Password |
+      | toostronkm@gmail.com       | 777      |
+      | momanani2017@gmail.com     | 777      |
+      | n.hamfallah@gmail.com      |  777     |
+
 
   Scenario Outline: Invalid email
     Given that the user is not logged in

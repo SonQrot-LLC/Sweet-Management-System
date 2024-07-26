@@ -29,11 +29,11 @@ Feature:  Sign up
 
   Scenario Outline:trying to signing up with new account
     Given that the user is not logged in
-    When the information exists, the email is not "<Email>"
+    When the email format is correct and the email "<Email>" does not exist in the database
     Then signing up succeeds
 
     Examples:
       | Email                      |
-      | tooweakm@gmail.com         |
+      | tooweankm@gmail.com         |
       | momanani20011@gmail.com    |
       | momkasat2017@gmail.com     |

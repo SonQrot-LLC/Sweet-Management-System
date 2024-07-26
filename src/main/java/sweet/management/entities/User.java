@@ -1,8 +1,5 @@
 package sweet.management.entities;
 
-import sweet.management.DatabaseConnection;
-import sweet.management.services.DatabaseService;
-
 import java.sql.*;
 import java.util.Objects;
 
@@ -98,11 +95,11 @@ public class User {
                 '}';
     }
 
-    public static void createUser(User user) throws SQLException {
+    public static void createUser(User user, Connection conn) throws SQLException {
         String sql = "INSERT INTO Users (email, password, role, city, created_at) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection connection = conn;
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getRole());
@@ -112,12 +109,14 @@ public class User {
         }
     }
 
-    public static User getUserByEmail(String email) throws SQLException {
+    public static User getUserByEmail(String email, Connection conn) throws SQLException {
         String sql = "SELECT *"+" FROM Users WHERE email = ?";
         User user = null;
-
-        try (Connection conn = DatabaseService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        if (conn == null)
+            throw new SQLException("No connection");
+        try (
+                Connection connection = conn;
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -135,11 +134,14 @@ public class User {
         return user;
     }
 
-    public static void updateUser(User user) throws SQLException {
+    public static void updateUser(User user,  Connection conn) throws SQLException {
+        if (conn == null)
+            throw new SQLException("No connection");
+
         String sql = "UPDATE Users SET password = ?, role = ?, city = ?, created_at = ? WHERE email = ?";
 
-        try (Connection conn = DatabaseService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection connection = conn;
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, user.getPassword());
             stmt.setString(2, user.getRole());
             stmt.setString(3, user.getCity());
@@ -149,11 +151,11 @@ public class User {
         }
     }
 
-    public static void deleteUser(String email) throws SQLException {
+    public static void deleteUser(String email, Connection conn) throws SQLException {
         String sql = "DELETE FROM Users WHERE email = ?";
 
-        try (Connection conn = DatabaseService.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection connection = conn;
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.executeUpdate();
         }
