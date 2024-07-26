@@ -30,7 +30,6 @@ public class Login {
     }
 
     public  boolean signUp(String email, String password, String role, String city, Connection conn)  {
-        System.out.println(isLoggedIn);
         if(!isLoggedIn) {
 
             try {
@@ -47,9 +46,10 @@ public class Login {
         return false;
     }
 
-//    public User getLoggedInUser() {
-//        return loggedInUser;
-//    }
+    public User getLoggedInUser() {
+        if(isLoggedIn)return loggedInUser;
+        return null;
+    }
 
     public  boolean isLoggedIn() {return isLoggedIn;}
 

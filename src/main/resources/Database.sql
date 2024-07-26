@@ -150,3 +150,56 @@ FROM
     Stores s ON o.store_id = s.store_id
 GROUP BY
     s.store_id, s.store_name;
+
+
+-- Users and UserProfiles
+ALTER TABLE UserProfiles DROP FOREIGN KEY UserProfiles_ibfk_1;
+ALTER TABLE UserProfiles ADD CONSTRAINT UserProfiles_ibfk_1 FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Stores
+ALTER TABLE Stores DROP FOREIGN KEY Stores_ibfk_1;
+ALTER TABLE Stores ADD CONSTRAINT Stores_ibfk_1 FOREIGN KEY (owner_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Orders
+ALTER TABLE Orders DROP FOREIGN KEY Orders_ibfk_1;
+ALTER TABLE Orders ADD CONSTRAINT Orders_ibfk_1 FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Stores and Orders
+ALTER TABLE Orders DROP FOREIGN KEY Orders_ibfk_2;
+ALTER TABLE Orders ADD CONSTRAINT Orders_ibfk_2 FOREIGN KEY (store_id) REFERENCES Stores(store_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Orders and OrderItems
+ALTER TABLE OrderItems DROP FOREIGN KEY OrderItems_ibfk_1;
+ALTER TABLE OrderItems ADD CONSTRAINT OrderItems_ibfk_1 FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Products and OrderItems
+ALTER TABLE OrderItems DROP FOREIGN KEY OrderItems_ibfk_2;
+ALTER TABLE OrderItems ADD CONSTRAINT OrderItems_ibfk_2 FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Feedback
+ALTER TABLE Feedback DROP FOREIGN KEY Feedback_ibfk_1;
+ALTER TABLE Feedback ADD CONSTRAINT Feedback_ibfk_1 FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Products and Feedback
+ALTER TABLE Feedback DROP FOREIGN KEY Feedback_ibfk_2;
+ALTER TABLE Feedback ADD CONSTRAINT Feedback_ibfk_2 FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Recipes
+ALTER TABLE Recipes DROP FOREIGN KEY Recipes_ibfk_1;
+ALTER TABLE Recipes ADD CONSTRAINT Recipes_ibfk_1 FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Messages (sender_email)
+ALTER TABLE Messages DROP FOREIGN KEY Messages_ibfk_1;
+ALTER TABLE Messages ADD CONSTRAINT Messages_ibfk_1 FOREIGN KEY (sender_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Messages (receiver_email)
+ALTER TABLE Messages DROP FOREIGN KEY Messages_ibfk_2;
+ALTER TABLE Messages ADD CONSTRAINT Messages_ibfk_2 FOREIGN KEY (receiver_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Users and Notifications
+ALTER TABLE Notifications DROP FOREIGN KEY Notifications_ibfk_1;
+ALTER TABLE Notifications ADD CONSTRAINT Notifications_ibfk_1 FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Products and Discounts
+ALTER TABLE Discounts DROP FOREIGN KEY Discounts_ibfk_1;
+ALTER TABLE Discounts ADD CONSTRAINT Discounts_ibfk_1 FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE ON UPDATE CASCADE;

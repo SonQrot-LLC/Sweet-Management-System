@@ -8,6 +8,8 @@ import io.cucumber.java.en.When;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 
+import java.sql.SQLException;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -75,7 +77,7 @@ public class LoginSignupStepDefinition {
 
     @When("the information exists, the email is {string}")
     public void theInformationExistsTheEmailIs(String email) {
-        assertFalse(login.signUp(email,"","admin","Tulkarm", DatabaseService.getConnection(true)));
+        assertFalse(login.signUp(email,"777","admin","Tulkarm", DatabaseService.getConnection(true)));
     }
 
     @Then("signing up fails")
@@ -85,17 +87,22 @@ public class LoginSignupStepDefinition {
 
     @When("the email {string} format is incorrect")
     public void theEmailFormatIsIncorrect(String email) {
-        login.signUp(email,"","admin","Tulkarm", DatabaseService.getConnection(true));
+        login.signUp(email,"777","admin","Tulkarm", DatabaseService.getConnection(true));
     }
 
     @When("the email format is correct and the email {string} does not exist in the database")
     public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabase(String email) {
-        assertTrue(login.signUp(email,"","admin","Tulkarm", DatabaseService.getConnection(true)));
+        assertTrue(login.signUp(email,"777","admin","Tulkarm", DatabaseService.getConnection(true)));
     }
 
     @Then("signing up succeeds")
     public void signingUpSucceeds() {
         assertTrue(login.isLoggedIn());
+        try {
+            User.deleteUser(login.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
