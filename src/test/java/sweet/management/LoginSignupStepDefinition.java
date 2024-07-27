@@ -126,14 +126,21 @@ public class LoginSignupStepDefinition {
         assertFalse(loggedInUsingAnotherAccount);
     }
 
-//    @When("the email format is correct and the email {string} does not exist in the database but the user is logged in")
-//    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButTheUserIsLoggedIn(String email) {
-//        singedUpUsingAnotherAccount = userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(false));
-//
-//    }
-//
-//    @Then("signing up with a new account fails")
-//    public void signingUpWithANewAccountFails() {
-//        assertFalse(singedUpUsingAnotherAccount);
-//    }
+    @When("the email format is correct and the email {string} does not exist in the database but the user is logged in")
+    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButTheUserIsLoggedIn(String email) {
+        singedUpUsingAnotherAccount = userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(true));
+    }
+
+    @Then("signing up with a new account fails")
+    public void signingUpWithANewAccountFails() {
+        assertFalse(singedUpUsingAnotherAccount);
+    }
+
+    @When("the email is null")
+    public void theEmailIsNull() {
+        assertFalse(userAuthService.signUp(null, "777", "admin", "Tulkarm", DatabaseService.getConnection(true)));
+    }
+
+
+
 }

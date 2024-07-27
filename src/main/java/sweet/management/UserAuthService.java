@@ -1,5 +1,6 @@
 package sweet.management;
 
+import sweet.management.entities.Store;
 import sweet.management.entities.User;
 import sweet.management.entities.UserProfile;
 import sweet.management.services.DatabaseService;
@@ -12,6 +13,7 @@ public class UserAuthService {
     private boolean isLoggedIn = false;
     private User loggedInUser;
     private UserProfile loggedInUserProfile;
+    private Store loggedInStore;
 
 
     public boolean login(String email, String password, Connection conn) {
@@ -23,6 +25,8 @@ public class UserAuthService {
                     loggedInUser = user;
                     if (loggedInUser.isBeneficiaryUser())
                         loggedInUserProfile = UserProfile.getUserProfileByEmail(email, conn);
+                    else if(loggedInUser.isStoreOwner())
+                        loggedInStore = Store.getStoreByOwnerEmail(email, conn);
                     return true;
                 }
             } catch (SQLException e) {
@@ -62,5 +66,7 @@ public class UserAuthService {
         return isLoggedIn;
     }
 
-
+    public Store getLoggedInStore() {
+        return loggedInStore;
+    }
 }

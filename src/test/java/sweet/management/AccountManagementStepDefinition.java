@@ -1,8 +1,11 @@
 package sweet.management;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Assert;
+import sweet.management.entities.Store;
 import sweet.management.entities.User;
 import sweet.management.entities.UserProfile;
 import sweet.management.services.DatabaseService;
@@ -16,6 +19,7 @@ public class AccountManagementStepDefinition {
     UserAuthService userAuthService;
     UserProfile userp;
     User user;
+    Store store;
     boolean isUpdated;
 
     public AccountManagementStepDefinition() {
@@ -170,4 +174,63 @@ public class AccountManagementStepDefinition {
     }
 
 
+    @When("I update my last name to {string} and there is sql connection")
+    public void iUpdateMyLastNameToAndThereIsSqlConnection(String lastName) {
+        userp.setLastName(lastName);
+        assertFalse(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(false), UserProfile.UPDATE_LAST_NAME, userAuthService));
+
+    }
+
+    @Given("I log in with username {string} and password {string} and i am a store owner")
+    public void iLogInWithUsernameAndPasswordAndIAmAStoreOwner(String email, String password) {
+        userAuthService.login(email, password, DatabaseService.getConnection(true));
+        assertTrue(userAuthService.isLoggedIn());
+        assertTrue(userAuthService.getLoggedInUser().isStoreOwner());
+        isUpdated = false;
+    }
+
+    @When("I update my store name to {string}")
+    public void iUpdateMyStoreNameTo(String storeName) {
+        store = userAuthService.getLoggedInStore();
+        store.setStoreName(storeName);
+        isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_STORE_NAME, userAuthService);
+    }
+
+    @And("I update my info to {string}")
+    public void iUpdateMyInfoTo(String info) {
+        store = userAuthService.getLoggedInStore();
+        store.setBusinessInfo(info);
+        isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_BUSINESS_INFO, userAuthService);
+    }
+
+    @When("I update my store name to {string} and there is sql connection")
+    public void iUpdateMyStoreNameToAndThereIsSqlConnection(String storeName) {
+        store = userAuthService.getLoggedInStore();
+        store.setStoreName(storeName);
+        isUpdated = Store.updateStore(store,DatabaseService.getConnection(false),Store.UPDATE_STORE_NAME, userAuthService);
+    }
+
+    @When("I delete a store")
+    public void iDeleteAStore() {
+        store = userAuthService.getLoggedInStore();
+        isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.DELETE_STORE, userAuthService);
+    }
+
+    @Then("Store is deleted")
+    public void storeIsDeleted() {
+        assertTrue(isUpdated);
+        try {
+            Store.createStore(store,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @When("I chose an invalid store updateType")
+    public void iChoseAnInvalidStoreUpdateType() {
+        store = userAuthService.getLoggedInStore();
+        store.setStoreName("test");
+        isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),10, userAuthService);
+    }
 }

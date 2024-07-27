@@ -97,7 +97,7 @@ public class UserProfile {
     }
 
     public static UserProfile getUserProfileByEmail(String email, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM UserProfiles WHERE email = ?";
+        String sql = "SELECT *" +" FROM UserProfiles WHERE email = ?";
         if (conn == null)
             throw new SQLException("No connection");
 

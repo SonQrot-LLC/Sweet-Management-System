@@ -26,6 +26,7 @@ Feature:Login
       | toostronkm@gmail.com       | 777      |
       | momanani2017@gmail.com     | 777      |
       | n.hamfallah@gmail.com      |  777     |
+      | mahmood@outlook.com        | 777      |
 
 
   Scenario Outline: Invalid email

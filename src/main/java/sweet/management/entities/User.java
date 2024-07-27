@@ -23,7 +23,6 @@ public class User {
         this.password = password;
         this.role = role;
         this.city = city;
-        this.createdAt = createdAt;
     }
 
     public User(String email, String password, String role, String city) {
@@ -73,6 +72,10 @@ public class User {
 
     public boolean isBeneficiaryUser() {
         return Objects.equals(this.role, "beneficiary_user");
+
+    }
+    public boolean isStoreOwner() {
+        return Objects.equals(this.role, "store_owner");
     }
 
     public static void createUser(User user, Connection conn) throws SQLException {

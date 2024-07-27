@@ -203,3 +203,6 @@ ALTER TABLE Notifications ADD CONSTRAINT Notifications_ibfk_1 FOREIGN KEY (user_
 -- Products and Discounts
 ALTER TABLE Discounts DROP FOREIGN KEY Discounts_ibfk_1;
 ALTER TABLE Discounts ADD CONSTRAINT Discounts_ibfk_1 FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE Stores ADD CONSTRAINT unique_owner_email UNIQUE (owner_email);

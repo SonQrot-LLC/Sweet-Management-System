@@ -16,6 +16,8 @@ Feature:  Sign up
     Given that the user is not logged in
     When the email "<email>" format is incorrect
     Then signing up fails
+    When the email is null
+    Then signing up fails
 
     Examples:
       | email                |
@@ -42,9 +44,9 @@ Feature:  Sign up
       | momkasat2017@gmail.com     |
 
 
-#
-#  Scenario trying to signing up with new account but i am logged in
-#    Given that the user is logged in
-#    When the email format is correct and the email "test@gmail.com" does not exist in the database but the user is logged in
-#    Then signing up with a new account fails
+
+  Scenario: trying to signing up with new account but i am logged in
+    Given that the user is logged in
+    When the email format is correct and the email "test@gmail.com" does not exist in the database but the user is logged in
+    Then signing up with a new account fails
 

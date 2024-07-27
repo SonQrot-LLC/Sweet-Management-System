@@ -8,6 +8,8 @@ Feature: AccountManagement
     And I update my address to "456 Sweet Avenue"
     And I update my phone number to "059569886"
     Then Update is successful
+    When I update my last name to "Last" and there is sql connection
+    Then  Update fails
 
   Scenario:  Beneficiary User makes invalid updates
     Given I log in with username "ahmad123@gmail.com" and password "777" and i am a Beneficiary User
@@ -49,6 +51,26 @@ Feature: AccountManagement
     Given I log in with username "ahmad123@gmail.com" and password "777" and i am not an Admin
     When I update "momanani2017@gmail.com" password to "888"
     Then Update fails
+
+  Scenario: Store Owner updates store information
+    Given I log in with username "mahmood@outlook.com" and password "777" and i am a store owner
+    When I update my store name to "Mr.Cake"
+    And I update my info to "The Cake Shop is a Cake Studio specializing in Wedding cakes, Custom Cakes, and Dessert Bars. We also offer a variety of bite sized treats. Everything is made from scratch in house and with locally sourced ingredients when possible."
+    Then Update is successful
+    When I update my store name to "Mrcake" and there is sql connection
+    Then  Update fails
+
+  Scenario:  Store Owner trying to delete the store
+    Given I log in with username "mahmood@outlook.com" and password "777" and i am a store owner
+    When I delete a store
+    Then Store is deleted
+
+  Scenario:  store Owner trying to update invalid update
+    Given I log in with username "mahmood@outlook.com" and password "777" and i am a store owner
+    When I chose an invalid store updateType
+    Then Update fails
+
+
 
 
 
