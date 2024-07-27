@@ -1,4 +1,9 @@
 Feature:Login
+  Scenario: the user is already logged in
+    Given that the user is logged in
+    When The information is  email is "momanani2017@gmail.com" and password is "777"
+    Then user failed in log in using another account
+
 
   Scenario Outline: Valid information
     Given that the user is not logged in

@@ -8,7 +8,7 @@ public class TypeChecker {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     public static boolean isValidEmail(String email) {
-        if (email == null) {
+        if (email == null || email.isEmpty()) {
             return false;
         }
         Matcher matcher = EMAIL_PATTERN.matcher(email);

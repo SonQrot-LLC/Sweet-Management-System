@@ -1,6 +1,58 @@
 Feature: AccountManagement
 
 
+  Scenario: Beneficiary User updates personal account details
+    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a Beneficiary User
+    When I update my first name to "John"
+    And I update my last name to "Doe"
+    And I update my address to "456 Sweet Avenue"
+    And I update my phone number to "059569886"
+    Then Update is successful
+
+  Scenario:  Beneficiary User makes invalid updates
+    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a Beneficiary User
+    When I chose an invalid updateType
+    Then Update fails
+
+  Scenario: User updates account credentials
+    Given I log in with username "ahmad123@gmail.com" and password "777"
+    When I update my password to "777"
+    And  I update my city to "Japan"
+    Then Update is successful
+
+  Scenario:  User makes invalid account updates
+    Given I log in with username "ahmad123@gmail.com" and password "777"
+    When I chose an invalid account updateType
+    Then Update fails
+
+  Scenario:  User makes invalid account updates
+    Given I log in with username "ahmad123@gmail.com" and password "777"
+    When I give valid updates and something went wrong with sql
+    Then Update fails
+
+  Scenario: User deletes account
+    Given I log in with username "ahmad123@gmail.com" and password "777"
+    When I delete account
+    Then Account is deleted
+
+  Scenario: Admin changing the roles of an account
+    Given I log in with username "mahmood@gmail.com" and password "777" and i am an Admin
+    When I update someone's role to  "admin"
+    Then The role is Updated
+
+  Scenario: Admin trying to update nonexistent account
+    Given I log in with username "mahmood@gmail.com" and password "777" and i am an Admin
+    When I update nonexistent user in the DB role to  "admin"
+    Then Update fails
+
+  Scenario: None admin trying to update another account
+    Given I log in with username "ahmad123@gmail.com" and password "777" and i am not an Admin
+    When I update "momanani2017@gmail.com" password to "888"
+    Then Update fails
+
+
+
+
 #  Scenario: Admin manages a user's account
 #    Given I am an Admin
 #    When I log in with username "admin@example.com" and password "adminpassword"
@@ -31,46 +83,9 @@ Feature: AccountManagement
 #    And I save the changes
 #    Then I should see a confirmation message "Contact details updated successfully"
 
-  Scenario: Beneficiary User updates personal account details
-    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a Beneficiary User
-    When I update my first name to "John"
-    And I update my last name to "Doe"
-    And I update my address to "456 Sweet Avenue"
-    And I update my phone number to "059569886"
-    Then Update is successful
 
-  Scenario:  Beneficiary User makes invalid updates
-    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a Beneficiary User
-    When I chose an invalid updateType
-    Then Update fails
 
-  Scenario: User updates account credentials
-    Given I log in with username "ahmad123@gmail.com" and password "777"
-    When I update my password to "777"
-    And  I update my city to "Japan"
-    Then Update is successful
 
-  Scenario:   User makes invalid account updates
-    Given I log in with username "ahmad123@gmail.com" and password "777"
-    When I chose an invalid account updateType
-    Then Update fails
-
-  Scenario: User deletes account
-    Given I log in with username "ahmad123@gmail.com" and password "777"
-    When I delete account
-    Then Account is deleted
-
-#  Scenario: Beneficiary User changes password
-#    Given I am a Beneficiary User
-#    When I log in with username "user@example.com" and password "userpassword"
-#    And I navigate to my account management section
-#    Then I should see an option to change my password
-#    When I enter my current password "userpassword"
-#    And I enter a new password "newuserpassword"
-#    And I confirm the new password "newuserpassword"
-#    And I save the changes
-#    Then I should see a confirmation message "Password changed successfully"
-#
 #  Scenario: Store Owner updates account details
 #    Given I am a Store Owner
 #    When I log in with username "storeowner@example.com" and password "storepassword"

@@ -29,11 +29,22 @@ Feature:  Sign up
 
   Scenario Outline:trying to signing up with new account
     Given that the user is not logged in
+    When the email format is correct and the email "<Email>" does not exist in the database but there is a problem in dataBase connection
+    Then signing up fails
     When the email format is correct and the email "<Email>" does not exist in the database
     Then signing up succeeds
+
 
     Examples:
       | Email                      |
       | tooweankm@gmail.com         |
       | momanani20011@gmail.com    |
       | momkasat2017@gmail.com     |
+
+
+#
+#  Scenario trying to signing up with new account but i am logged in
+#    Given that the user is logged in
+#    When the email format is correct and the email "test@gmail.com" does not exist in the database but the user is logged in
+#    Then signing up with a new account fails
+

@@ -1,10 +1,16 @@
 package sweet.management.entities;
 
-import java.sql.*;
+import sweet.management.UserAuthService;
+import sweet.management.services.DatabaseService;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserProfile {
 
-    private String email;
+    private final String email;
     private String firstName;
     private String lastName;
     private String phone;
@@ -25,17 +31,13 @@ public class UserProfile {
         this.address = address;
     }
 
-    public UserProfile(String email) {
-        this.email = email;
-    }
+//    public UserProfile(String email) {
+//        this.email = email;
+//    }
 
     // Getters and Setters
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getFirstName() {
@@ -70,96 +72,109 @@ public class UserProfile {
         this.address = address;
     }
 
-    // Override toString method for easier debugging
-    @Override
-    public String toString() {
-        return "UserProfile{" +
-                "email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                '}';
-    }
-
+//    // Override toString method for easier debugging
+//    @Override
+//    public String toString() {
+//        return "UserProfile{" +
+//                "email='" + email + '\'' +
+//                ", firstName='" + firstName + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                ", phone='" + phone + '\'' +
+//                ", address='" + address + '\'' +
+//                '}';
+//    }
 
     // Function to create a new user profile
     public static void createUserProfile(UserProfile userProfile, Connection conn) throws SQLException {
         String sql = "INSERT INTO UserProfiles (email, first_name, last_name, phone, address) VALUES (?, ?, ?, ?, ?)";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getEmail());
             stmt.setString(2, userProfile.getFirstName());
             stmt.setString(3, userProfile.getLastName());
             stmt.setString(4, userProfile.getPhone());
             stmt.setString(5, userProfile.getAddress());
-            stmt.executeUpdate();
+        });
+    }
+
+    public static UserProfile getUserProfileByEmail(String email, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM UserProfiles WHERE email = ?";
+        if (conn == null)
+            throw new SQLException("No connection");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new UserProfile(
+                            rs.getString("email"),
+                            rs.getString("first_name"),
+                            rs.getString("last_name"),
+                            rs.getString("phone"),
+                            rs.getString("address")
+                    );
+                }
+            }
         }
+        return null;
     }
 
     // Function to update first name
     public static boolean updateFirstName(UserProfile userProfile, Connection conn) throws SQLException {
         String sql = "UPDATE UserProfiles SET first_name = ? WHERE email = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getFirstName());
             stmt.setString(2, userProfile.getEmail());
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Return true if at least one row was affected
-        }
+        });
     }
 
+    // Function to update last name
     public static boolean updateLastName(UserProfile userProfile, Connection conn) throws SQLException {
         String sql = "UPDATE UserProfiles SET last_name = ? WHERE email = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getLastName());
             stmt.setString(2, userProfile.getEmail());
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Return true if at least one row was affected
-        }
+        });
     }
 
+    // Function to update phone
     public static boolean updatePhone(UserProfile userProfile, Connection conn) throws SQLException {
         String sql = "UPDATE UserProfiles SET phone = ? WHERE email = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getPhone());
             stmt.setString(2, userProfile.getEmail());
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Return true if at least one row was affected
-        }
+        });
     }
+
+    // Function to update address
     public static boolean updateAddress(UserProfile userProfile, Connection conn) throws SQLException {
         String sql = "UPDATE UserProfiles SET address = ? WHERE email = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getAddress());
             stmt.setString(2, userProfile.getEmail());
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Return true if at least one row was affected
-        }
+        });
     }
 
     // Main function to call the appropriate update function based on the parameter
-    public static boolean updateUserProfile(UserProfile userProfile, Connection conn, int updateType){
+    public static boolean updateUserProfile(UserProfile userProfile, Connection conn, int updateType, UserAuthService userAuthService) {
         try {
-        switch (updateType) {
-            case UPDATE_FIRST_NAME:
-                return updateFirstName(userProfile, conn);
-            case UPDATE_LAST_NAME:
-                return updateLastName(userProfile, conn);
-            case UPDATE_PHONE:
-                return updatePhone(userProfile, conn);
-            case UPDATE_ADDRESS:
-                return updateAddress(userProfile, conn);
-            default:
-                return false;
-        }
+            if (conn == null || userProfile == null || userAuthService == null ||  (!userAuthService.getLoggedInUser().isAdmin() && userAuthService.getLoggedInUserProfile() != null && !userProfile.getEmail().equals(userAuthService.getLoggedInUserProfile().getEmail()) ) ) {
+                throw new SQLException("No connection or unauthorized user");
             }
-        catch (Exception e) {
-            e.printStackTrace();
-        return false;}
+            switch (updateType) {
+                case UPDATE_FIRST_NAME:
+                    return updateFirstName(userProfile, conn);
+                case UPDATE_LAST_NAME:
+                    return updateLastName(userProfile, conn);
+                case UPDATE_PHONE:
+                    return updatePhone(userProfile, conn);
+                case UPDATE_ADDRESS:
+                    return updateAddress(userProfile, conn);
+                default:
+                    return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating user profile: " + e.getMessage());
+            return false;
+        }
     }
-
 }
