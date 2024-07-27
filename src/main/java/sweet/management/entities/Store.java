@@ -6,11 +6,11 @@ import sweet.management.services.DatabaseService;
 import java.sql.*;
 
 public class Store {
-    private int storeId;
+    private final int storeId;
     private final String ownerEmail;
     private String storeName;
     private String businessInfo;
-    private Timestamp createdAt;
+    private final Timestamp createdAt;
     public static final int UPDATE_STORE_NAME = 1;
     public static final int UPDATE_BUSINESS_INFO = 2;
     public static final int DELETE_STORE = 3;

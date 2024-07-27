@@ -25,7 +25,7 @@ public class UserAuthService {
                     loggedInUser = user;
                     if (loggedInUser.isBeneficiaryUser())
                         loggedInUserProfile = UserProfile.getUserProfileByEmail(email, conn);
-                    else if(loggedInUser.isStoreOwner())
+                    else if(loggedInUser.isStoreOwner() || loggedInUser.isRawMaterialSupplier())
                         loggedInStore = Store.getStoreByOwnerEmail(email, conn);
                     return true;
                 }

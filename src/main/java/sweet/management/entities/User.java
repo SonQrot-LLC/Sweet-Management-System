@@ -78,6 +78,10 @@ public class User {
         return Objects.equals(this.role, "store_owner");
     }
 
+    public boolean isRawMaterialSupplier(){
+        return Objects.equals(this.role, "raw_material_supplier");
+    }
+
     public static void createUser(User user, Connection conn) throws SQLException {
         String sql = "INSERT INTO users (email, password, role, city, created_at) VALUES (?, ?, ?, ?, ?)";
         DatabaseService.executeUpdate(sql, conn, stmt -> {
