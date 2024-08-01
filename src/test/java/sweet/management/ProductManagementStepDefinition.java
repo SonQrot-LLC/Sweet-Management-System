@@ -7,8 +7,8 @@ import sweet.management.entities.Product;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -23,7 +23,7 @@ public class ProductManagementStepDefinition {
         userAuthService = new UserAuthService();
         userAuthService.login("owner@gmail.com","123", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
-        productDeleteTest = new Product("delete_test","delete_test","1","1",82,"2024-11-11");
+        productDeleteTest = new Product("delete_test","delete_test","1","1",2,"2024-11-11");
         try {
             Product.resetIdCounter(DatabaseService.getConnection(true));
         } catch (SQLException e) {
@@ -100,7 +100,7 @@ public class ProductManagementStepDefinition {
     @When("sets product stock to {string}")
     public void setsProductStockTo(String stock) {
         try {
-            productTest.setPrice(Integer.parseInt(stock));
+            productTest.setStock(Integer.parseInt(stock));
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_STOCK);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -181,7 +181,8 @@ public class ProductManagementStepDefinition {
     @When("the user asks for discount suggestion")
     public void theUserAsksForDiscountSuggestion() {
         try {
-            Product.getProductsExpiringInLessThan120Days(DatabaseService.getConnection(true));
+            List<Product> list = Product.getProductsExpiringInLessThan120Days(DatabaseService.getConnection(true));
+            System.out.println("list size: " + list.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

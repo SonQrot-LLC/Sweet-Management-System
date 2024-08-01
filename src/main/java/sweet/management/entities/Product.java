@@ -124,9 +124,9 @@ public class Product {
     }
 
     public static Product getProductById(int productId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products WHERE product_id = ?";
+        String sql = "SELECT *" + " FROM products WHERE product_id = ?";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException();
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -232,7 +232,7 @@ public class Product {
 
 
         public static List<Product> getProductsExpiringInLessThan120Days(Connection conn) throws SQLException {
-            String sql = "SELECT * FROM products WHERE expiry_date <= ?";
+            String sql = "SELECT *" + " FROM products WHERE expiry_date <= ?";
             List<Product> products = new ArrayList<>();
 
             if (conn == null) {

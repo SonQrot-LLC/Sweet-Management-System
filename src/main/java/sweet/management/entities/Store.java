@@ -2,7 +2,6 @@ package sweet.management.entities;
 
 import sweet.management.UserAuthService;
 import sweet.management.services.DatabaseService;
-
 import java.sql.*;
 
 public class Store {
@@ -24,11 +23,17 @@ public class Store {
         this.createdAt = createdAt;
     }
 
-//    public Store(String ownerEmail, String storeName, String businessInfo) {
-//        this.ownerEmail = ownerEmail;
-//        this.storeName = storeName;
-//        this.businessInfo = businessInfo;
-//    }
+    public Store(String ownerEmail, String storeName, String businessInfo) {
+        try {
+            this.storeId = nextId(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException("Error generating next store ID", e);
+        }
+        this.ownerEmail = ownerEmail;
+        this.storeName = storeName;
+        this.businessInfo = businessInfo;
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+    }
 
     // Getters and Setters
     public int getStoreId() {
@@ -55,25 +60,28 @@ public class Store {
         this.businessInfo = businessInfo;
     }
 
-//    public Timestamp getCreatedAt() {
-//        return createdAt;
-//    }
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
 
     // Additional Methods
-    public static void createStore(Store store, Connection conn) throws SQLException {
-        String sql = "INSERT INTO stores (owner_email, store_name, business_info, created_at) VALUES (?, ?, ?, ?)";
-        DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setString(1, store.getOwnerEmail());
-            stmt.setString(2, store.getStoreName());
-            stmt.setString(3, store.getBusinessInfo());
-            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+    public static boolean createStore(Store store, Connection conn) throws SQLException {
+        String sql = "INSERT INTO stores (store_id, owner_email, store_name, business_info, created_at) VALUES (?, ?, ?, ?, ?)";
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
+            stmt.setInt(1, store.getStoreId()); // Include store_id in the insert
+            stmt.setString(2, store.getOwnerEmail());
+            stmt.setString(3, store.getStoreName());
+            stmt.setString(4, store.getBusinessInfo());
+            stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
         });
     }
 
+
     public static Store getStoreByOwnerEmail(String ownerEmail, Connection conn) throws SQLException {
-        String sql = "SELECT * "+" FROM stores WHERE owner_email = ?";
-        if (conn == null)
+        String sql = "SELECT * FROM stores WHERE owner_email = ?";
+        if (conn == null) {
             throw new SQLException("No connection");
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ownerEmail);
@@ -110,7 +118,7 @@ public class Store {
 
     public static boolean updateStore(Store store, Connection conn, int updateType, UserAuthService userAuthService) {
         try {
-            if (conn == null || store == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && !store.getOwnerEmail().equals(userAuthService.getLoggedInUser().getEmail()) )) {
+            if (conn == null || store == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && !store.getOwnerEmail().equals(userAuthService.getLoggedInUser().getEmail()))) {
                 throw new SQLException("No connection or unauthorized user");
             }
             switch (updateType) {
@@ -133,4 +141,33 @@ public class Store {
         String sql = "DELETE FROM stores WHERE store_id = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, storeId));
     }
+
+    public static boolean resetIdCounter(Connection conn) throws SQLException {
+        String sql = "ALTER TABLE stores AUTO_INCREMENT = 1;";
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {});
+    }
+
+    public static boolean setId(int id, Store store, Connection conn) throws SQLException {
+        String sql = "UPDATE stores SET store_id = ? WHERE store_id = ?";
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
+            stmt.setInt(1, id);
+            stmt.setInt(2, store.getStoreId());
+        });
+    }
+
+    public static int nextId(Connection conn) throws SQLException {
+        String sql = "SELECT MAX(store_id) AS max_id FROM stores";
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("max_id") + 1;
+                }
+            }
+        }
+        return 1;
+    }
+
 }

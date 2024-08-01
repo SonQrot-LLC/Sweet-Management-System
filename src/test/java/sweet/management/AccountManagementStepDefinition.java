@@ -220,7 +220,8 @@ public class AccountManagementStepDefinition {
     public void storeIsDeleted() {
         assertTrue(isUpdated);
         try {
-            Store.createStore(store,DatabaseService.getConnection(true));
+            Store addNewStore = new Store("mahmood@outlook.com","to be deleted", "testing deleting function");
+            Store.createStore(addNewStore,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
