@@ -1,4 +1,4 @@
-Feature: Order Management
+Feature: Messaging
 
  Scenario: Customer sends a message to store owner
   Given That Customer with email "order.user@gmail.com" is logged in
