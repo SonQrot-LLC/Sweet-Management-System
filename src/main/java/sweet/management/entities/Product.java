@@ -243,7 +243,6 @@ public class Product {
                 LocalDate currentDate = LocalDate.now();
                 LocalDate expiryThresholdDate = currentDate.plusDays(120);
                 stmt.setDate(1, Date.valueOf(expiryThresholdDate));
-                System.out.println(Date.valueOf(expiryThresholdDate));
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         Product product = new Product(
@@ -256,7 +255,6 @@ public class Product {
                                 rs.getInt("store_id"),
                                 rs.getString("expiry_date") // Assuming expiry_date is stored as a String
                         );
-                        System.out.println(rs.getString("product_name"));
                         products.add(product);
                     }
                 }
