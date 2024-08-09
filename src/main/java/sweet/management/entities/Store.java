@@ -142,18 +142,7 @@ public class Store {
         return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, storeId));
     }
 
-    public static boolean resetIdCounter(Connection conn) throws SQLException {
-        String sql = "ALTER TABLE stores AUTO_INCREMENT = 1;";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {});
-    }
 
-    public static boolean setId(int id, Store store, Connection conn) throws SQLException {
-        String sql = "UPDATE stores SET store_id = ? WHERE store_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, id);
-            stmt.setInt(2, store.getStoreId());
-        });
-    }
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT MAX(store_id) AS max_id FROM stores";

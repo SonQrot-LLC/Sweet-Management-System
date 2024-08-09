@@ -1,4 +1,4 @@
-Feature:Login
+Feature: Feedback
 
   Scenario: creating a valid feedback
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
@@ -6,23 +6,29 @@ Feature:Login
     Then the feedback should created successfully
 
 
-  Scenario: Getting feedback by email
+  Scenario: Getting feedbacks by email
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
     When the user requests feedback by email "feedbacktest@gmail.com"
     Then the feedback associated should be retrieved successfully
 
-  Scenario: Getting feedback by store ID
+  Scenario: Getting feedbacks by store ID
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
     When the user requests feedback for store ID "1"
     Then the feedback associated should be retrieved successfully
 
-  Scenario: Getting feedback by product ID
+  Scenario: Getting feedbacks by product ID
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
     When the user requests feedback for product ID "1"
     Then the feedback associated should be retrieved successfully
+
+    Scenario:  Getting feedbacks by invalid type
+      Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
+      When the user requests feedback for "phone" number "0591234567"
+      Then it wont return feedback list and it will fail
 
 
   Scenario: Successfully deleting order
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
     When The user deletes a feedback with id "1"
     Then the feedback is deleted successfully
+

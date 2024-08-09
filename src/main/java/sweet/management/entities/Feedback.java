@@ -31,9 +31,7 @@ public class Feedback {
     public Feedback(String userEmail, int productId, int rating, String comment) {
         try {
             this.feedbackId = nextId(DatabaseService.getConnection(true));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e) {e.printStackTrace();}
         this.userEmail = userEmail;
         this.productId = productId;
         this.rating = rating;
@@ -124,9 +122,7 @@ public class Feedback {
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT COALESCE(MAX(feedback_id), 0) + 1 AS next_id FROM feedback";
-        if (conn == null) {
-            throw new SQLException("No connection");
-        }
+        if (conn == null) throw new SQLException("No connection");
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

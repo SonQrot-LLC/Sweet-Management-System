@@ -7,12 +7,11 @@ import org.junit.Assert;
 import sweet.management.entities.Feedback;
 import sweet.management.services.DatabaseService;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FeedbackManagementStepManagement {
@@ -24,6 +23,9 @@ public class FeedbackManagementStepManagement {
         userAuthService = new UserAuthService();
 
     }
+
+
+
     @Given("that a user is logged in with email {string} and password {string}")
     public void thatAUserIsLoggedInWithEmailAndPassword(String email, String password) {
         Assert.assertTrue(userAuthService.login(email,password, DatabaseService.getConnection(true)));
@@ -88,5 +90,20 @@ public class FeedbackManagementStepManagement {
         List<Feedback> feedbacks = Feedback.getFeedback(Feedback.QUERY_BY_PRODUCT,productId,DatabaseService.getConnection(true));
         assertNotNull(feedbacks);
 
+    }
+
+    @When("the user requests feedback for {string} number {string}")
+    public void theUserRequestsFeedbackForNumber(String typeString, String phone) {
+        try {
+            List<Feedback> feedbacks = Feedback.getFeedback(typeString, phone, DatabaseService.getConnection(true));
+            assertNotNull(feedbacks);
+            fail("Expected SQLException was not thrown");
+        } catch (IllegalArgumentException | SQLException e) {
+            assertTrue(e.getMessage().contains("Invalid query type:"));
+        }
+    }
+
+    @Then("it wont return feedback list and it will fail")
+    public void itWontReturnFeedbackListAndItWillFail() {
     }
 }

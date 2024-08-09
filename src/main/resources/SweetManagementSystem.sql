@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Aug 09, 2024 at 07:34 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Host: localhost
+-- Generation Time: Aug 10, 2024 at 12:23 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sweetmanagementsystem`
+-- Database: `SweetManagementSystem`
 --
 
 -- --------------------------------------------------------
@@ -136,7 +136,112 @@ INSERT INTO `messages` (`message_id`, `sender_email`, `receiver_email`, `content
                                                                                                      (177, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:59:42'),
                                                                                                      (178, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:59:42'),
                                                                                                      (179, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:59:42'),
-                                                                                                     (180, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:59:42');
+                                                                                                     (180, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:59:42'),
+                                                                                                     (181, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 20:42:20'),
+                                                                                                     (182, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 20:42:20'),
+                                                                                                     (183, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 20:42:20'),
+                                                                                                     (184, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 20:42:20'),
+                                                                                                     (185, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 20:42:20'),
+                                                                                                     (186, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 20:42:47'),
+                                                                                                     (187, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 20:42:47'),
+                                                                                                     (188, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 20:42:47'),
+                                                                                                     (189, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 20:42:47'),
+                                                                                                     (190, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 20:42:47'),
+                                                                                                     (191, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 20:43:53'),
+                                                                                                     (192, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 20:43:53'),
+                                                                                                     (193, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 20:43:53'),
+                                                                                                     (194, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 20:43:53'),
+                                                                                                     (195, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 20:43:53'),
+                                                                                                     (196, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:39:58'),
+                                                                                                     (197, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:39:58'),
+                                                                                                     (198, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:39:58'),
+                                                                                                     (199, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:39:58'),
+                                                                                                     (200, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:39:58'),
+                                                                                                     (201, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:43:09'),
+                                                                                                     (202, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:43:09'),
+                                                                                                     (203, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:43:09'),
+                                                                                                     (204, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:43:09'),
+                                                                                                     (205, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:43:09'),
+                                                                                                     (206, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:50:16'),
+                                                                                                     (207, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:50:16'),
+                                                                                                     (208, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:50:16'),
+                                                                                                     (209, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:50:16'),
+                                                                                                     (210, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:50:16'),
+                                                                                                     (211, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:51:23'),
+                                                                                                     (212, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:51:23'),
+                                                                                                     (213, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:51:23'),
+                                                                                                     (214, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:51:23'),
+                                                                                                     (215, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:51:24'),
+                                                                                                     (216, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:52:40'),
+                                                                                                     (217, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:52:40'),
+                                                                                                     (218, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:52:40'),
+                                                                                                     (219, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:52:40'),
+                                                                                                     (220, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:52:40'),
+                                                                                                     (221, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:53:40'),
+                                                                                                     (222, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:53:40'),
+                                                                                                     (223, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:53:40'),
+                                                                                                     (224, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:53:40'),
+                                                                                                     (225, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:53:40'),
+                                                                                                     (226, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 21:56:22'),
+                                                                                                     (227, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 21:56:22'),
+                                                                                                     (228, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 21:56:22'),
+                                                                                                     (229, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 21:56:22'),
+                                                                                                     (230, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 21:56:22'),
+                                                                                                     (231, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:08:32'),
+                                                                                                     (232, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:08:32'),
+                                                                                                     (233, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:08:32'),
+                                                                                                     (234, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:08:32'),
+                                                                                                     (235, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:08:32'),
+                                                                                                     (236, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:09:16'),
+                                                                                                     (237, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:09:16'),
+                                                                                                     (238, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:09:16'),
+                                                                                                     (239, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:09:16'),
+                                                                                                     (240, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:09:16'),
+                                                                                                     (241, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:11:03'),
+                                                                                                     (242, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:11:03'),
+                                                                                                     (243, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:11:03'),
+                                                                                                     (244, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:11:03'),
+                                                                                                     (245, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:11:03'),
+                                                                                                     (246, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:11:40'),
+                                                                                                     (247, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:11:40'),
+                                                                                                     (248, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:11:40'),
+                                                                                                     (249, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:11:40'),
+                                                                                                     (250, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:11:40'),
+                                                                                                     (251, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:12:13'),
+                                                                                                     (252, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:12:13'),
+                                                                                                     (253, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:12:13'),
+                                                                                                     (254, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:12:13'),
+                                                                                                     (255, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:12:13'),
+                                                                                                     (256, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:13:18'),
+                                                                                                     (257, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:13:18'),
+                                                                                                     (258, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:13:18'),
+                                                                                                     (259, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:13:18'),
+                                                                                                     (260, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:13:18'),
+                                                                                                     (261, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:14:09'),
+                                                                                                     (262, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:14:09'),
+                                                                                                     (263, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:14:09'),
+                                                                                                     (264, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:14:09'),
+                                                                                                     (265, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:14:09'),
+                                                                                                     (266, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:18:13'),
+                                                                                                     (267, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:18:13'),
+                                                                                                     (268, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:18:13'),
+                                                                                                     (269, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:18:13'),
+                                                                                                     (270, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:18:13'),
+                                                                                                     (271, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:20:01'),
+                                                                                                     (272, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:20:01'),
+                                                                                                     (273, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:20:01'),
+                                                                                                     (274, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:20:01'),
+                                                                                                     (275, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:20:01'),
+                                                                                                     (276, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:21:21'),
+                                                                                                     (277, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:21:22'),
+                                                                                                     (278, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:21:22'),
+                                                                                                     (279, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:21:22'),
+                                                                                                     (280, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:21:22'),
+                                                                                                     (281, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 22:22:53'),
+                                                                                                     (282, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 22:22:53'),
+                                                                                                     (283, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 22:22:53'),
+                                                                                                     (284, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 22:22:53'),
+                                                                                                     (285, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 22:22:53');
 
 -- --------------------------------------------------------
 
@@ -178,7 +283,28 @@ INSERT INTO `orderitems` (`order_item_id`, `order_id`, `product_id`, `quantity`,
                                                                                               (5, 1, 1, 3, 18.00),
                                                                                               (6, 1, 1, 3, 18.00),
                                                                                               (7, 1, 1, 3, 18.00),
-                                                                                              (8, 1, 1, 3, 18.00);
+                                                                                              (8, 1, 1, 3, 18.00),
+                                                                                              (9, 1, 1, 3, 18.00),
+                                                                                              (10, 1, 1, 3, 18.00),
+                                                                                              (11, 1, 1, 3, 18.00),
+                                                                                              (12, 1, 1, 3, 18.00),
+                                                                                              (13, 1, 1, 3, 18.00),
+                                                                                              (14, 1, 1, 3, 18.00),
+                                                                                              (15, 1, 1, 3, 18.00),
+                                                                                              (16, 1, 1, 3, 18.00),
+                                                                                              (17, 1, 1, 3, 18.00),
+                                                                                              (18, 1, 1, 3, 18.00),
+                                                                                              (19, 1, 1, 3, 18.00),
+                                                                                              (20, 1, 1, 3, 18.00),
+                                                                                              (21, 1, 1, 3, 18.00),
+                                                                                              (22, 1, 1, 3, 18.00),
+                                                                                              (23, 1, 1, 3, 18.00),
+                                                                                              (24, 1, 1, 3, 18.00),
+                                                                                              (25, 1, 1, 3, 18.00),
+                                                                                              (26, 1, 1, 3, 18.00),
+                                                                                              (27, 1, 1, 3, 18.00),
+                                                                                              (28, 1, 1, 3, 18.00),
+                                                                                              (29, 1, 1, 3, 18.00);
 
 -- --------------------------------------------------------
 
@@ -262,7 +388,28 @@ INSERT INTO `orders` (`order_id`, `user_email`, `store_id`, `order_status`, `tot
                                                                                                               (60, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:49:23'),
                                                                                                               (61, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:54:20'),
                                                                                                               (62, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:55:57'),
-                                                                                                              (63, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:59:43');
+                                                                                                              (63, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:59:43'),
+                                                                                                              (64, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 20:42:20'),
+                                                                                                              (65, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 20:42:47'),
+                                                                                                              (66, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 20:43:54'),
+                                                                                                              (67, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:39:58'),
+                                                                                                              (68, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:43:09'),
+                                                                                                              (69, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:50:17'),
+                                                                                                              (70, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:51:24'),
+                                                                                                              (71, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:52:40'),
+                                                                                                              (72, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:53:40'),
+                                                                                                              (73, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 21:56:22'),
+                                                                                                              (74, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:08:33'),
+                                                                                                              (75, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:09:16'),
+                                                                                                              (76, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:11:03'),
+                                                                                                              (77, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:11:40'),
+                                                                                                              (78, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:12:13'),
+                                                                                                              (79, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:13:18'),
+                                                                                                              (80, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:14:09'),
+                                                                                                              (81, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:18:13'),
+                                                                                                              (82, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:20:01'),
+                                                                                                              (83, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:21:22'),
+                                                                                                              (84, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 22:22:53');
 
 -- --------------------------------------------------------
 
@@ -290,7 +437,7 @@ INSERT INTO `products` (`product_id`, `store_id`, `product_name`, `description`,
                                                                                                                                                 (1, 1, 'chocolate cake', 'Dark chocolate cake', 7.00, 25, '2024-07-31 19:17:49', '2025-01-01', 0.00),
                                                                                                                                                 (2, 1, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-07-31 20:43:51', '2026-10-07', 0.00),
                                                                                                                                                 (3, 1, 'item1', 'item1', 5.00, 115, '2024-07-31 21:22:11', '2024-12-12', 0.00),
-                                                                                                                                                (4, 1, 'item2', 'item2', 31.00, 200, '2024-07-31 21:22:11', '2024-09-20', 0.00),
+                                                                                                                                                (4, 1, 'item2', 'item2', 31.00, 200, '2024-07-31 21:22:11', '2024-09-20', 10.00),
                                                                                                                                                 (5, 1, 'item3', 'item3', 32.00, 124, '2024-07-31 21:22:11', '2024-09-03', 0.00),
                                                                                                                                                 (6, 1, 'item4', 'item4', 53.00, 21, '2024-07-31 21:22:51', '2024-08-15', 0.00),
                                                                                                                                                 (7, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 07:05:42', '2024-12-28', 0.00);
@@ -356,7 +503,7 @@ CREATE TABLE `stores` (
 INSERT INTO `stores` (`store_id`, `owner_email`, `store_name`, `business_info`, `created_at`) VALUES
                                                                                                   (1, 'salam@hawa.com', 'Test store', 'Test store for database', '2024-08-01 11:00:14'),
                                                                                                   (2, 'owner@gmail.com', 'Test store', 'Test store for database', '2024-07-31 19:08:31'),
-                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-09 16:59:42');
+                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-09 22:22:52');
 
 -- --------------------------------------------------------
 
@@ -398,7 +545,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`email`, `password`, `role`, `city`, `created_at`) VALUES
-                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-09 16:59:42'),
+                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-09 22:22:52'),
+                                                                            ('feedbacktest@gmail.com', '321', 'beneficiary_user', 'Nablus', '2024-08-09 20:43:41'),
                                                                             ('mahmood@gmail.com', '777', 'admin', 'Jordan', '2024-07-27 09:08:57'),
                                                                             ('mahmood@outlook.com', '777', 'store_owner', 'Khalil', '2024-07-27 16:31:27'),
                                                                             ('momanani2017@gmail.com', '777', 'admin', 'Tulkarm', '2024-07-26 16:51:33'),
@@ -429,7 +577,7 @@ CREATE TABLE `usersbycity` (
 --
 DROP TABLE IF EXISTS `bestsellingproducts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`orderitems` `oi` join `products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
 
 -- --------------------------------------------------------
 
@@ -438,7 +586,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `storeprofits`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`orderitems` `oi` join `orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `sweetmanagementsystem`.`stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
 
 -- --------------------------------------------------------
 
@@ -447,7 +595,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `usersbycity`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `usersbycity`  AS SELECT `users`.`city` AS `city`, count(`users`.`email`) AS `user_count` FROM `users` GROUP BY `users`.`city` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`usersbycity`  AS SELECT `sweetmanagementsystem`.`users`.`city` AS `city`, count(`sweetmanagementsystem`.`users`.`email`) AS `user_count` FROM `sweetmanagementsystem`.`users` GROUP BY `sweetmanagementsystem`.`users`.`city` ;
 
 --
 -- Indexes for dumped tables
@@ -552,7 +700,7 @@ ALTER TABLE `discounts`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
+    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=286;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -564,7 +712,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orderitems`
 --
 ALTER TABLE `orderitems`
-    MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+    MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `products`
