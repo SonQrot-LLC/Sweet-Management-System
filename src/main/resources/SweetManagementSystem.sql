@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Aug 07, 2024 at 08:21 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Host: localhost
+-- Generation Time: Aug 09, 2024 at 05:40 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sweetmanagementsystem`
+-- Database: `SweetManagementSystem`
 --
 
 -- --------------------------------------------------------
@@ -76,6 +76,27 @@ CREATE TABLE `messages` (
                             `content` text DEFAULT NULL,
                             `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`message_id`, `sender_email`, `receiver_email`, `content`, `created_at`) VALUES
+                                                                                                     (126, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-08 19:24:36'),
+                                                                                                     (127, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-08 19:24:36'),
+                                                                                                     (128, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-08 19:24:36'),
+                                                                                                     (129, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-08 19:24:36'),
+                                                                                                     (130, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-08 19:24:36'),
+                                                                                                     (131, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-08 22:08:25'),
+                                                                                                     (132, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-08 22:08:25'),
+                                                                                                     (133, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-08 22:08:25'),
+                                                                                                     (134, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-08 22:08:25'),
+                                                                                                     (135, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-08 22:08:25'),
+                                                                                                     (136, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 13:03:38'),
+                                                                                                     (137, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 13:03:38'),
+                                                                                                     (138, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 13:03:38'),
+                                                                                                     (139, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 13:03:38'),
+                                                                                                     (140, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 13:03:38');
 
 -- --------------------------------------------------------
 
@@ -176,7 +197,10 @@ INSERT INTO `orders` (`order_id`, `user_email`, `store_id`, `order_status`, `tot
                                                                                                               (49, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 17:50:27'),
                                                                                                               (50, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 17:52:26'),
                                                                                                               (51, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 17:54:47'),
-                                                                                                              (52, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 18:15:29');
+                                                                                                              (52, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 18:15:29'),
+                                                                                                              (53, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-08 19:24:36'),
+                                                                                                              (54, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-08 22:08:25'),
+                                                                                                              (55, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 13:03:38');
 
 -- --------------------------------------------------------
 
@@ -321,7 +345,10 @@ INSERT INTO `products` (`product_id`, `store_id`, `product_name`, `description`,
                                                                                                                                     (119, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:50:27', '2024-12-28'),
                                                                                                                                     (120, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:52:26', '2024-12-28'),
                                                                                                                                     (121, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:54:47', '2024-12-28'),
-                                                                                                                                    (122, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 18:15:29', '2024-12-28');
+                                                                                                                                    (122, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 18:15:29', '2024-12-28'),
+                                                                                                                                    (123, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-08 19:24:36', '2024-12-28'),
+                                                                                                                                    (124, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-08 22:08:25', '2024-12-28'),
+                                                                                                                                    (125, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-09 13:03:38', '2024-12-28');
 
 -- --------------------------------------------------------
 
@@ -384,7 +411,7 @@ CREATE TABLE `stores` (
 INSERT INTO `stores` (`store_id`, `owner_email`, `store_name`, `business_info`, `created_at`) VALUES
                                                                                                   (1, 'salam@hawa.com', 'Test store', 'Test store for database', '2024-08-01 11:00:14'),
                                                                                                   (2, 'owner@gmail.com', 'Test store', 'Test store for database', '2024-07-31 19:08:31'),
-                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-07 18:15:29');
+                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-09 13:03:37');
 
 -- --------------------------------------------------------
 
@@ -426,7 +453,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`email`, `password`, `role`, `city`, `created_at`) VALUES
-                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-07 18:15:29'),
+                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-09 13:03:37'),
                                                                             ('mahmood@gmail.com', '777', 'admin', 'Jordan', '2024-07-27 09:08:57'),
                                                                             ('mahmood@outlook.com', '777', 'store_owner', 'Khalil', '2024-07-27 16:31:27'),
                                                                             ('momanani2017@gmail.com', '777', 'admin', 'Tulkarm', '2024-07-26 16:51:33'),
@@ -456,7 +483,7 @@ CREATE TABLE `usersbycity` (
 --
 DROP TABLE IF EXISTS `bestsellingproducts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`orderitems` `oi` join `products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
 
 -- --------------------------------------------------------
 
@@ -465,7 +492,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `storeprofits`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`orderitems` `oi` join `orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `sweetmanagementsystem`.`stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
 
 -- --------------------------------------------------------
 
@@ -474,7 +501,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `usersbycity`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `usersbycity`  AS SELECT `users`.`city` AS `city`, count(`users`.`email`) AS `user_count` FROM `users` GROUP BY `users`.`city` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`usersbycity`  AS SELECT `sweetmanagementsystem`.`users`.`city` AS `city`, count(`sweetmanagementsystem`.`users`.`email`) AS `user_count` FROM `sweetmanagementsystem`.`users` GROUP BY `sweetmanagementsystem`.`users`.`city` ;
 
 --
 -- Indexes for dumped tables
@@ -576,16 +603,10 @@ ALTER TABLE `discounts`
     MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `feedback`
---
-ALTER TABLE `feedback`
-    MODIFY `feedback_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -603,7 +624,7 @@ ALTER TABLE `orderitems`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-    MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+    MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `recipes`
