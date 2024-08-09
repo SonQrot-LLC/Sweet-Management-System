@@ -26,11 +26,17 @@ public class OrderItem {
     }
 
     public OrderItem(int orderId, int productId, int quantity, double price) {
+        try (Connection conn = DatabaseService.getConnection(true)) {
+            this.orderItemId = nextId(conn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
     }
+
 
     // Getters and Setters
     public int getOrderItemId() {
@@ -63,12 +69,13 @@ public class OrderItem {
 
     // Static Methods for Database Operations
     public static boolean createOrderItem(OrderItem orderItem, Connection conn) throws SQLException {
-        String sql = "INSERT INTO orderitems (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO orderitems (order_item_id, order_id, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, orderItem.getOrderId());
-            stmt.setInt(2, orderItem.getProductId());
-            stmt.setInt(3, orderItem.getQuantity());
-            stmt.setDouble(4, orderItem.getPrice());
+            stmt.setInt(1, orderItem.getOrderItemId()); // Set the ID
+            stmt.setInt(2, orderItem.getOrderId());
+            stmt.setInt(3, orderItem.getProductId());
+            stmt.setInt(4, orderItem.getQuantity());
+            stmt.setDouble(5, orderItem.getPrice());
         });
     }
 
@@ -147,4 +154,19 @@ public class OrderItem {
         }
         return orderItems;
     }
+    public static int nextId(Connection conn) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(order_item_id), 0) + 1 AS next_id FROM orderitems";
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("next_id");
+                }
+            }
+        }
+        return 1; // Default to 1 if something goes wrong
+    }
+
 }

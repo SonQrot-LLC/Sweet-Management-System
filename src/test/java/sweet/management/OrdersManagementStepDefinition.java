@@ -6,6 +6,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import sweet.management.entities.Order;
+import sweet.management.entities.OrderItem;
+import sweet.management.entities.Product;
 import sweet.management.services.DatabaseService;
 
 import java.sql.SQLException;
@@ -17,10 +19,18 @@ import static org.junit.Assert.*;
 public class OrdersManagementStepDefinition {
 
     UserAuthService userAuthService;
-    boolean isUpdated;
+    boolean isUpdatedOrder;
     Order orderToBeUpdated;
     Order orderToBeDeleted;
     List<Order> ordersList;
+
+    Product product;
+    Order order;
+    boolean isUpdatedOrderItem;
+    OrderItem orderItemToBeUpdated;
+    OrderItem orderItemToBeDeleted;
+    List<OrderItem> orderItemsList;
+
 
 
     public OrdersManagementStepDefinition() {
@@ -39,7 +49,7 @@ public class OrdersManagementStepDefinition {
     public void theUserMakeANewOrderEmailAndOrderStatus(String userEmail, String orderStatus) {
         Order order = new Order(userEmail,2,orderStatus);
         try {
-            isUpdated = Order.createOrder(order,DatabaseService.getConnection(true));
+            isUpdatedOrder = Order.createOrder(order,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +57,7 @@ public class OrdersManagementStepDefinition {
     }
     @Then("The order should be successfully created")
     public void theOrderShouldBeSuccessfullyCreated() {
-        assertTrue(isUpdated);
+        assertTrue(isUpdatedOrder);
     }
 
 
@@ -56,7 +66,7 @@ public class OrdersManagementStepDefinition {
         try {
             orderToBeUpdated = Order.getOrderById(Integer.parseInt(id),DatabaseService.getConnection(true));
             assertNotNull(orderToBeUpdated);
-            isUpdated = false;
+            isUpdatedOrder = false;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +86,7 @@ public class OrdersManagementStepDefinition {
     public void updatesTotalAmountTo(String Total) {
         orderToBeUpdated.setTotalAmount(Double.parseDouble(Total));
         try {
-            isUpdated = Order.updateOrder(orderToBeUpdated,DatabaseService.getConnection(true), Order.UPDATE_TOTAL_AMOUNT);
+            isUpdatedOrder = Order.updateOrder(orderToBeUpdated,DatabaseService.getConnection(true), Order.UPDATE_TOTAL_AMOUNT);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -88,8 +98,8 @@ public class OrdersManagementStepDefinition {
         try {
             orderToBeDeleted = new Order(4000, "order.user@gmail.com", 2, "pending", 0.1, new Timestamp(System.currentTimeMillis()));
             assertTrue(Order.createOrder(orderToBeDeleted,DatabaseService.getConnection(true)));
-            isUpdated  = Order.updateOrder(orderToBeDeleted,DatabaseService.getConnection(true),Order.DELETE_ORDER);
-            assertTrue(isUpdated);
+            isUpdatedOrder  = Order.updateOrder(orderToBeDeleted,DatabaseService.getConnection(true),Order.DELETE_ORDER);
+            assertTrue(isUpdatedOrder);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -97,14 +107,14 @@ public class OrdersManagementStepDefinition {
 
     @Then("The order should be deleted successfully")
     public void theOrderShouldBeDeletedSuccessfully() {
-        assertTrue(isUpdated);
+        assertTrue(isUpdatedOrder);
     }
 
     @When("The user edits an order with ID {string}")
     public void theUserEditsAnOrderWithID(String id) {
         try {
             orderToBeUpdated = Order.getOrderById(Integer.parseInt(id),DatabaseService.getConnection(true));
-            isUpdated = false;
+            isUpdatedOrder = false;
             assertNotNull(orderToBeUpdated);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -115,7 +125,7 @@ public class OrdersManagementStepDefinition {
     public void theUserChoosesInvalidOrderUpdateType() {
         orderToBeUpdated.setTotalAmount(5.00);
         try {
-            isUpdated = Order.updateOrder(orderToBeUpdated,DatabaseService.getConnection(true),10);
+            isUpdatedOrder = Order.updateOrder(orderToBeUpdated,DatabaseService.getConnection(true),10);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -123,7 +133,7 @@ public class OrdersManagementStepDefinition {
 
     @Then("The order update should fail")
     public void theOrderUpdateShouldFail() {
-        assertFalse(isUpdated);
+        assertFalse(isUpdatedOrder);
     }
 
     @When("The user try to  get orders by store id {string}")
@@ -141,6 +151,43 @@ public class OrdersManagementStepDefinition {
     public void theUserTryToGetOrdersByUserEmail(String email) throws SQLException {
         ordersList = null;
         ordersList = Order.getOrdersByUserEmail(email, DatabaseService.getConnection(true));
+    }
+
+    @Then("order is updated successfully")
+    public void orderIsUpdatedSuccessfully()
+    {
+        assertTrue(isUpdatedOrder);
+    }
+
+
+    @Given("The order_id {string} is made to purchase the product_id {string} and the product and Order exists in the database")
+    public void theOrder_idIsMadeToPurchaseTheProduct_idAndTheProductAndOrderExistsInTheDatabase(String orderId, String productId) {
+        try {
+            product = Product.getProductById(Integer.parseInt(productId), DatabaseService.getConnection(true));
+            order = Order.getOrderById(Integer.parseInt(orderId), DatabaseService.getConnection(true));
+            assertNotNull("Product should be retrieved successfully", product);
+            assertNotNull("Product should be retrieved successfully", order);
+        } catch (SQLException e) {
+            fail("SQLException should not have occurred: " + e.getMessage());
+        }
+    }
+
+    @When("The quantity is {string} and the price is {string}")
+    public void theQuantityIsAndThePriceIs(String quantity, String totalPrice) {
+        try {
+        OrderItem orderItem = new OrderItem(
+                order.getOrderId(),product.getProductId(),Integer.parseInt(quantity),Double.parseDouble(totalPrice)
+        );
+            isUpdatedOrderItem = OrderItem.createOrderItem(orderItem,DatabaseService.getConnection(true));
+        assertNotNull("Product should be retrieved successfully", orderItem);
+        } catch (SQLException e) {
+            fail("SQLException should not have occurred: " + e.getMessage());
+        }
+    }
+
+
+    @Then("The orderItem should be successfully created")
+    public void theOrderItemShouldBeSuccessfullyCreated() {assertTrue(isUpdatedOrderItem);
     }
 
 
