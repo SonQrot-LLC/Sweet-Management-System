@@ -36,9 +36,9 @@ Feature:Login
 
     Examples:
       | Email                      | Password |
-      | tooweakm@gmail.com         | 777      |
+      | tooweankm@gmail.com         | 777      |
       |                            | 777      |
-      | momkasat2017@gmail.com     | 777      |
+      | momkasbat2017@gmail.com     | 777      |
 
   Scenario Outline: Invalid password
     Given that the user is not logged in
