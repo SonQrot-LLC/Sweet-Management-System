@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Aug 09, 2024 at 05:40 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.0.28
+-- Host: 127.0.0.1
+-- Generation Time: Aug 09, 2024 at 07:34 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `SweetManagementSystem`
+-- Database: `sweetmanagementsystem`
 --
 
 -- --------------------------------------------------------
@@ -96,7 +96,47 @@ INSERT INTO `messages` (`message_id`, `sender_email`, `receiver_email`, `content
                                                                                                      (137, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 13:03:38'),
                                                                                                      (138, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 13:03:38'),
                                                                                                      (139, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 13:03:38'),
-                                                                                                     (140, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 13:03:38');
+                                                                                                     (140, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 13:03:38'),
+                                                                                                     (141, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:29:49'),
+                                                                                                     (142, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:29:49'),
+                                                                                                     (143, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:29:49'),
+                                                                                                     (144, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:29:49'),
+                                                                                                     (145, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:29:49'),
+                                                                                                     (146, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:36:17'),
+                                                                                                     (147, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:36:17'),
+                                                                                                     (148, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:36:17'),
+                                                                                                     (149, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:36:17'),
+                                                                                                     (150, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:36:17'),
+                                                                                                     (151, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:38:40'),
+                                                                                                     (152, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:38:40'),
+                                                                                                     (153, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:38:40'),
+                                                                                                     (154, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:38:40'),
+                                                                                                     (155, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:38:40'),
+                                                                                                     (156, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:47:51'),
+                                                                                                     (157, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:47:51'),
+                                                                                                     (158, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:47:51'),
+                                                                                                     (159, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:47:51'),
+                                                                                                     (160, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:47:51'),
+                                                                                                     (161, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:49:22'),
+                                                                                                     (162, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:49:22'),
+                                                                                                     (163, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:49:22'),
+                                                                                                     (164, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:49:22'),
+                                                                                                     (165, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:49:23'),
+                                                                                                     (166, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:54:20'),
+                                                                                                     (167, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:54:20'),
+                                                                                                     (168, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:54:20'),
+                                                                                                     (169, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:54:20'),
+                                                                                                     (170, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:54:20'),
+                                                                                                     (171, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:55:57'),
+                                                                                                     (172, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:55:57'),
+                                                                                                     (173, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:55:57'),
+                                                                                                     (174, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:55:57'),
+                                                                                                     (175, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:55:57'),
+                                                                                                     (176, 'order.user@gmail.com', 'owner@gmail.com', 'How do you make cake', '2024-08-09 16:59:42'),
+                                                                                                     (177, 'order.user@gmail.com', 'supplier@gmail.com', 'How do you grow sugar', '2024-08-09 16:59:42'),
+                                                                                                     (178, 'owner@gmail.com', 'order.user@gmail.com', 'Here is how I do it', '2024-08-09 16:59:42'),
+                                                                                                     (179, 'supplier@gmail.com', 'order.user@gmail.com', 'this is how I do it', '2024-08-09 16:59:42'),
+                                                                                                     (180, 'order.user@gmail.com', 'owner@gmail.com', 'Ok', '2024-08-09 16:59:42');
 
 -- --------------------------------------------------------
 
@@ -125,6 +165,20 @@ CREATE TABLE `orderitems` (
                               `quantity` int(11) DEFAULT NULL,
                               `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orderitems`
+--
+
+INSERT INTO `orderitems` (`order_item_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
+                                                                                              (1, 1, 1, 3, 18.00),
+                                                                                              (2, 1, 1, 3, 18.00),
+                                                                                              (3, 1, 1, 3, 18.00),
+                                                                                              (4, 1, 1, 3, 18.00),
+                                                                                              (5, 1, 1, 3, 18.00),
+                                                                                              (6, 1, 1, 3, 18.00),
+                                                                                              (7, 1, 1, 3, 18.00),
+                                                                                              (8, 1, 1, 3, 18.00);
 
 -- --------------------------------------------------------
 
@@ -200,7 +254,15 @@ INSERT INTO `orders` (`order_id`, `user_email`, `store_id`, `order_status`, `tot
                                                                                                               (52, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-07 18:15:29'),
                                                                                                               (53, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-08 19:24:36'),
                                                                                                               (54, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-08 22:08:25'),
-                                                                                                              (55, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 13:03:38');
+                                                                                                              (55, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 13:03:38'),
+                                                                                                              (56, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:29:49'),
+                                                                                                              (57, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:36:17'),
+                                                                                                              (58, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:38:40'),
+                                                                                                              (59, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:47:51'),
+                                                                                                              (60, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:49:23'),
+                                                                                                              (61, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:54:20'),
+                                                                                                              (62, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:55:57'),
+                                                                                                              (63, 'order.user@gmail.com', 2, 'pending', 0.00, '2024-08-09 16:59:43');
 
 -- --------------------------------------------------------
 
@@ -216,139 +278,22 @@ CREATE TABLE `products` (
                             `price` decimal(10,2) DEFAULT NULL,
                             `stock` int(11) DEFAULT NULL,
                             `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-                            `expiry_date` date DEFAULT NULL
+                            `expiry_date` date DEFAULT NULL,
+                            `discount` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `store_id`, `product_name`, `description`, `price`, `stock`, `created_at`, `expiry_date`) VALUES
-                                                                                                                                    (1, 1, 'chocolate cake', 'Dark chocolate cake', 7.00, 25, '2024-07-31 19:17:49', '2025-01-01'),
-                                                                                                                                    (2, 1, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-07-31 20:43:51', '2026-10-07'),
-                                                                                                                                    (3, 1, 'item1', 'item1', 5.00, 115, '2024-07-31 21:22:11', '2024-12-12'),
-                                                                                                                                    (4, 1, 'item2', 'item2', 31.00, 200, '2024-07-31 21:22:11', '2024-09-20'),
-                                                                                                                                    (5, 1, 'item3', 'item3', 32.00, 124, '2024-07-31 21:22:11', '2024-09-03'),
-                                                                                                                                    (6, 1, 'item4', 'item4', 53.00, 21, '2024-07-31 21:22:51', '2024-08-15'),
-                                                                                                                                    (7, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 07:05:42', '2024-12-28'),
-                                                                                                                                    (8, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 07:06:16', '2024-12-28'),
-                                                                                                                                    (9, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 07:10:34', '2024-12-28'),
-                                                                                                                                    (10, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 09:34:56', '2024-12-28'),
-                                                                                                                                    (11, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 09:43:49', '2024-12-28'),
-                                                                                                                                    (12, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:25:02', '2024-12-28'),
-                                                                                                                                    (13, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:31:18', '2024-12-28'),
-                                                                                                                                    (14, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:35:54', '2024-12-28'),
-                                                                                                                                    (15, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:38:55', '2024-12-28'),
-                                                                                                                                    (16, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:39:56', '2024-12-28'),
-                                                                                                                                    (17, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:42:06', '2024-12-28'),
-                                                                                                                                    (18, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:42:37', '2024-12-28'),
-                                                                                                                                    (19, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:43:36', '2024-12-28'),
-                                                                                                                                    (20, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:44:15', '2024-12-28'),
-                                                                                                                                    (21, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:46:58', '2024-12-28'),
-                                                                                                                                    (22, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:47:02', '2024-12-28'),
-                                                                                                                                    (23, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:47:53', '2024-12-28'),
-                                                                                                                                    (24, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:48:29', '2024-12-28'),
-                                                                                                                                    (25, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:48:35', '2024-12-28'),
-                                                                                                                                    (26, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:52:46', '2024-12-28'),
-                                                                                                                                    (27, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 10:58:09', '2024-12-28'),
-                                                                                                                                    (28, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:02:12', '2024-12-28'),
-                                                                                                                                    (29, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:03:15', '2024-12-28'),
-                                                                                                                                    (30, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:11:23', '2024-12-28'),
-                                                                                                                                    (31, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:14:37', '2024-12-28'),
-                                                                                                                                    (32, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:15:35', '2024-12-28'),
-                                                                                                                                    (33, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:16:18', '2024-12-28'),
-                                                                                                                                    (34, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:24:02', '2024-12-28'),
-                                                                                                                                    (35, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:24:43', '2024-12-28'),
-                                                                                                                                    (36, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:25:28', '2024-12-28'),
-                                                                                                                                    (37, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:28:29', '2024-12-28'),
-                                                                                                                                    (38, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:49:50', '2024-12-28'),
-                                                                                                                                    (39, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:50:32', '2024-12-28'),
-                                                                                                                                    (40, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:51:08', '2024-12-28'),
-                                                                                                                                    (41, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:53:37', '2024-12-28'),
-                                                                                                                                    (42, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:56:11', '2024-12-28'),
-                                                                                                                                    (43, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 11:56:25', '2024-12-28'),
-                                                                                                                                    (44, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:13:48', '2024-12-28'),
-                                                                                                                                    (45, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:19:55', '2024-12-28'),
-                                                                                                                                    (46, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:20:47', '2024-12-28'),
-                                                                                                                                    (47, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:21:58', '2024-12-28'),
-                                                                                                                                    (48, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:29:22', '2024-12-28'),
-                                                                                                                                    (49, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:31:14', '2024-12-28'),
-                                                                                                                                    (50, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:31:58', '2024-12-28'),
-                                                                                                                                    (51, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:32:53', '2024-12-28'),
-                                                                                                                                    (52, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:34:14', '2024-12-28'),
-                                                                                                                                    (53, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:38:46', '2024-12-28'),
-                                                                                                                                    (54, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:40:20', '2024-12-28'),
-                                                                                                                                    (55, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:40:48', '2024-12-28'),
-                                                                                                                                    (56, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:41:06', '2024-12-28'),
-                                                                                                                                    (57, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:41:40', '2024-12-28'),
-                                                                                                                                    (58, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:41:57', '2024-12-28'),
-                                                                                                                                    (59, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:42:40', '2024-12-28'),
-                                                                                                                                    (60, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:43:42', '2024-12-28'),
-                                                                                                                                    (61, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:43:55', '2024-12-28'),
-                                                                                                                                    (62, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 13:47:45', '2024-12-28'),
-                                                                                                                                    (63, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:16:53', '2024-12-28'),
-                                                                                                                                    (64, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:17:08', '2024-12-28'),
-                                                                                                                                    (65, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:17:56', '2024-12-28'),
-                                                                                                                                    (66, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:18:01', '2024-12-28'),
-                                                                                                                                    (67, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:18:19', '2024-12-28'),
-                                                                                                                                    (68, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:19:30', '2024-12-28'),
-                                                                                                                                    (69, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:19:47', '2024-12-28'),
-                                                                                                                                    (70, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:19:52', '2024-12-28'),
-                                                                                                                                    (71, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:20:16', '2024-12-28'),
-                                                                                                                                    (72, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:20:35', '2024-12-28'),
-                                                                                                                                    (73, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:20:55', '2024-12-28'),
-                                                                                                                                    (74, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:21:19', '2024-12-28'),
-                                                                                                                                    (75, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:21:50', '2024-12-28'),
-                                                                                                                                    (76, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:22:46', '2024-12-28'),
-                                                                                                                                    (77, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:22:54', '2024-12-28'),
-                                                                                                                                    (78, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:25:48', '2024-12-28'),
-                                                                                                                                    (79, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:26:35', '2024-12-28'),
-                                                                                                                                    (80, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:38:37', '2024-12-28'),
-                                                                                                                                    (81, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:38:54', '2024-12-28'),
-                                                                                                                                    (82, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 14:39:44', '2024-12-28'),
-                                                                                                                                    (83, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 15:05:11', '2024-12-28'),
-                                                                                                                                    (84, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:17:33', '2024-12-28'),
-                                                                                                                                    (85, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:17:54', '2024-12-28'),
-                                                                                                                                    (86, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:18:26', '2024-12-28'),
-                                                                                                                                    (87, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:18:44', '2024-12-28'),
-                                                                                                                                    (88, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:20:00', '2024-12-28'),
-                                                                                                                                    (89, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:20:44', '2024-12-28'),
-                                                                                                                                    (90, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:37:07', '2024-12-28'),
-                                                                                                                                    (91, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:38:22', '2024-12-28'),
-                                                                                                                                    (92, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:38:46', '2024-12-28'),
-                                                                                                                                    (93, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:41:00', '2024-12-28'),
-                                                                                                                                    (94, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:42:31', '2024-12-28'),
-                                                                                                                                    (95, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 16:59:46', '2024-12-28'),
-                                                                                                                                    (96, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:08:12', '2024-12-28'),
-                                                                                                                                    (97, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:09:35', '2024-12-28'),
-                                                                                                                                    (98, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:10:25', '2024-12-28'),
-                                                                                                                                    (99, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:11:01', '2024-12-28'),
-                                                                                                                                    (100, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:13:19', '2024-12-28'),
-                                                                                                                                    (101, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:15:08', '2024-12-28'),
-                                                                                                                                    (102, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:20:39', '2024-12-28'),
-                                                                                                                                    (103, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:21:35', '2024-12-28'),
-                                                                                                                                    (104, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:22:04', '2024-12-28'),
-                                                                                                                                    (105, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:22:35', '2024-12-28'),
-                                                                                                                                    (106, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:23:53', '2024-12-28'),
-                                                                                                                                    (107, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:24:28', '2024-12-28'),
-                                                                                                                                    (108, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:25:12', '2024-12-28'),
-                                                                                                                                    (109, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:30:17', '2024-12-28'),
-                                                                                                                                    (110, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:33:02', '2024-12-28'),
-                                                                                                                                    (111, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:33:57', '2024-12-28'),
-                                                                                                                                    (112, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:36:24', '2024-12-28'),
-                                                                                                                                    (113, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:38:26', '2024-12-28'),
-                                                                                                                                    (114, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:39:55', '2024-12-28'),
-                                                                                                                                    (115, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:40:18', '2024-12-28'),
-                                                                                                                                    (116, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:43:14', '2024-12-28'),
-                                                                                                                                    (117, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:44:14', '2024-12-28'),
-                                                                                                                                    (118, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:49:20', '2024-12-28'),
-                                                                                                                                    (119, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:50:27', '2024-12-28'),
-                                                                                                                                    (120, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:52:26', '2024-12-28'),
-                                                                                                                                    (121, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 17:54:47', '2024-12-28'),
-                                                                                                                                    (122, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-07 18:15:29', '2024-12-28'),
-                                                                                                                                    (123, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-08 19:24:36', '2024-12-28'),
-                                                                                                                                    (124, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-08 22:08:25', '2024-12-28'),
-                                                                                                                                    (125, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-09 13:03:38', '2024-12-28');
+INSERT INTO `products` (`product_id`, `store_id`, `product_name`, `description`, `price`, `stock`, `created_at`, `expiry_date`, `discount`) VALUES
+                                                                                                                                                (1, 1, 'chocolate cake', 'Dark chocolate cake', 7.00, 25, '2024-07-31 19:17:49', '2025-01-01', 0.00),
+                                                                                                                                                (2, 1, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-07-31 20:43:51', '2026-10-07', 0.00),
+                                                                                                                                                (3, 1, 'item1', 'item1', 5.00, 115, '2024-07-31 21:22:11', '2024-12-12', 0.00),
+                                                                                                                                                (4, 1, 'item2', 'item2', 31.00, 200, '2024-07-31 21:22:11', '2024-09-20', 0.00),
+                                                                                                                                                (5, 1, 'item3', 'item3', 32.00, 124, '2024-07-31 21:22:11', '2024-09-03', 0.00),
+                                                                                                                                                (6, 1, 'item4', 'item4', 53.00, 21, '2024-07-31 21:22:51', '2024-08-15', 0.00),
+                                                                                                                                                (7, 2, 'cheesecake', 'Big juicy cake', 6.00, 30, '2024-08-01 07:05:42', '2024-12-28', 0.00);
 
 -- --------------------------------------------------------
 
@@ -411,7 +356,7 @@ CREATE TABLE `stores` (
 INSERT INTO `stores` (`store_id`, `owner_email`, `store_name`, `business_info`, `created_at`) VALUES
                                                                                                   (1, 'salam@hawa.com', 'Test store', 'Test store for database', '2024-08-01 11:00:14'),
                                                                                                   (2, 'owner@gmail.com', 'Test store', 'Test store for database', '2024-07-31 19:08:31'),
-                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-09 13:03:37');
+                                                                                                  (3, 'mahmood@outlook.com', 'to be deleted', 'testing deleting function', '2024-08-09 16:59:42');
 
 -- --------------------------------------------------------
 
@@ -453,10 +398,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`email`, `password`, `role`, `city`, `created_at`) VALUES
-                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-09 13:03:37'),
+                                                                            ('ahmad123@gmail.com', '777', 'beneficiary_user', 'Japan', '2024-08-09 16:59:42'),
                                                                             ('mahmood@gmail.com', '777', 'admin', 'Jordan', '2024-07-27 09:08:57'),
                                                                             ('mahmood@outlook.com', '777', 'store_owner', 'Khalil', '2024-07-27 16:31:27'),
                                                                             ('momanani2017@gmail.com', '777', 'admin', 'Tulkarm', '2024-07-26 16:51:33'),
+                                                                            ('momkasat2017@gmail.com', '777', 'admin', 'Tulkarm', '2024-08-09 16:47:52'),
                                                                             ('n.hamfallah@gmail.com', '777', 'admin', 'KATEEBEH', '2024-07-25 19:32:07'),
                                                                             ('order.store@gmail.com', '567', 'store_owner', 'Nablus', '2024-08-01 09:41:33'),
                                                                             ('order.user@gmail.com', '321', 'beneficiary_user', 'Hebron', '2024-08-01 09:41:33'),
@@ -483,7 +429,7 @@ CREATE TABLE `usersbycity` (
 --
 DROP TABLE IF EXISTS `bestsellingproducts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `bestsellingproducts`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`product_name` AS `product_name`, `p`.`store_id` AS `store_id`, sum(`oi`.`quantity`) AS `total_quantity_sold` FROM (`orderitems` `oi` join `products` `p` on(`oi`.`product_id` = `p`.`product_id`)) GROUP BY `p`.`product_id`, `p`.`product_name`, `p`.`store_id` ORDER BY sum(`oi`.`quantity`) DESC ;
 
 -- --------------------------------------------------------
 
@@ -492,7 +438,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `storeprofits`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`sweetmanagementsystem`.`orderitems` `oi` join `sweetmanagementsystem`.`orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `sweetmanagementsystem`.`stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `storeprofits`  AS SELECT `s`.`store_id` AS `store_id`, `s`.`store_name` AS `store_name`, sum(`oi`.`price` * `oi`.`quantity`) AS `total_profit` FROM ((`orderitems` `oi` join `orders` `o` on(`oi`.`order_id` = `o`.`order_id`)) join `stores` `s` on(`o`.`store_id` = `s`.`store_id`)) GROUP BY `s`.`store_id`, `s`.`store_name` ;
 
 -- --------------------------------------------------------
 
@@ -501,7 +447,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `usersbycity`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sweetmanagementsystem`.`usersbycity`  AS SELECT `sweetmanagementsystem`.`users`.`city` AS `city`, count(`sweetmanagementsystem`.`users`.`email`) AS `user_count` FROM `sweetmanagementsystem`.`users` GROUP BY `sweetmanagementsystem`.`users`.`city` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `usersbycity`  AS SELECT `users`.`city` AS `city`, count(`users`.`email`) AS `user_count` FROM `users` GROUP BY `users`.`city` ;
 
 --
 -- Indexes for dumped tables
@@ -606,7 +552,7 @@ ALTER TABLE `discounts`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
+    MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -618,13 +564,13 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orderitems`
 --
 ALTER TABLE `orderitems`
-    MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+    MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-    MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+    MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `recipes`

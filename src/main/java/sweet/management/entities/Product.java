@@ -6,37 +6,39 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Product {
     private int productId;
     private String productName;
     private String description;
     private double price;
     private int stock;
+    private double discount; // New field for discount
     private final Timestamp createdAt;
     private final int storeId;
-    private String expiryDate; // Changed to String
+    private String expiryDate;
+
     public static final int UPDATE_NAME = 1;
     public static final int UPDATE_DESCRIPTION = 2;
     public static final int UPDATE_PRICE = 3;
     public static final int UPDATE_STOCK = 4;
     public static final int UPDATE_EXPIRY_DATE = 5;
-    public static final int DELETE_PRODUCT = 6;
+    public static final int UPDATE_DISCOUNT = 6; // New constant for updating discount
+    public static final int DELETE_PRODUCT = 7;
 
     // Constructor
-    public Product(int productId, String productName, String description, double price, int stock, Timestamp createdAt, int storeId, String expiryDate) {
+    public Product(int productId, String productName, String description, double price, int stock, double discount, Timestamp createdAt, int storeId, String expiryDate) {
         this.productId = productId;
         this.productName = productName;
         this.description = description;
         this.price = price;
         this.stock = stock;
+        this.discount = discount; // Initialize discount
         this.storeId = storeId;
         this.expiryDate = expiryDate;
         this.createdAt = createdAt;
     }
 
-
-    public Product(String productName, String description, String price, String stock, int storeId, String expiryDate) {
+    public Product(String productName, String description, String price, String stock, String discount, int storeId, String expiryDate) {
         try {
             this.productId = nextId(DatabaseService.getConnection(true));
         } catch (SQLException e) {
@@ -46,6 +48,7 @@ public class Product {
         this.description = description;
         this.price = Double.parseDouble(price);
         this.stock = Integer.parseInt(stock);
+        this.discount = Double.parseDouble(discount); // Initialize discount
         this.storeId = storeId;
         this.expiryDate = expiryDate;
         this.createdAt = null;
@@ -88,6 +91,14 @@ public class Product {
         this.stock = stock;
     }
 
+    public double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -111,20 +122,21 @@ public class Product {
 
     // Static Methods for Database Operations
     public static boolean createProduct(Product product, Connection conn) throws SQLException {
-        String sql = "INSERT INTO products (product_name, description, price, stock, created_at, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (product_name, description, price, stock, discount, created_at, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getDescription());
             stmt.setDouble(3, product.getPrice());
             stmt.setInt(4, product.getStock());
-            stmt.setTimestamp(5, product.getCreatedAt());
-            stmt.setInt(6, product.getStoreId());
-            stmt.setString(7, product.getExpiryDate()); // Changed to String
+            stmt.setDouble(5, product.getDiscount()); // Set discount
+            stmt.setTimestamp(6, product.getCreatedAt());
+            stmt.setInt(7, product.getStoreId());
+            stmt.setString(8, product.getExpiryDate());
         });
     }
 
     public static Product getProductById(int productId, Connection conn) throws SQLException {
-        String sql = "SELECT *" + " FROM products WHERE product_id = ?";
+        String sql = "SELECT * FROM products WHERE product_id = ?";
         if (conn == null) {
             throw new SQLException();
         }
@@ -139,9 +151,10 @@ public class Product {
                             rs.getString("description"),
                             rs.getDouble("price"),
                             rs.getInt("stock"),
+                            rs.getDouble("discount"), // Retrieve discount
                             rs.getTimestamp("created_at"),
                             rs.getInt("store_id"),
-                            rs.getString("expiry_date") // Changed to String
+                            rs.getString("expiry_date")
                     );
                 }
             }
@@ -179,7 +192,13 @@ public class Product {
             case UPDATE_EXPIRY_DATE:
                 sql = "UPDATE products SET expiry_date = ? WHERE product_id = ?";
                 return DatabaseService.executeUpdate(sql, conn, stmt -> {
-                    stmt.setString(1, product.getExpiryDate()); // Changed to String
+                    stmt.setString(1, product.getExpiryDate());
+                    stmt.setInt(2, product.getProductId());
+                });
+            case UPDATE_DISCOUNT: // New case for updating discount
+                sql = "UPDATE products SET discount = ? WHERE product_id = ?";
+                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                    stmt.setDouble(1, product.getDiscount());
                     stmt.setInt(2, product.getProductId());
                 });
             default:
@@ -193,6 +212,7 @@ public class Product {
             stmt.setInt(1, productId);
         });
     }
+
     public static boolean resetIdCounter(Connection conn) throws SQLException {
         String sql = "ALTER TABLE products AUTO_INCREMENT = 1;";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {});
@@ -206,12 +226,8 @@ public class Product {
         });
     }
 
-
     public static int nextId(Connection conn) throws SQLException {
-        String sql = "SELECT AUTO_INCREMENT\n" +
-                "FROM information_schema.TABLES\n" +
-                "WHERE TABLE_SCHEMA = ?" +
-                "  AND TABLE_NAME = 'products';";
+        String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products';";
         if (conn == null) {
             throw new SQLException("No connection");
         }
@@ -219,7 +235,6 @@ public class Product {
             stmt.setString(1, "sweetmanagementsystem");
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-//                    System.out.println(rs.getInt(1));
                     return rs.getInt(1);
                 }
             }
@@ -227,39 +242,44 @@ public class Product {
         return 0;
     }
 
+    public static List<Product> getProductsExpiringInLessThan120Days(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM products WHERE expiry_date <= ?";
+        List<Product> products = new ArrayList<>();
 
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
 
-
-
-        public static List<Product> getProductsExpiringInLessThan120Days(Connection conn) throws SQLException {
-            String sql = "SELECT *" + " FROM products WHERE expiry_date <= ?";
-            List<Product> products = new ArrayList<>();
-
-            if (conn == null) {
-                throw new SQLException("No connection");
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                LocalDate currentDate = LocalDate.now();
-                LocalDate expiryThresholdDate = currentDate.plusDays(120);
-                stmt.setDate(1, Date.valueOf(expiryThresholdDate));
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        Product product = new Product(
-                                rs.getInt("product_id"),
-                                rs.getString("product_name"),
-                                rs.getString("description"),
-                                rs.getDouble("price"),
-                                rs.getInt("stock"),
-                                rs.getTimestamp("created_at"),
-                                rs.getInt("store_id"),
-                                rs.getString("expiry_date") // Assuming expiry_date is stored as a String
-                        );
-                        products.add(product);
-                    }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            LocalDate currentDate = LocalDate.now();
+            LocalDate expiryThresholdDate = currentDate.plusDays(120);
+            stmt.setDate(1, Date.valueOf(expiryThresholdDate));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getString("product_name"),
+                            rs.getString("description"),
+                            rs.getDouble("price"),
+                            rs.getInt("stock"),
+                            rs.getDouble("discount"), // Retrieve discount
+                            rs.getTimestamp("created_at"),
+                            rs.getInt("store_id"),
+                            rs.getString("expiry_date")
+                    );
+                    products.add(product);
                 }
             }
-            return products;
         }
+        return products;
     }
 
+    // New static method to update the discount for a product
+    public static boolean setDiscount(int productId, double discount, Connection conn) throws SQLException {
+        String sql = "UPDATE products SET discount = ? WHERE product_id = ?";
+        return DatabaseService.executeUpdate(sql, conn, stmt -> {
+            stmt.setDouble(1, discount);
+            stmt.setInt(2, productId);
+        });
+    }
+}

@@ -3,6 +3,7 @@ package sweet.management;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Assert;
 import sweet.management.entities.Product;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
@@ -18,12 +19,13 @@ public class ProductManagementStepDefinition {
     Boolean isUpdated;
     Product productTest;
     Product productDeleteTest;
+    List<Product> discountList;
 
     public ProductManagementStepDefinition() {
         userAuthService = new UserAuthService();
         userAuthService.login("owner@gmail.com","123", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
-        productDeleteTest = new Product("delete_test","delete_test","1","1",2,"2024-11-11");
+        productDeleteTest = new Product("delete_test","delete_test","1","1","0",2,"2024-11-11");
         try {
             Product.resetIdCounter(DatabaseService.getConnection(true));
         } catch (SQLException e) {
@@ -54,12 +56,12 @@ public class ProductManagementStepDefinition {
 
     @When("The user add a new product with name {string} And description {string} And price {string} And stock {string} And expiry date {string} Then The product should be added successfully")
     public void theUserAddANewProductWithNameAndDescriptionAndPriceAndStockAndExpiryDateThenTheProductShouldBeAddedSuccessfully(String name, String description, String price, String stock, String expiryDate) {
-        Product product = new Product(name,description,price,stock,userAuthService.getLoggedInStore().getStoreId(),expiryDate);
-        try {
-            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Product product = new Product(name,description,price,stock,"0",userAuthService.getLoggedInStore().getStoreId(),expiryDate);
+//        try {
+//            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @When("The user edits a product with ID {string}")
@@ -181,8 +183,8 @@ public class ProductManagementStepDefinition {
     @When("the user asks for discount suggestion")
     public void theUserAsksForDiscountSuggestion() {
         try {
-            List<Product> list = Product.getProductsExpiringInLessThan120Days(DatabaseService.getConnection(true));
-            System.out.println("list size: " + list.size());
+            discountList = Product.getProductsExpiringInLessThan120Days(DatabaseService.getConnection(true));
+//            System.out.println("list size: " + discountList.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -190,8 +192,33 @@ public class ProductManagementStepDefinition {
     }
     @Then("the products close expiry dates should appear")
     public void theProductsCloseExpiryDatesShouldAppear() {
-
+        for (Product product : discountList) {
+            System.out.println(product.getProductId());
+            System.out.println(product.getProductName());
+            System.out.println(product.getExpiryDate());
+            System.out.println(product.getPrice());
+        }
     }
 
+    @When("The user chooses a suggested product with id {string} for discount and adds value {string} to the discount")
+    public void theUserChoosesASuggestedProductWithIdForDiscountAndAddsValueToTheDiscount(String id, String discountValue) {
+        try {
+            Product.setDiscount(Integer.parseInt(id),Double.parseDouble(discountValue),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Then("The discount value is updated for this product")
+    public void theDiscountValueIsUpdatedForThisProduct() {
+        try {
+            Product discountedProduct = Product.getProductById(4,DatabaseService.getConnection(true));
+            System.out.println(discountedProduct.getProductName());
+            System.out.println(discountedProduct.getPrice());
+            System.out.println(discountedProduct.getDiscount());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

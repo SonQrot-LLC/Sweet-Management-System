@@ -46,6 +46,10 @@ Feature: Products Management
     When the user asks for discount suggestion
     Then the products close expiry dates should appear
 
+  Scenario: Add discount value
+    Given that the user is logged in and user is store owner or raw material supplier
+    When The user chooses a suggested product with id "4" for discount and adds value "10" to the discount
+    Then The discount value is updated for this product
 
 
 
