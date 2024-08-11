@@ -29,10 +29,20 @@ Feature:  Sign up
       | missing-part@domain  |
 
 
-  Scenario Outline:trying to signing up with new account
+  Scenario Outline:trying to signing up with new account fails
     Given that the user is not logged in
     When the email format is correct and the email "<Email>" does not exist in the database but there is a problem in dataBase connection
     Then signing up fails
+
+    Examples:
+      | Email                      |
+      | tooweankm@gmail.com         |
+      | momanani20011@gmail.com    |
+      | momkaat2017@gmail.com     |
+
+
+  Scenario Outline:trying to signing up with new account
+    Given that the user is not logged in
     When the email format is correct and the email "<Email>" does not exist in the database
     Then signing up succeeds
 
@@ -41,7 +51,7 @@ Feature:  Sign up
       | Email                      |
       | tooweankm@gmail.com         |
       | momanani20011@gmail.com    |
-      | momkaaasat2017@gmail.com     |
+      | momkaat2017@gmail.com     |
 
 
 
