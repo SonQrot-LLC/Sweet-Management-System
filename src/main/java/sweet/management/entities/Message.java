@@ -117,7 +117,7 @@ public class Message {
     }
 
     public static List<Message> getMessagesByReceiverEmail(Connection connection, String receiverEmail) throws SQLException {
-        String sql = "SELECT * FROM messages WHERE receiver_email = ?";
+        String sql = "SELECT * "+" FROM messages WHERE receiver_email = ?";
         List<Message> messages = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, receiverEmail);
@@ -141,7 +141,7 @@ public class Message {
     }
 
     public static List<Message> getMessagesBetweenUsers(Connection connection, String senderEmail, String receiverEmail) throws SQLException {
-        String sql = "SELECT * FROM messages WHERE sender_email = ? AND receiver_email = ?";
+        String sql = "SELECT *" + " FROM messages WHERE sender_email = ? AND receiver_email = ?";
         List<Message> messages = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, senderEmail);

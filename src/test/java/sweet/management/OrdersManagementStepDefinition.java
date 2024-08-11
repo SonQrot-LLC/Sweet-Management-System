@@ -216,4 +216,72 @@ public class OrdersManagementStepDefinition {
 //    public void itShouldFail() {
 //        assertNull(ordersList);
 //    }
+
+    @When("The user edits the order item to update the quantity to {string}")
+    public void theUserEditsTheOrderItemToUpdateTheQuantityTo(String quantity) {
+        try {
+            orderItemToBeUpdated = OrderItem.getOrderItemsByOrder(order.getOrderId(), DatabaseService.getConnection(true)).get(0);
+            assertNotNull(orderItemToBeUpdated);
+            orderItemToBeUpdated.setQuantity(Integer.parseInt(quantity));
+            isUpdatedOrderItem = OrderItem.updateOrderItem(orderItemToBeUpdated, DatabaseService.getConnection(true), OrderItem.UPDATE_QUANTITY);
+        } catch (SQLException e) {
+            fail("SQLException should not have occurred: " + e.getMessage());
+        }
+    }
+
+    @Then("The orderItem quantity should be successfully updated")
+    public void theOrderItemQuantityShouldBeSuccessfullyUpdated() {
+        assertTrue(isUpdatedOrderItem);
+    }
+
+    @When("The user edits the order item to update the price to {string}")
+    public void theUserEditsTheOrderItemToUpdateThePriceTo(String price) {
+        try {
+            orderItemToBeUpdated = OrderItem.getOrderItemsByOrder(order.getOrderId(), DatabaseService.getConnection(true)).get(0);
+            assertNotNull(orderItemToBeUpdated);
+            orderItemToBeUpdated.setPrice(Double.parseDouble(price));
+            isUpdatedOrderItem = OrderItem.updateOrderItem(orderItemToBeUpdated, DatabaseService.getConnection(true), OrderItem.UPDATE_PRICE);
+        } catch (SQLException e) {
+            fail("SQLException should not have occurred: " + e.getMessage());
+        }
+    }
+
+    @Then("The orderItem price should be successfully updated")
+    public void theOrderItemPriceShouldBeSuccessfullyUpdated() {
+        assertTrue(isUpdatedOrderItem);
+    }
+
+    @When("The user deletes the order item")
+    public void theUserDeletesTheOrderItem() {
+        try {
+            orderItemToBeDeleted = OrderItem.getOrderItemsByOrder(order.getOrderId(), DatabaseService.getConnection(true)).get(0);
+            assertNotNull(orderItemToBeDeleted);
+            isUpdatedOrderItem = OrderItem.deleteOrderItem(orderItemToBeDeleted.getOrderItemId(), DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("SQLException should not have occurred: " + e.getMessage());
+        }
+    }
+
+    @Then("The orderItem should be deleted successfully")
+    public void theOrderItemShouldBeDeletedSuccessfully() {
+        assertTrue(isUpdatedOrderItem);
+    }
+
+    @When("The user edits the order item with an invalid update type")
+    public void theUserEditsTheOrderItemWithAnInvalidUpdateType() {
+        try {
+            orderItemToBeUpdated = OrderItem.getOrderItemsByOrder(order.getOrderId(), DatabaseService.getConnection(true)).get(0);
+            assertNotNull(orderItemToBeUpdated);
+            orderItemToBeUpdated.setQuantity(10); // Example quantity
+            isUpdatedOrderItem = OrderItem.updateOrderItem(orderItemToBeUpdated, DatabaseService.getConnection(true), 999); // Invalid update type
+        } catch (SQLException e) {
+            isUpdatedOrderItem = false;
+        }
+    }
+
+    @Then("The orderItem update should fail")
+    public void theOrderItemUpdateShouldFail() {
+        assertFalse(isUpdatedOrderItem);
+    }
+
 }

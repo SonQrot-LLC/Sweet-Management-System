@@ -79,29 +79,6 @@ public class OrderItem {
         });
     }
 
-    public static OrderItem getOrderItemById(int orderItemId, Connection conn) throws SQLException {
-        String sql = "SELECT *" + " FROM orderitems WHERE order_item_id = ?";
-        if (conn == null) {
-            throw new SQLException("No connection");
-        }
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, orderItemId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new OrderItem(
-                            rs.getInt("order_item_id"),
-                            rs.getInt("order_id"),
-                            rs.getInt("product_id"),
-                            rs.getInt("quantity"),
-                            rs.getDouble("price")
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
     public static boolean updateOrderItem(OrderItem orderItem, Connection conn, int updateType) throws SQLException {
         String sql = null;
         switch (updateType) {
