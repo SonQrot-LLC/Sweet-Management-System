@@ -125,11 +125,11 @@ public class ProductManagementStepDefinition {
     }
 
     @When("The user deletes product with ID {string}")
-    public void theUserDeletesProductWithID(String string) {
+    public void theUserDeletesProductWithID(String id) {
         try {
             Product.createProduct(productDeleteTest,DatabaseService.getConnection(true));
-            Product.setId(4000,productDeleteTest,DatabaseService.getConnection(true));
-            isUpdated = Product.deleteProduct(4000,DatabaseService.getConnection(true));
+            productDeleteTest.setId(Integer.parseInt(id),DatabaseService.getConnection(true));
+            isUpdated = Product.deleteProduct(productDeleteTest.getProductId(),DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -203,7 +203,9 @@ public class ProductManagementStepDefinition {
     @When("The user chooses a suggested product with id {string} for discount and adds value {string} to the discount")
     public void theUserChoosesASuggestedProductWithIdForDiscountAndAddsValueToTheDiscount(String id, String discountValue) {
         try {
-            Product.setDiscount(Integer.parseInt(id),Double.parseDouble(discountValue),DatabaseService.getConnection(true));
+            Product discountedProduct = Product.getProductById(Integer.parseInt(id),DatabaseService.getConnection(true));
+            discountedProduct.setDiscount(Double.parseDouble(discountValue));
+            Product.updateProduct(discountedProduct,DatabaseService.getConnection(true),Product.UPDATE_DISCOUNT);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
