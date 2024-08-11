@@ -41,7 +41,7 @@ Feature:  Sign up
       | Email                      |
       | tooweankm@gmail.com         |
       | momanani20011@gmail.com    |
-      | momkaasat2017@gmail.com     |
+      | momkaaasat2017@gmail.com     |
 
 
 
