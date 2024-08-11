@@ -23,7 +23,6 @@ public class Product {
     public static final int UPDATE_STOCK = 4;
     public static final int UPDATE_EXPIRY_DATE = 5;
     public static final int UPDATE_DISCOUNT = 6; // New constant for updating discount
-    public static final int DELETE_PRODUCT = 7;
 
     // Constructor
     public Product(int productId, String productName, String description, double price, int stock, double discount, Timestamp createdAt, int storeId, String expiryDate) {
@@ -218,11 +217,13 @@ public class Product {
         return DatabaseService.executeUpdate(sql, conn, stmt -> {});
     }
 
-    public static boolean setId(int id, Product product, Connection conn) throws SQLException {
+    public  boolean setId(int id,Connection conn) throws SQLException {
+        int oldId = this.productId;
+        this.productId = id;
         String sql = "UPDATE products SET product_id = ? WHERE product_id = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setInt(1, id);
-            stmt.setInt(2, product.getProductId());
+            stmt.setInt(2, oldId);
         });
     }
 
@@ -274,12 +275,4 @@ public class Product {
         return products;
     }
 
-    // New static method to update the discount for a product
-    public static boolean setDiscount(int productId, double discount, Connection conn) throws SQLException {
-        String sql = "UPDATE products SET discount = ? WHERE product_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setDouble(1, discount);
-            stmt.setInt(2, productId);
-        });
-    }
 }
