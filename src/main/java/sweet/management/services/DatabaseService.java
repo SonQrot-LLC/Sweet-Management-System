@@ -28,16 +28,29 @@ public class DatabaseService {
 //        }
 //    }
 
-        public static Connection getConnection(boolean connect) {
-
+    public static Connection getConnection(boolean connect) {
+        Connection connection = null;
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/defaultdb", DATABASE_USER, DATABASE_PASSWORD);
-            if (!connect)
-                throw new SQLException("Failed to connect to database");
-            return connection;
+            String url = "jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/SweetManagementSystem?useSSL=true&requireSSL=true";
+            String user = "avnadmin";
+            String password = "AVNS_V48PsTcnluVA-KIvExk";
+
+            // Attempt to establish a connection
+            connection = DriverManager.getConnection(url, user, password);
+
+            // Check if connection should be verified (if connect is true)
+            if (!connect) {
+                // Simulate a failure condition for demonstration purposes
+                throw new SQLException("Connection verification failed.");
+            }
+
         } catch (SQLException e) {
-            return null;
+            // Print the stack trace for debugging
+            e.printStackTrace();
         }
+
+        // Return the connection (or null if there was an error)
+        return connection;
     }
 
 
