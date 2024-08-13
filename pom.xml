@@ -4,6 +4,11 @@
     <groupId>Management-System</groupId>
     <artifactId>Sweet-Management-System</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+         <properties>
+  <sonar.organization>momenmac</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+</properties>
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
