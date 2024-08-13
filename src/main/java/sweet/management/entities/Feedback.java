@@ -133,4 +133,30 @@ public class Feedback {
         return 1; // Default to 1 if something goes wrong
     }
 
+    public static List<Feedback> getAllFeedbacks(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM feedback";
+        List<Feedback> feedbackList = new ArrayList<>();
+
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Feedback feedback = new Feedback(
+                            rs.getInt("feedback_id"),
+                            rs.getString("user_email"),
+                            rs.getInt("product_id"),
+                            rs.getInt("rating"),
+                            rs.getString("comment"),
+                            rs.getTimestamp("created_at")
+                    );
+                    feedbackList.add(feedback);
+                }
+            }
+        }
+        return feedbackList;
+    }
+
 }

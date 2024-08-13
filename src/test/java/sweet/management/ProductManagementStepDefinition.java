@@ -23,7 +23,7 @@ public class ProductManagementStepDefinition {
 
     public ProductManagementStepDefinition() {
         userAuthService = new UserAuthService();
-        userAuthService.login("owner@gmail.com","123", DatabaseService.getConnection(true));
+        userAuthService.login("salam@hawa.com","222", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
         productDeleteTest = new Product("delete_test","delete_test","1","1","0",2,"2024-11-11");
         try {
@@ -183,7 +183,7 @@ public class ProductManagementStepDefinition {
     @When("the user asks for discount suggestion")
     public void theUserAsksForDiscountSuggestion() {
         try {
-            discountList = Product.getProductsExpiringInLessThan120Days(DatabaseService.getConnection(true));
+            discountList = Product.getProductsExpiringInLessThan120Days("salam@hawa.com",DatabaseService.getConnection(true));
 //            System.out.println("list size: " + discountList.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);

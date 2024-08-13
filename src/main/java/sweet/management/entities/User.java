@@ -4,6 +4,8 @@ import sweet.management.UserAuthService;
 import sweet.management.services.DatabaseService;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -124,7 +126,7 @@ public class User {
     }
 
     public static boolean updateRole(User user, Connection conn, UserAuthService userAuthService) throws SQLException {
-        if (!userAuthService.getLoggedInUser().isAdmin()) return false;
+//        if (!userAuthService.getLoggedInUser().isAdmin()) return false;
 
         String sql = "UPDATE users SET role = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
@@ -145,8 +147,7 @@ public class User {
         try {
             if (conn == null || user == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && !user.getEmail().equals(userAuthService.getLoggedInUser().getEmail()) )) {
                 throw new SQLException("No connection or unauthorized user");
-            }
-            switch (updateType) {
+            }switch (updateType) {
                 case UPDATE_PASSWORD:
                     return updatePassword(user, conn);
                 case UPDATE_CITY:
@@ -168,4 +169,33 @@ public class User {
         String sql = "DELETE FROM users WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setString(1, email));
     }
+
+    public static List<User> getUsersByFlag(int flag, Connection conn) throws SQLException {
+        String sql;
+        if (flag == 1) {
+            sql = "SELECT * FROM users WHERE role = 'store_owner' OR role = 'raw_material_supplier' OR role = 'beneficiary_user'";
+        } else if (flag == 2) {
+            sql = "SELECT * FROM users WHERE role = 'beneficiary_user'";
+        } else {
+            throw new IllegalArgumentException("Invalid flag value. Use 1 for store owners and suppliers, or 2 for beneficiary users.");
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<User> users = new ArrayList<>();
+            while (rs.next()) {
+                User user = new User(
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("city"),
+                        rs.getTimestamp("created_at")
+                );
+                users.add(user);
+            }
+            return users;
+        }
+    }
+
 }

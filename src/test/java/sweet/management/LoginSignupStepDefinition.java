@@ -20,9 +20,7 @@ public class LoginSignupStepDefinition {
 
 
     public LoginSignupStepDefinition() {
-
         currentUser = new User("salam@hawa.com", "222", "store_owner", "Tulkarem");
-
     }
 
     @Given("that the user is not logged in")
@@ -111,7 +109,9 @@ public class LoginSignupStepDefinition {
 
     @Given("that the user is logged in")
     public void thatTheUserIsLoggedIn() {
-        assertTrue(userAuthService.login("momanani2017@gmail.com", "777", DatabaseService.getConnection(true)));
+        boolean loggedin;
+        loggedin = userAuthService.login("momanani2017@gmail.com", "777", DatabaseService.getConnection(true));
+        assertTrue(loggedin);
         assertTrue(userAuthService.isLoggedIn());
     }
 

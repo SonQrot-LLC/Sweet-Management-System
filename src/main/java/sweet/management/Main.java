@@ -1,10 +1,11 @@
 package sweet.management;
 
-import sweet.management.entities.Store;
-import sweet.management.entities.UserProfile;
+import sweet.management.entities.*;
 import sweet.management.services.DatabaseService;
 
+import java.awt.*;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.*;
 
@@ -12,12 +13,23 @@ public class Main {
     static Logger logger;
     static Scanner scanner = new Scanner(System.in);
     static  UserAuthService userAuthService = new UserAuthService();
+    private static String search;
+    private static Order order;
     private static int whichType = 0;
     public static final int ADMIN_TYPE = 1;
     public static final int STORE_OWNER_TYPE = 2;
     public static final int SUPPLIER_TYPE = 3;
     public static final int BENEFICIARY_USER_TYPE = 4;
     private static final String INVALID_CHOICE_MESSAGE = "Invalid choice! Please try again.";
+    private static final String SOMETHING_WENT_WRONG_MESSAGE = "Something went wrong! Please try again.";
+    private static final int GET_BY_ID = 1;
+    private static final int GET_ALL = 2;
+    private static final int GET_BY_SEARCH =3;
+    private static final int GET_BY_STORE = 4;
+    private static int storeId = 0;
+    public static int feedbackProductId = 0;
+
+
 
 
     static {
@@ -27,7 +39,7 @@ public class Main {
         logger.setUseParentHandlers(false); // Disable default console handler
         logger.addHandler(handler);
     }
-    
+
     public static void main(String[] args) {
 
 
@@ -94,22 +106,29 @@ public class Main {
         logger.info("""
                 Please enter your choice:
                 1. View products
-                2. Publish a recipe
-                3. Browse recipes
-                4. Communication
-                5. Account preference
-                6. Exit
+                2. View Stores
+                3. Publish a recipe
+                4. Browse recipes
+                5. Communication
+                6. Account preference
+                7. User Profile
+                8. My orders
+                9. Log out
                 """);
         int choice = scanner.nextInt();
         scanner.nextLine();
         switch (choice) {
-            case 1 -> viewProductsScreen();
-            case 2 -> publichRecipesScreen();
-            case 3 -> browseRescipesScreen();
-            case 4 -> communicationScreen();
-            case 5 -> accountPrefrencesScreen();
-            case 6 -> {
-                System.exit(0);
+            case 1 -> viewProductsScreen(GET_ALL);
+            case 2 -> viewStores();
+            case 3 -> publishRecipesScreen();
+            case 4 -> browseRecipesScreen(GET_ALL);
+            case 5 -> communicationScreen();
+            case 6 -> accountPreferenceScreen();
+            case 7 -> editUserProfileScreen();
+            case 8 -> myOrdersScreen();
+            case 9-> {
+//                System.exit(0);
+                logOut();
                 return;
             }
             default -> logger.warning(INVALID_CHOICE_MESSAGE);
@@ -117,33 +136,458 @@ public class Main {
         beneficiaryUserScreen();
     }
 
-    private static void viewProductsScreen() {
+    private static void myOrdersScreen() {
+        logger.info("""
+                Please enter your choice:
+                1. Show all orders
+                2. Get pending orders
+                3. Get order from a store
+                4. View Order details
+                5. Cancel Order
+                6. Confirm Order
+                7. Return to the main menu""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        logger.info("\n");
+        switch (choice) {
+            case 1 -> getOrderScreen(GET_ALL);
+            case 2 -> getOrderScreen(GET_BY_SEARCH);
+            case 3 -> getOrderScreen(GET_BY_STORE);
+            case 4 -> viewOrderDetails();
+            case 5 -> setOrderStatus("cancelled");
+            case 6 -> setOrderStatus("processed");
+            case 7 -> beneficiaryUserScreen();
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        myOrdersScreen();
     }
+
+    private static void getOrderScreen(int OrderKey) {
+        List <Order> orders = null;
+        String email = userAuthService.getLoggedInUser().getEmail();
+        try {
+            if (OrderKey == GET_ALL) {
+                orders = Order.getOrdersByUserEmail(email,DatabaseService.getConnection(true));
+            }
+            else if(OrderKey == GET_BY_SEARCH){
+                orders = Order.getOrdersByUserEmail(email,DatabaseService.getConnection(true));
+                orders.removeIf(order -> !order.getOrderStatus().equals("pending"));
+            }
+            else if(OrderKey == GET_BY_STORE){
+                logger.info("Enter Store ID");
+                int id = scanner.nextInt();
+                scanner.nextLine();
+                orders = Order.getOrdersByStoreId(id,DatabaseService.getConnection(true));
+                orders.removeIf(order -> !order.getUserEmail().equals(email));
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(!orders.isEmpty())
+            logger.info(String.format("%-25s %-25s %-30s %-20s %-40s ",
+                    "Order ID","Store ID", "Status", "Total amount", "Order Date"));
+        for(Order order: orders) {
+            logger.info(String.format("%-25s %-25s %-30s %-20s %-40s ",
+                    order.getOrderId(),
+                    order.getStoreId(),
+                    order.getOrderStatus(),
+                    order.getTotalAmount(),
+                    order.getCreatedAt()
+            ));
+        }
+
+
+
+
+
+    }
+
+    private static void editUserProfile(String email) {
+        UserProfile userProfile = null;
+        int choice;
+        try {
+            userProfile = UserProfile.getUserProfileByEmail(email, DatabaseService.getConnection(true));
+            if (userProfile == null)
+                throw new SQLException(SOMETHING_WENT_WRONG_MESSAGE);
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+            return;
+        }
+
+        logger.info("Enter First Name:");
+        String firstName = scanner.nextLine();
+
+        logger.info("Enter Last Name:");
+        String lastName = scanner.nextLine();
+
+        logger.info("Enter Address");
+        String address = scanner.nextLine();
+
+        logger.info("Enter Phone number");
+        String phone = scanner.nextLine();
+
+        userProfile.setFirstName(firstName);
+        userProfile.setLastName(lastName);
+        userProfile.setAddress(address);
+        userProfile.setPhone(phone);
+
+        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_FIRST_NAME,userAuthService);
+        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_LAST_NAME,userAuthService);
+        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_ADDRESS,userAuthService);
+        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_PHONE,userAuthService);
+
+        if(!userAuthService.getLoggedInUser().isAdmin()){
+            userAuthService.getLoggedInUserProfile().setFirstName(firstName);
+            userAuthService.getLoggedInUserProfile().setLastName(lastName);
+            userAuthService.getLoggedInUserProfile().setAddress(address);
+            userAuthService.getLoggedInUserProfile().setPhone(phone);
+        }
+    }
+
+
+
+    private static void editUserProfileScreen() {
+        logger.info("First Name: "+userAuthService.getLoggedInUserProfile().getFirstName());
+        logger.info("Last Name: "+userAuthService.getLoggedInUserProfile().getLastName());
+        logger.info("Address: "+userAuthService.getLoggedInUserProfile().getAddress());
+        logger.info("Phone: "+userAuthService.getLoggedInUserProfile().getPhone()+ "\n");
+        logger.info("""
+                Please enter your choice:
+                1. Edit user profile
+                2. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> editUserProfile(userAuthService.getLoggedInUser().getEmail().strip());
+            case 2 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+    }
+
+    private static void browseRecipesScreen(Integer recipeKey) {
+        try {
+            displayRecipesTable(recipeKey);
+            logger.info("Enter any value to return back to the main menu");
+            scanner.nextLine();
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+    }
+
+    private static void displayRecipesTable(Integer recipeKey) throws SQLException {
+        List<Recipe> recipes;
+        if (recipeKey == GET_ALL) {
+            recipes = Recipe.getAllRecipes(DatabaseService.getConnection(true));
+        }
+        else if (recipeKey == GET_BY_ID) {
+             recipes = Recipe.getRecipesByUserEmail(userAuthService.getLoggedInUser().getEmail(), DatabaseService.getConnection(true));
+        }
+        else throw new SQLException(INVALID_CHOICE_MESSAGE);
+        // Print table headers
+        logger.info(String.format("%-10s %-50s %-30s %-40s %-30s %-20s",
+                "ID", "User Email", "Recipe Name", "Ingredients", "Instructions", "Allergies"));
+
+        // Print recipe details
+        for (Recipe recipe : recipes) {
+            logger.info(String.format("%-10d %-50s %-30s %-40s %-30s %-20s",
+                    recipe.getRecipeId(),
+                    recipe.getUserEmail(),
+                    recipe.getRecipeName(),
+                    recipe.getIngredients(),
+                    recipe.getInstructions(),
+                    recipe.getAllergies()));
+        }
+    }
+
+    private static void publishRecipesScreen() {
+        logger.info("Publishing recipes \n");
+        logger.info("Please enter the recipe name you would like to publish");
+        String recipeName = scanner.nextLine();
+        logger.info("Please enter the ingredients of the recipe you would like to publish");
+        String ingredients = scanner.nextLine();
+        logger.info("Please enter the instructions of the recipe you would like to publish");
+        String instructions = scanner.nextLine();
+        logger.info("Please enter the allergies of the recipe you would like to publish");
+        String allergies = scanner.nextLine();
+        Recipe recipe = new Recipe(userAuthService.getLoggedInUser().getEmail(), recipeName, ingredients, instructions, allergies);
+        try{
+            Recipe.createRecipe(recipe,DatabaseService.getConnection(true));
+            logger.info("Successfully published recipe " + recipeName);
+        }catch (SQLException e){
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+    }
+
+    private static void viewStores() {
+        List<Store> allStores;
+        try {
+            allStores = Store.getAllStores(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+            return;
+        }
+
+        logger.info(String.format("%-10s %-20s %-30s %-25s %-25s",
+                "Store ID", "Store Name", "Owner Email", "Business Info", "Date Added"));
+
+        for (Store store : allStores) {
+            logger.info(String.format("%-10s %-20s %-30s %-25s %-25s",
+                    store.getStoreId(),
+                    store.getStoreName(),
+                    store.getOwnerEmail(),
+                    store.getBusinessInfo(),
+                    store.getCreatedAt()));
+        }
+        logger.info("""
+                \nPlease enter the id of the store to show its products if you want to return to the stores list enter 0
+                """);
+        storeId = scanner.nextInt();
+        scanner.nextLine();
+        if (storeId == 0){
+            return;
+        }
+        else
+            viewProductsScreen(GET_BY_ID);
+        viewStores();
+    }
+
+    private static void viewProductsScreen(int productKey) {
+        listProducts(productKey);
+        if (viewProductOptions()) return;
+        viewProductsScreen(productKey);
+    }
+
+    private static boolean viewProductOptions() {
+        logger.info("""
+                Please enter your choice:
+                1. Purchase a product
+                2. View feedbacks of a product
+                3. search for a product
+                4. Return to the main menu""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> purchaseProductScreen();
+            case 2 -> viewFeedbacksOfProduct();
+            case 3 -> searchForProduct();
+            case 4 -> {
+                storeId = 0;
+                determineScreenAfterLogin();
+                return true;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        return false;
+    }
+
+    private static void listProducts(int productKey) {
+        List<Product> allProducts;
+        try {
+            if (productKey == GET_BY_ID)
+                allProducts = Product.getProductsByStoreId(storeId,DatabaseService.getConnection(true));
+            else if(productKey == GET_ALL)
+                allProducts = Product.getAllProducts(DatabaseService.getConnection(true));
+            else if (productKey == GET_BY_SEARCH)
+                allProducts = Product.searchProducts(search,DatabaseService.getConnection(true));
+            else throw new SQLException();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
+                "ID", "Name", "Description", "Price", "Stock", "Date added", "Expiry date", "Discount", "Store Name"));
+
+        for (Product product : allProducts) {
+            // Get the Store object using the storeId from the Product
+            Store store = null;  // Assuming you have a valid Connection object 'conn'
+            try {
+                store = Store.getStoreById(product.getStoreId(), DatabaseService.getConnection(true));
+            } catch (SQLException e) {
+                logger.info(SOMETHING_WENT_WRONG_MESSAGE);
+            }
+            String storeName = (store != null) ? store.getStoreName() : "Unknown";
+
+            logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getDescription(),
+                    product.getPrice() + "$",
+                    product.getStock(),
+                    product.getCreatedAt(),
+                    product.getExpiryDate(),
+                    product.getDiscount(),
+                    storeName));
+        }
+    }
+
+    private static void purchaseProductScreen() {
+        logger.info("""
+                Please enter the id of the product to purchase:
+              """);
+        int productID = scanner.nextInt();
+        scanner.nextLine();
+
+        logger.info("""
+                Please enter the quantity of the product to purchase:
+              """);
+        int quantity = scanner.nextInt();
+        scanner.nextLine();
+
+        try {
+            Product tempProduct = Product.getProductById(productID,DatabaseService.getConnection(true));
+            if (!tempProduct.isAvailable() || tempProduct.getStock() < quantity){
+                logger.info("\nthis Product is not available ("+tempProduct.getStock()+" left in the stock)\n");
+                return;
+            }
+            if (order == null || (order.getStoreId() != tempProduct.getStoreId())) {
+                order = new Order(userAuthService.getLoggedInUser().getEmail(), tempProduct.getStoreId(), "pending");
+                Order.createOrder(order,DatabaseService.getConnection(true));
+            }
+            double price = tempProduct.getPrice() * 0.1 + tempProduct.getPrice();
+            String formattedPrice = String.format("%.2f", price);
+            price = Double.parseDouble(formattedPrice);
+            OrderItem tempOrderItem = new OrderItem(order.getOrderId(),productID,quantity,price);
+            OrderItem.createOrderItem(tempOrderItem,DatabaseService.getConnection(true));
+            logger.info("The item was added successfully to the order");
+
+        } catch (SQLException e) {
+            logger.info(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+
+
+
+    }
+
+    private static void searchForProduct() {
+        logger.info("""
+                Please enter the value to search abt:
+                """);
+        search = scanner.nextLine();
+        listProducts(GET_BY_SEARCH);
+        if (viewProductOptions()) return;
+        searchForProduct();
+    }
+
+    private static void viewFeedbacksOfProduct() {
+        logger.info("""
+                  Please enter the id of the product to see the feedbacks:
+                """);
+        feedbackProductId = scanner.nextInt();
+        scanner.nextLine();
+        displayFeedback(GET_BY_ID);
+
+        logger.info("""
+                Please enter your choice:
+                1. Add a Feedback
+                2. Return to the products list
+             """);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> addFeedback();
+            case 2 -> {
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        viewFeedbacksOfProduct();
+    }
+
+    private static void displayFeedback(int feedbackKey) {
+        List<Feedback> feedbackList;
+        try {
+            if (feedbackKey == GET_ALL) {
+                feedbackList = Feedback.getAllFeedbacks(DatabaseService.getConnection(true));
+            } else if(feedbackKey == GET_BY_ID) {
+                feedbackList = Feedback.getFeedback(Feedback.QUERY_BY_PRODUCT, String.valueOf(feedbackProductId), DatabaseService.getConnection(true));
+            } else if (feedbackKey == GET_BY_SEARCH) {
+                feedbackList = Feedback.getFeedback(Feedback.QUERY_BY_EMAIL,search, DatabaseService.getConnection(true));
+            } else if (feedbackKey == GET_BY_STORE) {
+                feedbackList = Feedback.getFeedback(Feedback.QUERY_BY_STORE,String.valueOf(storeId), DatabaseService.getConnection(true));
+            } else throw new SQLException();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving feedback", e);
+        }
+
+        // Display feedback table header
+        logger.info(String.format("%-10s %-20s %-10s %-30s %-25s",
+                "ID", "User Email", "Rating", "Comment", "Created At"));
+
+        // Log feedback details
+        for (Feedback feedback : feedbackList) {
+            logger.info(String.format("%-10d %-20s %-10d %-30s %-25s",
+                    feedback.getFeedbackId(),
+                    feedback.getUserEmail(),
+                    feedback.getRating(),
+                    feedback.getComment(),
+                    feedback.getCreatedAt()));
+        }
+    }
+
+    private static void addFeedback() {
+        logger.info("""
+                  Please enter the id of the product to add the feedback:
+                """);
+        int productId = scanner.nextInt();
+        scanner.nextLine();
+
+        logger.info("""
+                  Please enter the rating of the product:
+                """);
+        int rating = scanner.nextInt();
+        scanner.nextLine();
+
+        logger.info("""
+                  Please enter the feedback description:
+                """);
+        String feedbackDescription = scanner.nextLine();
+        try {
+            Product tempProduct = Product.getProductById(productId,DatabaseService.getConnection(true));
+            if(tempProduct != null){
+                Feedback tempFeedback = new Feedback(userAuthService.getLoggedInUser().getEmail(),productId,rating,feedbackDescription);
+                Feedback.createFeedback(tempFeedback,DatabaseService.getConnection(true));
+            }
+            else
+                logger.warning(INVALID_CHOICE_MESSAGE);
+
+        }catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+    }
+
 
     private static void supplierScreen() {
         logger.info("Supplier Screen");
         logger.info("""
                 Please enter your choice:
-                1. Manage Products
+                1. Manage Materials
                 2. Discount Management
                 3. Monitor Sales
                 4. Store preference
                 5. Communication
                 6. Account preference
                 7. Order Management
-                8. Exit""");
+                8. Best selling Item
+                9. Log out""");
         int choice = scanner.nextInt();
         scanner.nextLine();
+        logger.info("\n");
         switch (choice) {
             case 1 -> manageProductsScreen();
             case 2 -> discountManagementScreen();
             case 3 -> monitorSalesScreen();
-            case 4 -> storePrefrencesScreen();
+            case 4 -> storePreferencesScreen();
             case 5 -> communicationScreen();
-            case 6 -> accountPrefrencesScreen();
+            case 6 -> accountPreferenceScreen();
             case 7 -> orderManagementScreen();
-            case 8 -> {
-                System.exit(0);
+            case 8 -> bestSellingProduct();
+            case 9 -> {
+//                System.exit(0);
+                logOut();
                 return;
             }
             default -> logger.warning(INVALID_CHOICE_MESSAGE);
@@ -162,19 +606,23 @@ public class Main {
                 5. Communication
                 6. Account preference
                 7. Order Management
-                8. Exit""");
+                8. Best selling product
+                9. Log out""");
         int choice = scanner.nextInt();
         scanner.nextLine();
+        logger.info("\n");
         switch (choice) {
             case 1 -> manageProductsScreen();
             case 2 -> discountManagementScreen();
             case 3 -> monitorSalesScreen();
-            case 4 -> storePrefrencesScreen();
+            case 4 -> storePreferencesScreen();
             case 5 -> communicationScreen();
-            case 6 -> accountPrefrencesScreen();
+            case 6 -> accountPreferenceScreen();
             case 7 -> orderManagementScreen();
-            case 8 -> {
-                System.exit(0);
+            case 8 -> bestSellingProduct();
+            case 9 -> {
+//                System.exit(0);
+                logOut();
                 return;
             }
             default -> logger.warning(INVALID_CHOICE_MESSAGE);
@@ -182,42 +630,963 @@ public class Main {
         storeOwnerScreen();
     }
 
+
+    private static void orderManagementScreen() {
+        List <Order> orders;
+        String email = userAuthService.getLoggedInStore().getOwnerEmail();
+        try {
+            Store store = Store.getStoreByOwnerEmail(email,DatabaseService.getConnection(true));
+            orders = Order.getOrdersByStoreId(store.getStoreId(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if(!orders.isEmpty())
+            logger.info(String.format("%-25s %-50s %-30s %-20s %-40s ",
+                    "Order ID","Customer Email", "Status", "Total amount", "Order Date"));
+        for(Order order: orders){
+        logger.info(String.format("%-25s %-50s %-30s %-20s %-40s ",
+                order.getOrderId(),
+                order.getUserEmail(),
+                order.getOrderStatus(),
+                order.getTotalAmount(),
+                order.getCreatedAt()
+               ));
+        }
+        logger.info("""
+                Please enter your choice:
+                1. View Order Details
+                2. Ship Order
+                3. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> viewOrderDetails();
+            case 2 -> setOrderStatus("shipped");
+            case 3 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        orderManagementScreen();
+    }
+
+
+    public static void setOrderStatus(String status){
+        logger.info("Enter Order ID:");
+        Order order;
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            order = Order.getOrderById(id,DatabaseService.getConnection(true));
+            order.setOrderStatus(status);
+            Order.updateOrder(order,DatabaseService.getConnection(true),Order.UPDATE_STATUS);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static void viewOrderDetails(){
+        List <OrderItem> orderItems;
+        logger.info("Enter Order ID:");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        try {
+
+            Order order = Order.getOrderById(id,DatabaseService.getConnection(true));
+            if (order == null)
+                throw new SQLException();
+            else if (userAuthService.getLoggedInUser().isBeneficiaryUser() && !order.getUserEmail().equals(userAuthService.getLoggedInUser().getEmail()))
+                throw new SQLException();
+            else if((userAuthService.getLoggedInUser().isStoreOwner() || userAuthService.getLoggedInUser().isRawMaterialSupplier()) && order.getStoreId() != userAuthService.getLoggedInStore().getStoreId())
+                throw new SQLException();
+
+            orderItems = OrderItem.getOrderItemsByOrder(id,DatabaseService.getConnection(true));
+            if(!orderItems.isEmpty())
+                logger.info(String.format("%-25s %-30s %-30s %-20s ",
+                        "Item ID", "Item Name", "Quantity", "Total Amount"));
+
+            for(OrderItem orderItem: orderItems){
+                logger.info(String.format("%-25s %-30s %-30s %-20s ",
+                        orderItem.getProductId(),
+                        Product.getProductById(orderItem.getProductId(),DatabaseService.getConnection(true)).getProductName(),
+                        orderItem.getQuantity(),
+                        orderItem.getPrice()
+                ));
+            }
+            logger.info("\n");
+
+        } catch (SQLException e) {
+            logger.warning("Wrong order ID");
+        }
+
+    }
+
+
+    public static void bestSellingProduct(){
+        String email = userAuthService.getLoggedInUser().getEmail();
+        ViewService service = new ViewService();
+        List<ViewService.Product> products;
+        try {
+            products = service.getBestSellingProducts(DatabaseService.getConnection(true));
+            if (!products.isEmpty())
+            logger.info(String.format("%-25s %-30s %-25s %-20s ",
+                    "ID","Item Name", "Store Name", "Quantity Sold"));
+            for (ViewService.Product  product: products) {
+                if(Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getOwnerEmail().equals(email))
+                logger.info(String.format("%-25s %-30s %-25s %-20s",
+                        product.getProductId(),
+                        product.getProductName(),
+                        Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getStoreName(),
+                        product.getTotalQuantitySold()
+                ));
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void monitorSalesScreen(){
+        ViewService service = new ViewService();
+        List<ViewService.StoreProfit> profits;
+        try {
+            String email = userAuthService.getLoggedInUser().getEmail();
+            profits = service.getStoreProfits(DatabaseService.getConnection(true));
+        if (!profits.isEmpty())
+        logger.info(String.format("%-25s %-30s %-20s",
+                "Store ID","Name", "Total Profits"));
+        for (ViewService.StoreProfit profit: profits) {
+            if(Store.getStoreById(profit.getStoreId(),DatabaseService.getConnection(true)).getOwnerEmail().equals(email))
+            logger.info(String.format("%-25s %-30s %-20s",
+                    profit.getStoreId(),
+                    profit.getStoreName(),
+                    profit.getTotalProfit()
+            ));
+        }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void accountPreferenceScreen(){
+        logger.info("Password: "+userAuthService.getLoggedInUser().getPassword());
+        logger.info("City: " + userAuthService.getLoggedInUser().getCity());
+        logger.info("Role: "+ userAuthService.getLoggedInUser().getRole());
+        logger.info("\n");
+        logger.info("""
+                Please enter your choice:
+                1. Edit Account Preferences
+                2. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> editAccountPreferences(userAuthService.getLoggedInUser().getEmail().strip());
+            case 2 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        accountPreferenceScreen();
+
+    }
+    public static void editAccountPreferences(String email){
+        User user = null;
+        int choice;
+        String role = null;
+        try {
+            role = User.getUserByEmail(email, DatabaseService.getConnection(true)).getRole();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            user = User.getUserByEmail(email, DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Enter Password:");
+        String password = scanner.nextLine();
+        logger.info("Enter City");
+        String city = scanner.nextLine();
+        try {
+            if (!User.getUserByEmail(email,DatabaseService.getConnection(true)).isBeneficiaryUser()) {
+                logger.info("""
+                        Chose role:
+                        1. Store Owner
+                        2. Raw Material Supplier""");
+                choice = scanner.nextInt();
+                scanner.nextLine();
+                switch (choice) {
+                    case 1 -> role = "store_owner";
+                    case 2 -> role = "raw_material_supplier";
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        user.setPassword(password);
+        user.setCity(city);
+        user.setRole(role);
+        User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_CITY,userAuthService);
+        User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_PASSWORD,userAuthService);
+        User.updateUser(user,DatabaseService.getConnection(true),User.UPDATE_ROLE,userAuthService);
+        if(!userAuthService.getLoggedInUser().isAdmin()){
+            userAuthService.getLoggedInUser().setRole(role);
+            userAuthService.getLoggedInUser().setCity(city);
+            userAuthService.getLoggedInUser().setPassword(password);
+        }
+
+    }
+
+    public static void storePreferencesScreen(){
+        Store store;
+        try {
+            store = Store.getStoreByOwnerEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Store Name: "+store.getStoreName()+"    Business Information: "+store.getBusinessInfo());
+        logger.info("\n");
+        logger.info("""
+                Please enter your choice:
+                1. Edit Store Preferences
+                2. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> editStorePreferences();
+            case 2 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        storePreferencesScreen();
+    }
+
+    public static void editStorePreferences(){
+        Store store;
+        try {
+            store = Store.getStoreByOwnerEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Enter Store Name");
+        String storeName = scanner.nextLine();
+        logger.info("Enter Store Business Information");
+        String businessInfo = scanner.nextLine();
+        store.setStoreName(storeName);
+        store.setBusinessInfo(businessInfo);
+        Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_STORE_NAME,userAuthService);
+        Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_BUSINESS_INFO,userAuthService);
+    }
+
+    public static void communicationScreen(){
+        logger.info("""
+                Please enter your choice:
+                1. Send message
+                2. View inbox
+                3. View sent messages
+                4. View sent messages to specific recipients
+                5. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> sendMessage();
+            case 2 -> viewInbox();
+            case 3 -> viewSentMessages();
+            case 4 -> viewSentMessagesToSpecificRecipients();
+            case 5 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        communicationScreen();
+    }
+
+    public static void viewSentMessagesToSpecificRecipients(){
+       logger.info("Enter Recipient email");
+       String email = scanner.nextLine();
+        List<Message> messages;
+        try {
+            messages = Message.getMessagesBetweenUsers(DatabaseService.getConnection(true), userAuthService.getLoggedInUser().getEmail(),email);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-10s %-30s %-10s",
+                "ID","Content", "Date Sent"));
+        for(Message message : messages) {
+            logger.info(String.format("%-10s %-30s %-10s",
+                    message.getMessageId(),
+                    message.getContent(),
+                    message.getCreatedAt()));
+        }
+    }
+
+    public static void viewSentMessages(){
+        List<Message> messages;
+        try {
+            messages = Message.getMessagesBySenderEmail(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-10s %-25s %-30s %-10s",
+                "ID", "Receiver", "Content", "Date Sent"));
+        for(Message message : messages) {
+            logger.info(String.format("%-10s %-25s %-30s %-10s",
+                    message.getMessageId(),
+                    message.getReceiverEmail(),
+                    message.getContent(),
+                    message.getCreatedAt()));
+        }
+    }
+
+
+    public static void viewInbox(){
+        List<Message> messages;
+        try {
+            messages = Message.getMessagesByReceiverEmail(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if(!messages.isEmpty())
+        logger.info(String.format("%-10s %-25s %-30s %-10s",
+                "ID", "Sender", "Content", "Date Received"));
+        for(Message message : messages) {
+            logger.info(String.format("%-10s %-25s %-30s %-10s",
+                    message.getMessageId(),
+                    message.getSenderEmail(),
+                    message.getContent(),
+                    message.getCreatedAt()));
+        }
+
+        logger.info("""
+                Please enter your choice:
+                1. Reply to message
+                2. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> replyToMessage();
+            case 2 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        viewInbox();
+    }
+
+    public static void replyToMessage(){
+        int id;
+        logger.info("Enter message ID to reply to");
+        id = scanner.nextInt();
+        scanner.nextLine();
+        logger.info("Enter reply");
+        String reply = scanner.nextLine();
+        try {
+            Message.insertMessage(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail(),Message.getMessageById(DatabaseService.getConnection(true),id).getSenderEmail(),reply);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Message sent");
+    }
+
+
+    public static void sendMessage(){
+        logger.info("Enter recipient mail");
+        String recipient = scanner.nextLine();
+        logger.info("Enter message to send");
+        String message = scanner.nextLine();
+        try {
+            Message.insertMessage(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail(),recipient,message);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Message sent");
+    }
+
+    public static void discountManagementScreen(){
+        List<Product> products;
+        try {
+            products = Product.getProductsByUserEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
+                "ID", "Name", "Price", "Stock", "Expiry date", "Discount"));
+        for (Product product : products) {
+            logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getPrice() + "$",
+                    product.getStock(),
+                    product.getExpiryDate(),
+                    product.getDiscount()));
+        }
+        logger.info("""
+                Please enter your choice:
+                1. Edit discount value
+                2. Suggest items to discount
+                3. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> editDiscountScreen();
+            case 2 -> suggestDiscountScreen();
+            case 3 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        discountManagementScreen();
+    }
+
+    public static void suggestDiscountScreen(){
+        logger.info("These Items are expiring soon!: ");
+        List<Product> products;
+        try {
+            products = Product.getProductsExpiringInLessThan120Days(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
+                "ID", "Name", "Price", "Stock", "Expiry date", "Discount"));
+        for (Product product : products) {
+            logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getPrice() + "$",
+                    product.getStock(),
+                    product.getExpiryDate(),
+                    product.getDiscount()));
+        }
+
+        editDiscountScreen();
+    }
+
+
+    public static void editDiscountScreen(){
+        int productID;
+        Product product;
+        boolean updated;
+        logger.info("Enter product ID to discount: ");
+        productID = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            product = Product.getProductById(productID,DatabaseService.getConnection(true));
+            logger.info("Enter discount value: ");
+            String discount = scanner.nextLine();
+            product.setDiscount(Double.parseDouble(discount));
+            updated = Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_DISCOUNT);
+    }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (updated)
+            logger.info("Item updated successfully");
+        else
+            logger.warning("Item not updated successfully");
+    }
+
+
+
+    public static void manageProductsScreen(){
+        List<Product> products;
+        try {
+            products = Product.getProductsByUserEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if(!products.isEmpty())
+        logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s",
+                "ID", "Name", "Description", "Price", "Stock", "Date added", "Expiry date", "Discount"));
+        for (Product product : products) {
+            logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s",
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getDescription(),
+                    product.getPrice() + "$",
+                    product.getStock(),
+                    product.getCreatedAt(),
+                    product.getExpiryDate(),
+                    product.getDiscount()));
+        }
+
+        if(userAuthService.getLoggedInUser().isStoreOwner())
+        logger.info("""
+                Please enter your choice:
+                1. Add product
+                2. Edit product
+                3. Delete product
+                4. Return""");
+        else
+        logger.info("""
+                Please enter your choice:
+                1. Add material
+                2. Edit material
+                3. Delete material
+                4. Return""");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> addProductScreen();
+            case 2 -> editProductScreen();
+            case 3 -> deleteProductScreen();
+            case 4 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        manageProductsScreen();
+    }
+
+    public static void addProductScreen() {
+        int storeID;
+        logger.info("Enter name: ");
+        String name = scanner.nextLine();
+        logger.info("Enter description: ");
+        String description = scanner.nextLine();
+        logger.info("Enter price: ");
+        String price = scanner.nextLine();
+        logger.info("Enter stock: ");
+        String stock = scanner.nextLine();
+        logger.info("Enter expiry date: ");
+        String expiryDate = scanner.nextLine();
+        try {
+            storeID = Store.getStoreByOwnerEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true)).getStoreId();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        Product product = new Product(name,description,price,stock,"0",storeID,expiryDate);
+        try {
+            Product.createProduct(product,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info("Added successfully!");
+    }
+
+    public static void deleteProductScreen(){
+        boolean deleted;
+        logger.info("Enter ID: ");
+        int productID = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            deleted= Product.deleteProduct(productID,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (deleted)
+            logger.info("Deleted successfully!");
+        else
+            logger.warning("Deletion failed!");
+    }
+
+
+    public static void editProductScreen(){
+        int productID;
+        Product product;
+        boolean updated;
+        logger.info("Enter ID: ");
+        productID = scanner.nextInt();
+        scanner.nextLine();
+        try {
+         product = Product.getProductById(productID,DatabaseService.getConnection(true));
+        logger.info("Enter name: ");
+        String name = scanner.nextLine();
+        product.setProductName(name);
+        Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_NAME);
+        logger.info("Enter description: ");
+        String description = scanner.nextLine();
+        product.setDescription(description);
+        Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_DESCRIPTION);
+        logger.info("Enter price: ");
+        String price = scanner.nextLine();
+        product.setPrice(Double.parseDouble(price));
+        Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_PRICE);
+        logger.info("Enter stock: ");
+        String stock = scanner.nextLine();
+        product.setStock(Integer.parseInt(stock));
+        Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_STOCK);
+        logger.info("Enter expiry date: ");
+        String expiryDate = scanner.nextLine();
+        product.setExpiryDate(expiryDate);
+        updated = Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_EXPIRY_DATE);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (updated)
+            logger.info("Updated successfully!");
+        else
+            logger.warning("Update failed!");
+
+    }
+
     private static void adminScreen() {
         logger.info("Admin Screen");
         logger.info("""
                 Please enter your choice:
-                1. Manage Store Owners
-                2. Manage Suppliers
-                3. Manage Beneficiary users
-                4. Monitor Profits
-                5. Generate a financial report
-                6. Return all best selling products in each store
-                7. Return statistics on registered users by city
-                8. Manage posts and recipes
-                9. Manage feedback
-                10. Account preference
-                11. Exit
+                1. Manage Account Preferences
+                2. Manage Beneficiary users
+                3. Monitor Profits
+                4. Return all best selling products in each store
+                5. Return statistics on registered users by city
+                6. Manage recipes
+                7. Manage feedback
+                8. Account preference
+                9. Log out
                 """);
         int choice = scanner.nextInt();
         scanner.nextLine();
         switch (choice) {
-            case 1 -> manageStoreOwnersScreen();
-            case 2 -> manageSupliersScreen();
-            case 3 -> manageBeneficiaryUsersScreen();
-            case 4 -> monitorProfitsScreen();
-            case 5 -> generateReportScreen();
-            case 6 -> returnAllBestSellingProductsInEachStoreScreen();
-            case 7 -> returnStatisticsOnRegisteredUsersByCityScreen();
-            case 8 -> managePostsAndRecipesScreen();
-            case 9 -> manageFeedbackScreen();
-            case 10 -> accountPreferancesScreen();
-            case 11 -> {
-                System.exit(0);
+            case 1 -> manageAccountPreferences();
+            case 2 -> manageBeneficiaryUsersScreen();
+            case 3 -> monitorProfitsScreen();
+            case 4 -> returnAllBestSellingProductsInEachStoreScreen();
+            case 5 -> returnStatisticsOnRegisteredUsersByCityScreen();
+            case 6 -> manageRecipesScreen();
+            case 7 -> manageFeedbackScreen();
+            case 8 -> accountPreferenceScreen();
+            case 9 -> {
+//                System.exit(0);
+                logOut();
                 return;
             }
             default -> logger.warning(INVALID_CHOICE_MESSAGE);
         }
         adminScreen();
+    }
+
+    private static void manageFeedbackScreen() {
+        displayFeedback(GET_ALL);
+        feedbackManagementChoices();
+    }
+
+    private static void feedbackManagementChoices() {
+        logger.info("""
+                Please enter your choice:
+                1. Remove Feedback
+                2. Get Feedbacks of a product
+                3. Get Feedbacks of a user
+                4. Get Feedbacks of a store
+                5. Return to the main menu
+                """);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> deleteFeedback();
+            case 2 -> getFeedbacksScreen(GET_BY_ID);
+            case 3 -> getFeedbacksScreen(GET_BY_SEARCH);
+            case 4 -> getFeedbacksScreen(GET_BY_STORE);
+            case 5 -> adminScreen();
+        }
+    }
+
+    private static void getFeedbacksScreen(int feedbackKey) {
+        if (feedbackKey == GET_BY_ID){
+            logger.info("Please Enter the id of the product");
+            feedbackProductId = scanner.nextInt();
+            scanner.nextLine();
+        }
+        else if (feedbackKey == GET_BY_SEARCH){
+            logger.info("Please Enter the search term");
+            search = scanner.nextLine();
+        }
+        else if (feedbackKey == GET_BY_STORE){
+            logger.info("Please Enter the id of the store");
+            feedbackProductId = scanner.nextInt();
+            scanner.nextLine();
+        }
+        displayFeedback(feedbackKey);
+        search = null;
+        storeId = 0;
+        feedbackProductId = 0;
+        feedbackManagementChoices();
+
+    }
+
+    private static void deleteFeedback() {
+        logger.info("Please Enter the id of the feedback to delete");
+        int feedbackID = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            if (Feedback.deleteFeedback(feedbackID,DatabaseService.getConnection(true)))
+                logger.info("Deleted successfully!");
+            else throw new SQLException();
+        } catch (SQLException e) {
+            logger.info(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+
+    }
+
+    public static void monitorProfitsScreen(){
+        ViewService service = new ViewService();
+        List<ViewService.StoreProfit> profits;
+        try {
+            profits = service.getStoreProfits(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-25s %-30s %-20s",
+                "Store ID","Store Name", "Total Profits"));
+        for (ViewService.StoreProfit profit: profits) {
+            logger.info(String.format("%-25s %-30s %-20s",
+                    profit.getStoreId(),
+                    profit.getStoreName(),
+                    profit.getTotalProfit()
+            ));
+        }
+    }
+
+    private static void manageRecipesScreen() {
+        try {
+            displayRecipesTable(GET_ALL);
+            logger.info("""
+                    Please enter your choice:
+                    1. Add a Recipe
+                    2. Update a Recipe
+                    3. Delete a Recipe
+                    4. return to the main menu
+                    """);
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            switch (choice) {
+                case 1 -> publishRecipesScreen();
+                case 2 -> updateRecipesScreen();
+                case 3 -> deleteRecipesScreen();
+                case 4 -> {
+                    determineScreenAfterLogin();
+                }
+                default -> logger.warning(INVALID_CHOICE_MESSAGE);
+            }
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+        manageRecipesScreen();
+
+    }
+
+    private static void deleteRecipesScreen() {
+        logger.info("Please enter the id of the Recipe : \n");
+        int recipeID = scanner.nextInt();
+        scanner.nextLine();
+        Recipe recipe = null;
+        try{
+            recipe = Recipe.getRecipeById(recipeID,DatabaseService.getConnection(true));
+            if (recipe==null)
+                throw new SQLException();
+            if (userAuthService.getLoggedInUser().isAdmin() || userAuthService.getLoggedInUser().getEmail().equals(recipe.getUserEmail())){
+                if(Recipe.deleteRecipe(recipeID,DatabaseService.getConnection(true)))
+                    logger.info("Updated successfully!\n");
+                else throw new SQLException();
+            }
+        }
+        catch (SQLException e){
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+
+        }
+
+
+
+
+
+    }
+
+    private static void updateRecipesScreen() {
+        logger.info("Please enter the id of the Recipe : \n");
+        int recipeID = scanner.nextInt();
+        Recipe recipe = null;
+        scanner.nextLine();
+        try{
+            recipe = Recipe.getRecipeById(recipeID,DatabaseService.getConnection(true));
+            if (recipe==null)
+                throw new SQLException();
+            if (userAuthService.getLoggedInUser().isAdmin() || userAuthService.getLoggedInUser().getEmail().equals(recipe.getUserEmail())){
+
+                logger.info("Please enter the recipe name ");
+                String recipeName = scanner.nextLine();
+                logger.info("Please enter the ingredients");
+                String ingredients = scanner.nextLine();
+                logger.info("Please enter the instructions ");
+                String instructions = scanner.nextLine();
+                logger.info("Please enter the allergies");
+                String allergies = scanner.nextLine();
+
+                recipe.setRecipeName(recipeName);
+                recipe.setIngredients(ingredients);
+                recipe.setInstructions(instructions);
+                recipe.setAllergies(allergies);
+
+                Recipe.updateRecipe(recipe,DatabaseService.getConnection(true),Recipe.UPDATE_RECIPE_NAME);
+                Recipe.updateRecipe(recipe,DatabaseService.getConnection(true),Recipe.UPDATE_INGREDIENTS);
+                Recipe.updateRecipe(recipe,DatabaseService.getConnection(true),Recipe.UPDATE_INSTRUCTIONS);
+                Recipe.updateRecipe(recipe,DatabaseService.getConnection(true),Recipe.UPDATE_ALLERGIES);
+
+                logger.info("Updated successfully!\n");
+            }
+
+        }
+        catch (SQLException e){
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+
+        }
+
+
+    }
+
+
+    public static void returnAllBestSellingProductsInEachStoreScreen(){
+        ViewService service = new ViewService();
+        List<ViewService.Product> products;
+        try {
+            products = service.getBestSellingProducts(DatabaseService.getConnection(true));
+
+        logger.info(String.format("%-25s %-30s %-25s %-20s ",
+                "ID","Item Name", "Store Name", "Quantity Sold"));
+        for (ViewService.Product  product: products) {
+            logger.info(String.format("%-25s %-30s %-25s %-20s",
+                    product.getProductId(),
+                    product.getProductName(),
+                    Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getStoreName(),
+                    product.getTotalQuantitySold()
+                    ));
+        }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static void manageBeneficiaryUsersScreen(){
+        List <User> users;
+        try {
+            users = User.getUsersByFlag(2,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-25s %-15s %-20s",
+                "Email","Password", "City"));
+        for (User  user: users) {
+            logger.info(String.format("%-25s %-15s %-20s",
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getCity()));
+        }
+        logger.info("""
+                Please enter your choice:
+                1. Edit user
+                2. Delete user
+                3. Return
+                """);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> adminEditBeneficiaryUser();
+            case 2 -> deleteAccount();
+            case 3 -> {
+//                System.exit(0);
+                logOut();
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        manageBeneficiaryUsersScreen();
+        
+    }
+    public static void adminEditBeneficiaryUser(){
+        logger.info("Enter User Email");
+        String email = scanner.nextLine();
+        editUserProfile(email);
+    }
+    
+    
+    
+    
+    public static void returnStatisticsOnRegisteredUsersByCityScreen(){
+        ViewService service = new ViewService();
+        List <ViewService.UserByCity> usersByCity;
+        try {
+            usersByCity = service.getUsersByCity(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if(!usersByCity.isEmpty()){
+            logger.info(String.format("%-20s %-15s ",
+                    "City", "User Count"));
+        for(ViewService.UserByCity user : usersByCity){
+            logger.info(String.format("%-20s %-15s ",user.getCityName(), String.valueOf(user.getUserCount())));
+        }
+        }
+    }
+
+    public static void manageAccountPreferences(){
+        List <User> users;
+        try {
+            users = User.getUsersByFlag(1,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        logger.info(String.format("%-25s %-30s %-15s %-20s",
+                "Email", "Role", "Password", "City"));
+        for (User  user: users) {
+            logger.info(String.format("%-25s %-30s %-15s %-20s",
+                    user.getEmail(),
+                    user.getRole(),
+                    user.getPassword(),
+                    user.getCity()));
+        }
+        logger.info("""
+                Please enter your choice:
+                1. Edit user
+                2. Delete user
+                3. Return
+                """);
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        switch (choice) {
+            case 1 -> adminEditUser();
+            case 2 -> deleteAccount();
+            case 3 -> {
+//                System.exit(0);
+                return;
+            }
+            default -> logger.warning(INVALID_CHOICE_MESSAGE);
+        }
+        manageAccountPreferences();
+    }
+
+    public static void adminEditUser(){
+        logger.info("Enter User Email");
+        String email = scanner.nextLine();
+        editAccountPreferences(email);
+    }
+
+    public static void deleteAccount(){
+        boolean deleted;
+        logger.info("Enter User Email");
+        String email = scanner.nextLine();
+        try {
+           deleted =  User.deleteUser(email,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (deleted) logger.info("Deleted successfully!");
+        else logger.warning("Deletion failed!");
+    }
+
+    private static void logOut(){
+        order = null;
+        userAuthService = new UserAuthService();
+        userRegister();
     }
 
     private static void signIn() {
@@ -231,6 +1600,7 @@ public class Main {
             logger.info("You are logged in!");
         else{
             logger.warning("Invalid email or password.!");
+            return;
         }
         if(userAuthService.getLoggedInUser().isAdmin()){whichType = 1;}
         else if (userAuthService.getLoggedInUser().isStoreOwner()) {whichType = 2;}

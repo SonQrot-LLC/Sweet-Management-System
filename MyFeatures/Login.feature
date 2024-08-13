@@ -35,9 +35,9 @@ Feature:Login
     Then user failed in log in
 
     Examples:
-      | Email                      | Password |
+      | Email                       | Password |
       | tooweankm@gmail.com         | 777      |
-      |                            | 777      |
+      |                             | 777      |
       | momkasbat2017@gmail.com     | 777      |
 
   Scenario Outline: Invalid password

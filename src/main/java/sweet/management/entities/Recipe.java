@@ -302,5 +302,33 @@ public class Recipe {
         return recipes;
     }
 
+    public static List<Recipe> getAllRecipes(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM recipes";
+        List<Recipe> recipes = new ArrayList<>();
+
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Recipe recipe = new Recipe(
+                            rs.getInt("recipe_id"),
+                            rs.getString("user_email"),
+                            rs.getString("recipe_name"),
+                            rs.getString("ingredients"),
+                            rs.getString("instructions"),
+                            rs.getTimestamp("created_at"),
+                            rs.getString("allergies")
+                    );
+                    recipes.add(recipe);
+                }
+            }
+        }
+        return recipes;
+    }
+
+
 
 }

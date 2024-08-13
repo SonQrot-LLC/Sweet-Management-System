@@ -21,44 +21,44 @@ public class Message {
         this.content = content;
         this.createdAt = createdAt;
     }
-//
-//    // Getters and setters
-//    public int getMessageId() {
-//        return messageId;
-//    }
-//
-//    public void setMessageId(int messageId) {
-//        this.messageId = messageId;
-//    }
-//
-//    public String getSenderEmail() {
-//        return senderEmail;
-//    }
-//
-//    public void setSenderEmail(String senderEmail) {
-//        this.senderEmail = senderEmail;
-//    }
-//
-//    public String getReceiverEmail() {
-//        return receiverEmail;
-//    }
-//
-//    public void setReceiverEmail(String receiverEmail) {
-//        this.receiverEmail = receiverEmail;
-//    }
-//
-//    public String getContent() {
-//        return content;
-//    }
-//
-//    public void setContent(String content) {
-//        this.content = content;
-//    }
-//
-//    public Timestamp getCreatedAt() {
-//        return createdAt;
-//    }
-//
+
+    // Getters and setters
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
+    }
+
+    public String getSenderEmail() {
+        return senderEmail;
+    }
+
+    public void setSenderEmail(String senderEmail) {
+        this.senderEmail = senderEmail;
+    }
+
+    public String getReceiverEmail() {
+        return receiverEmail;
+    }
+
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
 //    public void setCreatedAt(Timestamp createdAt) {
 //        this.createdAt = createdAt;
 //    }
@@ -74,23 +74,23 @@ public class Message {
         }
     }
 
-//    public static Message getMessageById(Connection connection, int messageId) throws SQLException {
-//        String sql = "SELECT * FROM messages WHERE message_id = ?";
-//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-//            statement.setInt(1, messageId);
-//            ResultSet resultSet = statement.executeQuery();
-//            if (resultSet.next()) {
-//                return new Message(
-//                        resultSet.getInt("message_id"),
-//                        resultSet.getString("sender_email"),
-//                        resultSet.getString("receiver_email"),
-//                        resultSet.getString("content"),
-//                        resultSet.getTimestamp("created_at")
-//                );
-//            }
-//        }
-//        return null;
-//    }
+    public static Message getMessageById(Connection connection, int messageId) throws SQLException {
+        String sql = "SELECT * FROM messages WHERE message_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, messageId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return new Message(
+                        resultSet.getInt("message_id"),
+                        resultSet.getString("sender_email"),
+                        resultSet.getString("receiver_email"),
+                        resultSet.getString("content"),
+                        resultSet.getTimestamp("created_at")
+                );
+            }
+        }
+        return null;
+    }
 
     public static List<Message> getMessagesBySenderEmail(Connection connection, String senderEmail) throws SQLException {
         String sql = "SELECT * FROM messages WHERE sender_email = ?";

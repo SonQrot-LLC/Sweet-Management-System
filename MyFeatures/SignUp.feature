@@ -6,7 +6,7 @@ Feature:  Sign up
     Then signing up fails
 
     Examples:
-      | Email                      |
+      | Email                       |
       | toostronkm@gmail.com        |
       | momanani2017@gmail.com      |
       | n.hamfallah@gmail.com       |
@@ -36,9 +36,9 @@ Feature:  Sign up
 
     Examples:
       | Email                      |
-      | tooweankm@gmail.com         |
+      | tooweankm@gmail.com        |
       | momanani20011@gmail.com    |
-      | momkaat2017@gmail.com     |
+      | momkaat2017@gmail.com      |
 
 
   Scenario Outline:trying to signing up with new account
@@ -49,9 +49,9 @@ Feature:  Sign up
 
     Examples:
       | Email                      |
-      | tooweankm@gmail.com         |
+      | tooweankm@gmail.com        |
       | momanani20011@gmail.com    |
-      | momkaat2017@gmail.com     |
+      | momkaat2017@gmail.com      |
 
 
 

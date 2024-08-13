@@ -3,6 +3,8 @@ package sweet.management.entities;
 import sweet.management.UserAuthService;
 import sweet.management.services.DatabaseService;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Store {
     private final int storeId;
@@ -158,5 +160,49 @@ public class Store {
         }
         return 1;
     }
+    public static Store getStoreById(int storeId, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM stores WHERE store_id = ?";
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Store(
+                            rs.getInt("store_id"),
+                            rs.getString("owner_email"),
+                            rs.getString("store_name"),
+                            rs.getString("business_info"),
+                            rs.getTimestamp("created_at")
+                    );
+                }
+            }
+        }
+        return null; // Return null if no store is found with the given ID
+    }
+
+    public static List<Store> getAllStores(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM stores";
+        List<Store> stores = new ArrayList<>();
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                stores.add(new Store(
+                        rs.getInt("store_id"),
+                        rs.getString("owner_email"),
+                        rs.getString("store_name"),
+                        rs.getString("business_info"),
+                        rs.getTimestamp("created_at")
+                ));
+            }
+        }
+        return stores;
+    }
+
 
 }

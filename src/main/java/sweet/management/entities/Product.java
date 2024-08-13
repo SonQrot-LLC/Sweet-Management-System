@@ -243,8 +243,10 @@ public class Product {
         return 0;
     }
 
-    public static List<Product> getProductsExpiringInLessThan120Days(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products WHERE expiry_date <= ?";
+    public static List<Product> getProductsExpiringInLessThan120Days(String email, Connection conn) throws SQLException {
+        String sql = "SELECT p.* FROM products p " +
+                "JOIN stores s ON p.store_id = s.store_id " +
+                "WHERE s.owner_email = ? AND p.expiry_date <= ?";
         List<Product> products = new ArrayList<>();
 
         if (conn == null) {
@@ -254,7 +256,10 @@ public class Product {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             LocalDate currentDate = LocalDate.now();
             LocalDate expiryThresholdDate = currentDate.plusDays(120);
-            stmt.setDate(1, Date.valueOf(expiryThresholdDate));
+
+            stmt.setString(1, email);
+            stmt.setDate(2, Date.valueOf(expiryThresholdDate));
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Product product = new Product(
@@ -275,4 +280,122 @@ public class Product {
         return products;
     }
 
+
+
+
+    public static List<Product> getProductsByUserEmail(String email, Connection conn) throws SQLException {
+        String sql = "SELECT p.* FROM products p " +
+                "JOIN stores s ON p.store_id = s.store_id " +
+                "WHERE s.owner_email = ?";
+        List<Product> products = new ArrayList<>();
+
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getString("product_name"),
+                            rs.getString("description"),
+                            rs.getDouble("price"),
+                            rs.getInt("stock"),
+                            rs.getDouble("discount"),
+                            rs.getTimestamp("created_at"),
+                            rs.getInt("store_id"),
+                            rs.getString("expiry_date")
+                    );
+                    products.add(product);
+                }
+            }
+        }
+        return products;
+    }
+    public static List<Product> getAllProducts(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM products";
+        List<Product> products = new ArrayList<>();
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            returnProductsList(stmt, products);
+        }
+        return products;
+    }
+
+
+    public static List<Product> getProductsByStoreId(int storeId, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM products WHERE store_id = ?";
+        List<Product> products = new ArrayList<>();
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId); // Set the store ID in the SQL query
+            returnProductsList(stmt, products);
+        }
+        return products;
+    }
+
+    private static void returnProductsList(PreparedStatement stmt, List<Product> products) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        rs.getString("description"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock"),
+                        rs.getDouble("discount"),
+                        rs.getTimestamp("created_at"),
+                        rs.getInt("store_id"),
+                        rs.getString("expiry_date")
+                );
+                products.add(product);
+            }
+        }
+    }
+
+    public static List<Product> searchProducts(String searchTerm, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM products WHERE " +
+                "LOWER(product_name) LIKE ? OR LOWER(description) LIKE ?";
+        List<Product> products = new ArrayList<>();
+
+        if (conn == null) {
+            throw new SQLException("No connection");
+        }
+
+        // Prepare the search term for the SQL query
+        String formattedSearchTerm = "%" + searchTerm.toLowerCase() + "%";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, formattedSearchTerm);
+            stmt.setString(2, formattedSearchTerm);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getString("product_name"),
+                            rs.getString("description"),
+                            rs.getDouble("price"),
+                            rs.getInt("stock"),
+                            rs.getDouble("discount"),
+                            rs.getTimestamp("created_at"),
+                            rs.getInt("store_id"),
+                            rs.getString("expiry_date")
+                    );
+                    products.add(product);
+                }
+            }
+        }
+        return products;
+    }
+
+
 }
+
+
