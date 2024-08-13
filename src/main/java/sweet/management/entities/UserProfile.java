@@ -86,7 +86,7 @@ public class UserProfile {
 
     // Function to create a new user profile
     public static void createUserProfile(UserProfile userProfile, Connection conn) throws SQLException {
-        String sql = "INSERT INTO UserProfiles (email, first_name, last_name, phone, address) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO userprofiles (email, first_name, last_name, phone, address) VALUES (?, ?, ?, ?, ?)";
         DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getEmail());
             stmt.setString(2, userProfile.getFirstName());
@@ -120,7 +120,7 @@ public class UserProfile {
 
     // Function to update first name
     public static boolean updateFirstName(UserProfile userProfile, Connection conn) throws SQLException {
-        String sql = "UPDATE UserProfiles SET first_name = ? WHERE email = ?";
+        String sql = "UPDATE userprofiles SET first_name = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getFirstName());
             stmt.setString(2, userProfile.getEmail());
@@ -129,7 +129,7 @@ public class UserProfile {
 
     // Function to update last name
     public static boolean updateLastName(UserProfile userProfile, Connection conn) throws SQLException {
-        String sql = "UPDATE UserProfiles SET last_name = ? WHERE email = ?";
+        String sql = "UPDATE userprofiles SET last_name = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getLastName());
             stmt.setString(2, userProfile.getEmail());
@@ -138,7 +138,7 @@ public class UserProfile {
 
     // Function to update phone
     public static boolean updatePhone(UserProfile userProfile, Connection conn) throws SQLException {
-        String sql = "UPDATE UserProfiles SET phone = ? WHERE email = ?";
+        String sql = "UPDATE userprofiles SET phone = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getPhone());
             stmt.setString(2, userProfile.getEmail());
@@ -147,7 +147,7 @@ public class UserProfile {
 
     // Function to update address
     public static boolean updateAddress(UserProfile userProfile, Connection conn) throws SQLException {
-        String sql = "UPDATE UserProfiles SET address = ? WHERE email = ?";
+        String sql = "UPDATE userprofiles SET address = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, userProfile.getAddress());
             stmt.setString(2, userProfile.getEmail());
