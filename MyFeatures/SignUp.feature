@@ -50,7 +50,7 @@ Feature:  Sign up
     Examples:
       | Email                      |
       | tooweankm@gmail.com        |
-      | momanani20011@gmail.com    |
+      | momanani20021@gmail.com    |
       | momkaat2017@gmail.com      |
 
 

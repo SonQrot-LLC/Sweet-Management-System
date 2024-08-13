@@ -16,10 +16,22 @@ public class DatabaseService {
 //        }
 //    }
 
-    public static Connection getConnection(boolean connect) {
+//    public static Connection getConnection(boolean connect) {
+//
+//        try {
+//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SweetManagementSystem", DATABASE_USER, DATABASE_PASSWORD);
+//            if (!connect)
+//                throw new SQLException("Failed to connect to database");
+//            return connection;
+//        } catch (SQLException e) {
+//            return null;
+//        }
+//    }
+
+        public static Connection getConnection(boolean connect) {
 
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SweetManagementSystem", DATABASE_USER, DATABASE_PASSWORD);
+            connection = DriverManager.getConnection("jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/defaultdb", DATABASE_USER, DATABASE_PASSWORD);
             if (!connect)
                 throw new SQLException("Failed to connect to database");
             return connection;
@@ -27,6 +39,7 @@ public class DatabaseService {
             return null;
         }
     }
+
 
     @FunctionalInterface
     public interface SQLConsumer<T> {
