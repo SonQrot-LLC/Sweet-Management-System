@@ -26,6 +26,7 @@ public class Main {
     private static final String ITEM_NAME = "Item Name";
     private static final String CONTENT = "Content";
     private static final String DELETED_SUCCESSFULLY = "Deleted successfully!";
+    private static final String ENTER_USER_EMAIL = "Enter User Email";
     static Logger logger;
     static Scanner scanner = new Scanner(System.in);
     static  UserAuthService userAuthService = new UserAuthService();
@@ -137,7 +138,7 @@ public class Main {
             case 1 -> viewProductsScreen(GET_ALL);
             case 2 -> viewStores();
             case 3 -> publishRecipesScreen();
-            case 4 -> browseRecipesScreen(GET_ALL);
+            case 4 -> browseRecipesScreen();
             case 5 -> communicationScreen();
             case 6 -> accountPreferenceScreen();
             case 7 -> editUserProfileScreen();
@@ -227,7 +228,7 @@ public class Main {
     }
 
     private static void editUserProfile(String email) {
-        UserProfile userProfile = null;
+        UserProfile userProfile;
         try {
             userProfile = UserProfile.getUserProfileByEmail(email, DatabaseService.getConnection(true));
             if (userProfile == null)
@@ -287,9 +288,9 @@ public class Main {
         }
     }
 
-    private static void browseRecipesScreen(Integer recipeKey) {
+    private static void browseRecipesScreen() {
         try {
-            displayRecipesTable(recipeKey);
+            displayRecipesTable(Main.GET_ALL);
             logger.info("Enter any value to return back to the main menu");
             scanner.nextLine();
         } catch (SQLException e) {
@@ -354,16 +355,20 @@ public class Main {
             return;
         }
 
-        logger.info(String.format("%-10s %-20s %-30s %-25s %-25s",
-                STORE_ID, STORE_NAME, OWNER_EMAIL, BUSINESS_INFO, DATE_ADDED));
+        String headerMessage = String.format("%-10s %-20s %-30s %-25s %-25s",
+                STORE_ID, STORE_NAME, OWNER_EMAIL, BUSINESS_INFO, DATE_ADDED);
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(headerMessage);
 
-        for (Store store : allStores) {
-            logger.info(String.format("%-10s %-20s %-30s %-25s %-25s",
-                    store.getStoreId(),
-                    store.getStoreName(),
-                    store.getOwnerEmail(),
-                    store.getBusinessInfo(),
-                    store.getCreatedAt()));
+            for (Store store : allStores) {
+                String storeMessage = String.format("%-10s %-20s %-30s %-25s %-25s",
+                        store.getStoreId(),
+                        store.getStoreName(),
+                        store.getOwnerEmail(),
+                        store.getBusinessInfo(),
+                        store.getCreatedAt());
+                logger.info(storeMessage);
+            }
         }
         logger.info("""
                 Please enter the id of the store to show its products if you want to return to the stores list enter 0
@@ -421,8 +426,13 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
-                "ID", "Name", "Description", PRICE, STOCK, "Date added", EXPIRY_DATE, DISCOUNT, STORE_NAME));
+        String headerMessage = String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
+                "ID", "Name", "Description", PRICE, STOCK, "Date added", EXPIRY_DATE, DISCOUNT, STORE_NAME);
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(headerMessage);
+        }
+
+
 
         for (Product product : allProducts) {
             // Get the Store object using the storeId from the Product
@@ -433,17 +443,21 @@ public class Main {
                 logger.info(SOMETHING_WENT_WRONG_MESSAGE);
             }
             String storeName = (store != null) ? store.getStoreName() : "Unknown";
+            if (logger.isLoggable(Level.INFO)) {
+                String productMessage = String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getDescription(),
+                        product.getPrice() + "$",
+                        product.getStock(),
+                        product.getCreatedAt(),
+                        product.getExpiryDate(),
+                        product.getDiscount(),
+                        storeName);
 
-            logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s %-15s",
-                    product.getProductId(),
-                    product.getProductName(),
-                    product.getDescription(),
-                    product.getPrice() + "$",
-                    product.getStock(),
-                    product.getCreatedAt(),
-                    product.getExpiryDate(),
-                    product.getDiscount(),
-                    storeName));
+                logger.info(productMessage);
+            }
+
         }
     }
 
@@ -663,17 +677,20 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        if(!orders.isEmpty())
-            logger.info(String.format("%-25s %-50s %-30s %-20s %-40s ",
-                    ORDER_ID,"Customer Email", STATUS, TOTAL_AMOUNT, ORDER_DATE));
-        for(Order order: orders){
-        logger.info(String.format("%-25s %-50s %-30s %-20s %-40s ",
-                order.getOrderId(),
-                order.getUserEmail(),
-                order.getOrderStatus(),
-                order.getTotalAmount(),
-                order.getCreatedAt()
-               ));
+        if (logger.isLoggable(Level.INFO) && !orders.isEmpty()) {
+            String headerMessage = String.format("%-25s %-50s %-30s %-20s %-40s ",
+                    ORDER_ID, "Customer Email", STATUS, TOTAL_AMOUNT, ORDER_DATE);
+            logger.info(headerMessage);
+
+            for (Order order : orders) {
+                String orderMessage = String.format("%-25s %-50s %-30s %-20s %-40s ",
+                        order.getOrderId(),
+                        order.getUserEmail(),
+                        order.getOrderStatus(),
+                        order.getTotalAmount(),
+                        order.getCreatedAt());
+                logger.info(orderMessage);
+            }
         }
         logger.info("""
                 Please enter your choice:
@@ -1547,7 +1564,7 @@ public class Main {
         
     }
     public static void adminEditBeneficiaryUser(){
-        logger.info("Enter User Email");
+        logger.info(ENTER_USER_EMAIL);
         String email = scanner.nextLine();
         editUserProfile(email);
     }
@@ -1610,14 +1627,14 @@ public class Main {
     }
 
     public static void adminEditUser(){
-        logger.info("Enter User Email");
+        logger.info(ENTER_USER_EMAIL);
         String email = scanner.nextLine();
         editAccountPreferences(email);
     }
 
     public static void deleteAccount(){
         boolean deleted;
-        logger.info("Enter User Email");
+        logger.info(ENTER_USER_EMAIL);
         String email = scanner.nextLine();
         try {
            deleted =  User.deleteUser(email,DatabaseService.getConnection(true));

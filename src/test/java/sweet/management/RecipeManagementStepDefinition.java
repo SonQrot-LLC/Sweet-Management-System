@@ -96,6 +96,7 @@ public class RecipeManagementStepDefinition {
         found = !recipesSearched.isEmpty();
         printFoundRecipes();
         assertTrue(found);
+        System.out.println("matching recipes should not be shown");
     }
 
     @When("The user searches for recipes he shared")
@@ -113,6 +114,7 @@ public class RecipeManagementStepDefinition {
         found = !recipesSearched.isEmpty();
         printFoundRecipes();
         assertTrue(found);
+        System.out.println("The recipes should appear");
     }
 
     public void printFoundRecipes(){
