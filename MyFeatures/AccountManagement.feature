@@ -86,6 +86,16 @@ Feature: AccountManagement
     When I try to retrieve all stores and the connection is null
     Then All stores should not be returned
 
+  Scenario: Admin retrieves users with a specific role
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get users with flag 1
+    Then Users with roles 'store_owner', 'raw_material_supplier', and 'beneficiary_user' should be shown
+
+  Scenario: Admin tries to get users but there is no connection
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get users with flag 2 but there is no connection
+    Then No users should be shown
+
 
 
 #  Scenario: Admin manages a user's account

@@ -25,6 +25,7 @@ public class AccountManagementStepDefinition {
     int storeIdToNotBeDeleted;
     Store storeObjectFields;
     List<Store> storesToBeReturned;
+    List<User> usersToBeReturned;
     boolean isUpdated;
 
     public AccountManagementStepDefinition() {
@@ -232,7 +233,6 @@ public class AccountManagementStepDefinition {
         try {
 
             assertNull(Store.getStoreById(storeIdToBeDeleted,DatabaseService.getConnection(true)));
-
             Store addNewStore = new Store("mahmood@outlook.com","to be deleted", "testing deleting function");
             Store.createStore(addNewStore,DatabaseService.getConnection(true));
         } catch (SQLException e) {
@@ -322,4 +322,38 @@ public class AccountManagementStepDefinition {
         isUpdated = storesToBeReturned != null && !storesToBeReturned.isEmpty();
         assertFalse(isUpdated);
     }
+    @When("The admin tries to get users with flag {int}")
+    public void theAdminTriesToGetUsersWithFlag(int flag) {
+        try {
+            usersToBeReturned = User.getUsersByFlag(flag, DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Exception occurred while retrieving users: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        }
+    }
+
+    @Then("Users with roles 'store_owner', 'raw_material_supplier', and 'beneficiary_user' should be shown")
+    public void usersWithRolesShouldBeShown() {
+        assertNotNull(usersToBeReturned);
+        assertFalse(usersToBeReturned.isEmpty());
+    }
+
+    @When("The admin tries to get users with flag {int} but there is no connection")
+    public void theAdminTriesToGetUsersWithFlagButNoConnection(int flag) {
+        try {
+            usersToBeReturned = User.getUsersByFlag(flag, null);
+        } catch (SQLException e) {
+            System.err.println("Expected SQLException due to null connection: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Expected IllegalArgumentException: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        }
+    }
+
+    @Then("No users should be shown")
+    public void noUsersShouldBeShown() {
+        assertTrue(usersToBeReturned.isEmpty());
+    }
+
 }

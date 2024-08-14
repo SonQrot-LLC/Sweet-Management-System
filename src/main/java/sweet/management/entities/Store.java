@@ -33,12 +33,8 @@ public class Store {
         this.createdAt = createdAt;
     }
 
-    public Store(String ownerEmail, String storeName, String businessInfo) {
-        try {
-            this.storeId = nextId(DatabaseService.getConnection(true));
-        } catch (SQLException e) {
-            throw new RuntimeException("Something went wrong when trying to connect to database");
-        }
+    public Store(String ownerEmail, String storeName, String businessInfo) throws SQLException {
+        this.storeId = nextId(DatabaseService.getConnection(true));
         this.ownerEmail = ownerEmail;
         this.storeName = storeName;
         this.businessInfo = businessInfo;
@@ -82,7 +78,7 @@ public class Store {
             stmt.setString(2, store.getOwnerEmail());
             stmt.setString(3, store.getStoreName());
             stmt.setString(4, store.getBusinessInfo());
-            stmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            stmt.setTimestamp(5, store.getCreatedAt());
         });
     }
 
