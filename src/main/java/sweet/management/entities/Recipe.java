@@ -98,6 +98,8 @@ public class Recipe {
         this.allergies = allergies;
     }
 
+    public Timestamp getCreatedAt() {return createdAt;}
+
     // Static Methods for Database Operations
     public static boolean createRecipe(Recipe recipe, Connection conn) throws SQLException {
         String sql = "INSERT INTO recipes (recipe_id, user_email, recipe_name, ingredients, instructions, allergies) VALUES (?, ?, ?, ?, ?, ?)";
@@ -210,15 +212,6 @@ public class Recipe {
             getRecipeResultSet(recipes, stmt);
         }
         return recipes;
-    }
-
-    // New static method to update the allergies for a recipe
-    public static boolean setAllergies(int recipeId, String allergies, Connection conn) throws SQLException {
-        String sql = "UPDATE recipes SET allergies = ? WHERE recipe_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setString(1, allergies);
-            stmt.setInt(2, recipeId);
-        });
     }
 
 

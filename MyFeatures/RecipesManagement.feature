@@ -46,3 +46,9 @@ Feature: Recipe Management
      Then The admin will be notified that product doesn't exist
 
 
+  Scenario: Product trying to get all products
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all recipes
+    Then The recipes should be shown successfully
+
+

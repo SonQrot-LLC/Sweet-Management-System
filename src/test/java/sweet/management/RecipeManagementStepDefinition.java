@@ -16,7 +16,8 @@ public class RecipeManagementStepDefinition {
     UserAuthService userAuthService;
     User loggedInUser;
     Boolean added;
-    List <Recipe> recipesSearched;
+    Recipe recipeToAdd;
+    List <Recipe> recipesList;
     boolean found;
     boolean deleted;
     boolean updated;
@@ -41,7 +42,7 @@ public class RecipeManagementStepDefinition {
 
     @When("The user adds recipe with name {string}, ingredients {string}, instruction {string} and allergies {string}")
     public void theUserAddsRecipeWithNameIngredientsInstructionAndAllergies(String name, String ingredients, String instructions, String allergies) {
-        Recipe recipeToAdd= new Recipe(loggedInUser.getEmail(),name,ingredients,instructions,allergies);
+        recipeToAdd= new Recipe(loggedInUser.getEmail(),name,ingredients,instructions,allergies);
         try {
            added =  Recipe.createRecipe(recipeToAdd,DatabaseService.getConnection(true));
            Recipe.deleteRecipe(Recipe.nextId(DatabaseService.getConnection(true))-1,DatabaseService.getConnection(true));
@@ -54,14 +55,21 @@ public class RecipeManagementStepDefinition {
     @Then("The recipe is added successfully")
     public void theRecipeIsAddedSuccessfully() {
         assertTrue(added);
-        added = false;
+        assertNotNull(recipeToAdd);
+        System.out.println("Recipe id: " + recipeToAdd.getRecipeId());
+        System.out.println("Recipe name: " + recipeToAdd.getRecipeName());
+        System.out.println("Recipe ingredients: " + recipeToAdd.getIngredients());
+        System.out.println("Recipe instructions: " + recipeToAdd.getInstructions());
+        System.out.println("Recipe allergies: " + recipeToAdd.getAllergies());
+        System.out.println("Created at: " + recipeToAdd.getCreatedAt());
+
     }
 
 
     @When("The user searches for product with name {string}")
     public void theUserSearchesForProductWithName(String name) {
         try {
-            recipesSearched = Recipe.searchRecipesByName(name,DatabaseService.getConnection(true));
+            recipesList = Recipe.searchRecipesByName(name,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -70,21 +78,21 @@ public class RecipeManagementStepDefinition {
 
     @Then("the recipe should appear")
     public void theRecipeShouldAppear() {
-        found = !recipesSearched.isEmpty();
+        found = !recipesList.isEmpty();
         printFoundRecipes();
         assertTrue(found);
     }
 
     @Then("A message should appear to notify the user")
     public void aMessageShouldAppearToNotifyTheUser() {
-        found = !recipesSearched.isEmpty();
+        found = !recipesList.isEmpty();
         assertFalse(found);
     }
 
     @When("the user filters the results to exclude recipes with {string} food allergy")
     public void theUserFiltersTheResultsToExcludeRecipesWithFoodAllergy(String allergy) {
         try {
-            recipesSearched = Recipe.getRecipesWithoutAllergies(allergy,DatabaseService.getConnection(true));
+            recipesList = Recipe.getRecipesWithoutAllergies(allergy,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +101,7 @@ public class RecipeManagementStepDefinition {
 
     @Then("matching recipes should not be shown")
     public void matchingRecipesShouldNotBeShown() {
-        found = !recipesSearched.isEmpty();
+        found = !recipesList.isEmpty();
         printFoundRecipes();
         assertTrue(found);
         System.out.println("matching recipes should not be shown");
@@ -102,7 +110,7 @@ public class RecipeManagementStepDefinition {
     @When("The user searches for recipes he shared")
     public void theUserSearchesForRecipesHeShared() {
         try {
-            recipesSearched = Recipe.getRecipesByUserEmail(loggedInUser.getEmail(),DatabaseService.getConnection(true));
+            recipesList = Recipe.getRecipesByUserEmail(loggedInUser.getEmail(),DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -111,7 +119,7 @@ public class RecipeManagementStepDefinition {
 
     @Then("The recipes should appear")
     public void theRecipesShouldAppear() {
-        found = !recipesSearched.isEmpty();
+        found = !recipesList.isEmpty();
         printFoundRecipes();
         assertTrue(found);
         System.out.println("The recipes should appear");
@@ -119,7 +127,7 @@ public class RecipeManagementStepDefinition {
 
     public void printFoundRecipes(){
         if(found){
-            for (Recipe recipe : recipesSearched) {
+            for (Recipe recipe : recipesList) {
                 System.out.println(recipe.getRecipeName());
                 System.out.println(recipe.getUserEmail());
             }
@@ -219,4 +227,17 @@ public class RecipeManagementStepDefinition {
         }
     }
 
+    @When("The user tries to get all recipes")
+    public void theUserTriesToGetAllRecipes() {
+        try {
+            recipesList = Recipe.getAllRecipes(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all recipes");
+        }
+    }
+
+    @Then("The recipes should be shown successfully")
+    public void theRecipesShouldBeShownSuccessfully() {
+        assertNotNull(recipesList);
+    }
 }

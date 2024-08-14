@@ -167,10 +167,6 @@ public class User {
     }
 
     public static List<User> getUsersByFlag(int flag, Connection conn) throws SQLException {
-        if (conn == null) {
-            throw new SQLException("No connection provided");
-        }
-
         String sql;
         if (flag == 1) {
             sql = "SELECT * FROM users WHERE role = 'store_owner' OR role = 'raw_material_supplier' OR role = 'beneficiary_user'";
@@ -178,6 +174,9 @@ public class User {
             sql = "SELECT * FROM users WHERE role = 'beneficiary_user'";
         } else {
             throw new IllegalArgumentException("Invalid flag value. Use 1 for store owners and suppliers, or 2 for beneficiary users.");
+        }
+        if (conn == null) {
+            throw new SQLException("No connection provided");
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);

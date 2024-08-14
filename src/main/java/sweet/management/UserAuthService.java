@@ -4,7 +4,6 @@ import sweet.management.entities.Store;
 import sweet.management.entities.User;
 import sweet.management.entities.UserProfile;
 import sweet.management.services.DatabaseService;
-import sweet.management.services.TypeChecker;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,7 +40,7 @@ public class UserAuthService {
             try {
                 if (conn == null)
                     throw new SQLException();
-                if (User.getUserByEmail(email, DatabaseService.getConnection(true)) == null && TypeChecker.isValidEmail(email)) {
+                if (User.getUserByEmail(email, DatabaseService.getConnection(true)) == null && DatabaseService.isValidEmail(email)) {
                     User.createUser(new User(email, password, role, city), conn);
                     login(email, password, DatabaseService.getConnection(true));
                     return true;

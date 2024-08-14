@@ -3,6 +3,7 @@ Feature: Products Management
   Scenario: Successfully adding products
     Given that the user is logged in and user is store owner or raw material supplier
     When The user add a new product with name "cheesecake" And description "Big juicy cake" And price "6" And stock "30" And expiry date "2024-12-28" Then The product should be added successfully
+    Then The product should be added successfully to the database
 
   Scenario: Successfully updating products
     Given that the user is logged in and user is store owner or raw material supplier

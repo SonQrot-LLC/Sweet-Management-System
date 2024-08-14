@@ -18,6 +18,7 @@ public class ProductManagementStepDefinition {
     Boolean isUpdated;
     Product productTest;
     Product productDeleteTest;
+    Product productToBeAdded;
     List<Product> discountList;
     List<Product> allProductList;
 
@@ -46,9 +47,9 @@ public class ProductManagementStepDefinition {
 
     @When("The user add a new product with name {string} And description {string} And price {string} And stock {string} And expiry date {string} Then The product should be added successfully")
     public void theUserAddANewProductWithNameAndDescriptionAndPriceAndStockAndExpiryDateThenTheProductShouldBeAddedSuccessfully(String name, String description, String price, String stock, String expiryDate) {
-        Product product = new Product(name,description,price,stock,"0",userAuthService.getLoggedInStore().getStoreId(),expiryDate);
+        productToBeAdded = new Product(name,description,price,stock,"0",userAuthService.getLoggedInStore().getStoreId(),expiryDate);
         try {
-            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
+            isUpdated = Product.createProduct(productToBeAdded,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -282,5 +283,19 @@ public class ProductManagementStepDefinition {
         } catch (SQLException e) {
             fail("Could not get all products");
         }
+    }
+
+    @Then("The product should be added successfully to the database")
+    public void theProductShouldBeAddedSuccessfullyToTheDatabase() {
+        assertNotNull(productToBeAdded);
+        assertTrue(productToBeAdded.isAvailable());
+        System.out.println("Product ID: " + productToBeAdded.getProductId());
+        System.out.println("Product Name: " + productToBeAdded.getProductName());
+        System.out.println("Product Price: " + productToBeAdded.getPrice());
+        System.out.println("Product Discount: " + productToBeAdded.getDiscount());
+        System.out.println("Product Description: " + productToBeAdded.getDescription());
+        System.out.println("Product Stock: " + productToBeAdded.getStock());
+        System.out.println("Created at: " + productToBeAdded.getCreatedAt());
+
     }
 }
