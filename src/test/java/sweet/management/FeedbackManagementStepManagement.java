@@ -10,8 +10,7 @@ import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FeedbackManagementStepManagement {
@@ -19,6 +18,7 @@ public class FeedbackManagementStepManagement {
     Feedback feedback;
     boolean isCreated;
     boolean isDeleted;
+    List<Feedback> allFeedbacks;
     public FeedbackManagementStepManagement(){
         userAuthService = new UserAuthService();
 
@@ -107,5 +107,43 @@ public class FeedbackManagementStepManagement {
     @Then("it wont return feedback list and it will fail")
     public void itWontReturnFeedbackListAndItWillFail() {
         //result test will be found in the When block
+    }
+
+    @Given("that the admin is logged in with email {string} and password {string}")
+    public void thatTheAdminIsLoggedInWithEmailAndPassword(String email, String password) {
+        userAuthService = new UserAuthService();
+        userAuthService.login(email,password, DatabaseService.getConnection(true));
+        assertTrue(userAuthService.isLoggedIn());
+        assertTrue(userAuthService.getLoggedInUser().isAdmin());
+    }
+
+    @When("The admin tries to get all feedbacks")
+    public void theAdminTriesToGetAllFeedbacks() {
+        try {
+            allFeedbacks = Feedback.getAllFeedbacks(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all feedbacks");
+        }
+    }
+
+    @Then("All feedbacks should be shown")
+    public void allFeedbacksShouldBeShown() {
+        assertNotNull(allFeedbacks);
+    }
+
+    @When("The admin tries to get all feedbacks but there is no connection")
+    public void theAdminTriesToGetAllFeedbacksButThereIsNoConnection() {
+        try {
+            allFeedbacks = Feedback.getAllFeedbacks(DatabaseService.getConnection(false));
+        } catch (SQLException e) {
+            System.out.println("There is no connection");
+        }
+    }
+
+
+    @Then("All feedbacks should not be shown")
+    public void allFeedbacksShouldNotBeShown() {
+        assertNull(allFeedbacks);
+
     }
 }

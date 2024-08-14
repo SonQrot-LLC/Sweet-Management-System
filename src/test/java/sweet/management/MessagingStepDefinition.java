@@ -3,15 +3,20 @@ package sweet.management;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import sweet.management.entities.Feedback;
 import sweet.management.entities.Message;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class MessagingStepDefinition {
     UserAuthService userAuthService;
     User loggedInUser;
+    Message messageToBeDisplayed;
+
 
     public MessagingStepDefinition() {
         userAuthService = new UserAuthService();
@@ -148,5 +153,51 @@ public class MessagingStepDefinition {
         //result test will be found in the When block
 
     }
+
+    @When("The user tries to get a message by id {string}")
+    public void theUserTriesToGetAMessageById(String id) {
+        try {
+            messageToBeDisplayed = Message.getMessageById(DatabaseService.getConnection(true),Integer.parseInt(id));
+            assertNotNull(messageToBeDisplayed);
+        } catch (SQLException e) {
+            fail("Could not get a message with the id " + id);
+        }
+
+    }
+
+    @Then("The message is shown")
+    public void theMessageIsShown() {
+        int expectedMessageId = 1;
+        String expectedEmail = loggedInUser.getEmail();
+        String expectedReceiver = "owner@gmail.com";
+        String expectedContent = "How do you make cake";
+
+        assertEquals(expectedEmail,messageToBeDisplayed.getSenderEmail());
+        assertEquals(expectedReceiver,messageToBeDisplayed.getReceiverEmail());
+        assertEquals(expectedContent,messageToBeDisplayed.getContent());
+        assertEquals(expectedMessageId,messageToBeDisplayed.getMessageId());
+
+        System.out.println("\nThe sender email is "+ messageToBeDisplayed.getSenderEmail());
+        System.out.println("\nThe receiver email is "+ messageToBeDisplayed.getReceiverEmail());
+        System.out.println("\nThe content is "+ messageToBeDisplayed.getContent());
+        System.out.println("\n The message was sent at "+ messageToBeDisplayed.getCreatedAt());
+
+
+    }
+
+    @When("The user tries to get a message by invalid id {string}")
+    public void theUserTriesToGetAMessageByInvalidId(String id) {
+        try {
+            messageToBeDisplayed = Message.getMessageById(DatabaseService.getConnection(true),Integer.parseInt(id));
+        } catch (SQLException e) {
+            fail("Could not get a message with the id " + id);
+        }
+    }
+
+    @Then("The message wont be shown")
+    public void theMessageWontBeShown() {
+        assertNull("The message does not exist",messageToBeDisplayed);
+    }
+
 
 }

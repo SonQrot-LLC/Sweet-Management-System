@@ -39,3 +39,13 @@ Feature: Messaging
   Given That Customer with email "order.user@gmail.com" is logged in
   When The user chooses the show all received messages option
   Then The messages are shown
+
+  Scenario: User tries to get a message by id number
+   Given That Customer with email "order.user@gmail.com" is logged in
+   When The user tries to get a message by id "1"
+   Then The message is shown
+
+ Scenario: User tries to get a message by invalid id number
+  Given That Customer with email "order.user@gmail.com" is logged in
+  When The user tries to get a message by invalid id "5000"
+  Then The message wont be shown

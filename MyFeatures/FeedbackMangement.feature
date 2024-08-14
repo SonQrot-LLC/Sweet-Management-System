@@ -32,3 +32,15 @@ Feature: Feedback
     When The user deletes a feedback with id "1"
     Then the feedback is deleted successfully
 
+  Scenario: Admin trying to get all feedbacks
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get all feedbacks
+    Then All feedbacks should be shown
+
+  Scenario: Admin trying to get all feedbacks
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get all feedbacks but there is no connection
+    Then All feedbacks should not be shown
+
+
+
