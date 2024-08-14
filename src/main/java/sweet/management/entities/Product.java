@@ -132,7 +132,7 @@ public class Product {
     }
 
     // Static Methods for Database Operations
-    public static void createProduct(Product product, Connection conn) throws SQLException {
+    public static Boolean createProduct(Product product, Connection conn) throws SQLException {
         String sql = "INSERT INTO products (product_id,product_name, description, price, stock, discount, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setInt(1, product.getProductId());
@@ -144,6 +144,7 @@ public class Product {
             stmt.setInt(7, product.getStoreId());
             stmt.setString(8, product.getExpiryDate());
         });
+        return true;
     }
 
     public static Product getProductById(int productId, Connection conn) throws SQLException {

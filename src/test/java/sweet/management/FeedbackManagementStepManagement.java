@@ -76,6 +76,7 @@ public class FeedbackManagementStepManagement {
 
     @Then("the feedback associated should be retrieved successfully")
     public void theFeedbackAssociatedShouldBeRetrievedSuccessfully() {
+        //result test will be found in the When block
     }
 
     @When("the user requests feedback for store ID {string}")
@@ -105,5 +106,6 @@ public class FeedbackManagementStepManagement {
 
     @Then("it wont return feedback list and it will fail")
     public void itWontReturnFeedbackListAndItWillFail() {
+        //result test will be found in the When block
     }
 }

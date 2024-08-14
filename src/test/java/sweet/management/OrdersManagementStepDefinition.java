@@ -47,9 +47,9 @@ public class OrdersManagementStepDefinition {
     }
     @When("The user make a new order email {string} and orderStatus {string}")
     public void theUserMakeANewOrderEmailAndOrderStatus(String userEmail, String orderStatus) {
-        Order order = new Order(userEmail,2,orderStatus);
+        Order tempOrder = new Order(userEmail,2,orderStatus);
         try {
-            isUpdatedOrder = Order.createOrder(order,DatabaseService.getConnection(true));
+            isUpdatedOrder = Order.createOrder(tempOrder,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,8 +83,8 @@ public class OrdersManagementStepDefinition {
     }
 
     @And("updates total amount to {string}")
-    public void updatesTotalAmountTo(String Total) {
-        orderToBeUpdated.setTotalAmount(Double.parseDouble(Total));
+    public void updatesTotalAmountTo(String total) {
+        orderToBeUpdated.setTotalAmount(Double.parseDouble(total));
         try {
             isUpdatedOrder = Order.updateOrder(orderToBeUpdated,DatabaseService.getConnection(true), Order.UPDATE_TOTAL_AMOUNT);
         } catch (SQLException e) {
@@ -189,33 +189,6 @@ public class OrdersManagementStepDefinition {
     @Then("The orderItem should be successfully created")
     public void theOrderItemShouldBeSuccessfullyCreated() {assertTrue(isUpdatedOrderItem);
     }
-
-
-//    @When("The user try to  get orders by store id {string} and the there is sql connection problem")
-//    public void theUserTryToGetOrdersByStoreIdAndTheThereIsSqlConnectionProblem(String id) {
-//        ordersList = null;
-//        try {
-//            ordersList = Order.getOrdersByStoreId(Integer.parseInt(id),DatabaseService.getConnection(false));
-//        } catch (SQLException e) {
-//            System.out.println("failed to get orders by user id");
-//        }
-//    }
-//
-//    @When("The user try to  get orders by user email {string} and the there is sql connection problem")
-//    public void theUserTryToGetOrdersByUserEmailAndTheThereIsSqlConnectionProblem(String email) {
-//
-//        ordersList = null;
-//        try {
-//            ordersList = Order.getOrdersByUserEmail(email,DatabaseService.getConnection(true));
-//        } catch (SQLException e) {
-//            System.out.println("failed to get orders by user email");
-//        }
-//    }
-//
-//    @Then("it should fail")
-//    public void itShouldFail() {
-//        assertNull(ordersList);
-//    }
 
     @When("The user edits the order item to update the quantity to {string}")
     public void theUserEditsTheOrderItemToUpdateTheQuantityTo(String quantity) {

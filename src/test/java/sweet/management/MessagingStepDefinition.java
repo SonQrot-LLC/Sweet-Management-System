@@ -4,11 +4,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import sweet.management.entities.Message;
-import sweet.management.entities.Product;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
-import java.util.List;
 import static org.junit.Assert.*;
 
 public class MessagingStepDefinition {
@@ -38,6 +36,7 @@ public class MessagingStepDefinition {
 
     @Then("it's received by the owner")
     public void itSReceivedByTheOwner() {
+        //result test will be found in the When block
 
     }
 
@@ -52,6 +51,7 @@ public class MessagingStepDefinition {
 
     @Then("it's received by the supplier")
     public void itSReceivedByTheSupplier() {
+        //result test will be found in the When block
 
     }
 
@@ -75,6 +75,7 @@ public class MessagingStepDefinition {
 
     @Then("the reply is sent to user")
     public void theReplyIsSentToUser() {
+        //result test will be found in the When block
 
     }
 
@@ -109,6 +110,8 @@ public class MessagingStepDefinition {
 
     @Then("the reply is sent to owner")
     public void theReplyIsSentToOwner() {
+        //result test will be found in the When block
+
 
     }
 
@@ -142,6 +145,7 @@ public class MessagingStepDefinition {
 
     @Then("The messages are shown")
     public void theMessagesAreShown() {
+        //result test will be found in the When block
 
     }
 

@@ -3,7 +3,6 @@ package sweet.management;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import sweet.management.entities.Product;
 import sweet.management.entities.Recipe;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
@@ -16,7 +15,7 @@ import static org.junit.Assert.*;
 public class RecipeManagementStepDefinition {
     UserAuthService userAuthService;
     User loggedInUser;
-    Boolean Added;
+    Boolean added;
     List <Recipe> recipesSearched;
     boolean found;
     boolean deleted;
@@ -44,7 +43,7 @@ public class RecipeManagementStepDefinition {
     public void theUserAddsRecipeWithNameIngredientsInstructionAndAllergies(String name, String ingredients, String instructions, String allergies) {
         Recipe recipeToAdd= new Recipe(loggedInUser.getEmail(),name,ingredients,instructions,allergies);
         try {
-           Added =  Recipe.createRecipe(recipeToAdd,DatabaseService.getConnection(true));
+           added =  Recipe.createRecipe(recipeToAdd,DatabaseService.getConnection(true));
            Recipe.deleteRecipe(Recipe.nextId(DatabaseService.getConnection(true))-1,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -54,8 +53,8 @@ public class RecipeManagementStepDefinition {
 
     @Then("The recipe is added successfully")
     public void theRecipeIsAddedSuccessfully() {
-        assertTrue(Added);
-        Added = false;
+        assertTrue(added);
+        added = false;
     }
 
 
@@ -131,12 +130,12 @@ public class RecipeManagementStepDefinition {
     }
 
     @When("The admin Deletes recipe with ID {string}")
-    public void theAdminDeletesRecipeWithID(String ID) {
-        if (ID.equals("7")) {
-        addTestRecipe(Integer.parseInt(ID));
+    public void theAdminDeletesRecipeWithID(String id) {
+        if (id.equals("7")) {
+        addTestRecipe(Integer.parseInt(id));
         }
         try {
-            deleted = Recipe.deleteRecipe(Integer.parseInt(ID),DatabaseService.getConnection(true));
+            deleted = Recipe.deleteRecipe(Integer.parseInt(id),DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -204,16 +203,15 @@ public class RecipeManagementStepDefinition {
     public User adminLogin(){
         UserAuthService adminAuthService = new UserAuthService();
         adminAuthService.login("admin@gmail.com","123", DatabaseService.getConnection(true));
-        User loggedInAdmin = adminAuthService.getLoggedInUser();
-        return loggedInAdmin;
+        return adminAuthService.getLoggedInUser();
 
     }
 
     public Recipe addTestRecipe(int id){
-        Recipe testRecipe = new Recipe(id,"feedbacktest@gmail.com","test","test","test",null,"test");
+        Recipe tempRecipe = new Recipe(id,"feedbacktest@gmail.com","test","test","test",null,"test");
         try {
-            Recipe.createRecipe(testRecipe,DatabaseService.getConnection(true));
-            return testRecipe;
+            Recipe.createRecipe(tempRecipe,DatabaseService.getConnection(true));
+            return tempRecipe;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

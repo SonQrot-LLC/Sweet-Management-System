@@ -39,16 +39,6 @@ public class ProductManagementStepDefinition {
         isUpdated = false;
     }
 
-//    @When("The user add a new product with full info")
-//    public void theUserAddANewProductWithFullInfo() {
-//        Product product = new Product("BIG CAKE"," A big cake that can feed up to 10 persons",55.00,7,userAuthService.getLoggedInStore().getStoreId());
-//        try {
-//            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     @Then("The product should be added successfully")
     public void theProductShouldBeAddedSuccessfully() {
         assertTrue(isUpdated);
@@ -57,11 +47,11 @@ public class ProductManagementStepDefinition {
     @When("The user add a new product with name {string} And description {string} And price {string} And stock {string} And expiry date {string} Then The product should be added successfully")
     public void theUserAddANewProductWithNameAndDescriptionAndPriceAndStockAndExpiryDateThenTheProductShouldBeAddedSuccessfully(String name, String description, String price, String stock, String expiryDate) {
         Product product = new Product(name,description,price,stock,"0",userAuthService.getLoggedInStore().getStoreId(),expiryDate);
-//        try {
-//            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            isUpdated = Product.createProduct(product,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @When("The user edits a product with ID {string}")
@@ -184,7 +174,6 @@ public class ProductManagementStepDefinition {
     public void theUserAsksForDiscountSuggestion() {
         try {
             discountList = Product.getProductsExpiringInLessThan120Days("salam@hawa.com",DatabaseService.getConnection(true));
-//            System.out.println("list size: " + discountList.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
