@@ -583,7 +583,7 @@ public class Main {
         try {
             Product tempProduct = Product.getProductById(productId,DatabaseService.getConnection(true));
             if(tempProduct != null){
-                Feedback tempFeedback = new Feedback(userAuthService.getLoggedInUser().getEmail(),productId,rating,feedbackDescription);
+                Feedback tempFeedback = new Feedback(userAuthService.getLoggedInUser().getEmail(),productId,rating,feedbackDescription,DatabaseService.getConnection(true));
                 Feedback.createFeedback(tempFeedback,DatabaseService.getConnection(true));
             }
             else

@@ -5,14 +5,13 @@ import sweet.management.services.DatabaseService;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Feedback {
     public static final String QUERY_BY_EMAIL = "email";
     public static final String QUERY_BY_STORE = "store";
     public static final String QUERY_BY_PRODUCT = "product";
 
-    private int feedbackId;
+    private final int feedbackId;
     private final String userEmail;
     private final int productId;
     private final int rating;
@@ -29,13 +28,8 @@ public class Feedback {
         this.createdAt = createdAt;
     }
 
-    public Feedback(String userEmail, int productId, int rating, String comment) {
-        try {
-            this.feedbackId = nextId(DatabaseService.getConnection(true));
-        } catch (SQLException e) {
-            Logger logger = Logger.getLogger(DatabaseService.class.getName());
-            logger.warning("something went wrong when trying to connect to database");
-        }
+    public Feedback(String userEmail, int productId, int rating, String comment,Connection connection) throws SQLException {
+        this.feedbackId = nextId(connection);
         this.userEmail = userEmail;
         this.productId = productId;
         this.rating = rating;

@@ -19,6 +19,7 @@ public class ProductManagementStepDefinition {
     Product productTest;
     Product productDeleteTest;
     List<Product> discountList;
+    List<Product> allProductList;
 
     public ProductManagementStepDefinition() {
         userAuthService = new UserAuthService();
@@ -67,7 +68,7 @@ public class ProductManagementStepDefinition {
             productTest.setProductName(name);
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_NAME);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
     @When("sets product description to {string}")
@@ -76,7 +77,7 @@ public class ProductManagementStepDefinition {
             productTest.setDescription(description);
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_DESCRIPTION);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
     @When("sets product price to {string}")
@@ -85,7 +86,7 @@ public class ProductManagementStepDefinition {
             productTest.setPrice(Double.parseDouble(price));
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_PRICE);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
     @When("sets product stock to {string}")
@@ -94,7 +95,7 @@ public class ProductManagementStepDefinition {
             productTest.setStock(Integer.parseInt(stock));
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_STOCK);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
     @When("sets product expiry date to {string}")
@@ -103,7 +104,7 @@ public class ProductManagementStepDefinition {
             productTest.setExpiryDate(expDate);
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),Product.UPDATE_EXPIRY_DATE);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
 
@@ -135,7 +136,7 @@ public class ProductManagementStepDefinition {
             productTest.setProductName("testName");
             isUpdated = Product.updateProduct(productTest,DatabaseService.getConnection(true),9);
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Could not update product");
         }
     }
 
@@ -192,6 +193,7 @@ public class ProductManagementStepDefinition {
     public void theUserChoosesASuggestedProductWithIdForDiscountAndAddsValueToTheDiscount(String id, String discountValue) {
         try {
             Product discountedProduct = Product.getProductById(Integer.parseInt(id),DatabaseService.getConnection(true));
+            assert discountedProduct != null;
             discountedProduct.setDiscount(Double.parseDouble(discountValue));
             Product.updateProduct(discountedProduct,DatabaseService.getConnection(true),Product.UPDATE_DISCOUNT);
         } catch (SQLException e) {
@@ -203,6 +205,7 @@ public class ProductManagementStepDefinition {
     public void theDiscountValueIsUpdatedForThisProduct() {
         try {
             Product discountedProduct = Product.getProductById(4,DatabaseService.getConnection(true));
+            assert discountedProduct != null;
             System.out.println(discountedProduct.getProductName());
             System.out.println(discountedProduct.getPrice());
             System.out.println(discountedProduct.getDiscount());
@@ -211,4 +214,73 @@ public class ProductManagementStepDefinition {
         }
     }
 
+    @Given("That the user is logged in with a user {string} and password {string}")
+    public void thatTheUserIsLoggedInWithAUserAndPassword(String email, String password) {
+        userAuthService = new UserAuthService();
+        userAuthService.login(email,password,DatabaseService.getConnection(true));
+        assertTrue(userAuthService.isLoggedIn());
+        assertTrue(userAuthService.getLoggedInUser().isAdmin() || userAuthService.getLoggedInUser().isBeneficiaryUser());
+    }
+
+    @When("The user tries to get all products")
+    public void theUserTriesToGetAllProducts() {
+        try {
+            allProductList = Product.getAllProducts(DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all products");
+        }
+    }
+
+    @Then("The products should be shown successfully")
+    public void theProductsShouldBeShownSuccessfully() {
+        assertNotNull(allProductList);
+    }
+
+    @When("The user tries to get all products but there is no connection")
+    public void theUserTriesToGetAllProductsButThereIsNoConnection() {
+        try {
+            allProductList = Product.getAllProducts(DatabaseService.getConnection(false));
+        } catch (SQLException e) {
+            System.out.println("Could not get all products");
+        }
+    }
+
+    @Then("The products should not be shown")
+    public void theProductsShouldNotBeShown() {
+        assertNull(allProductList);
+    }
+
+    @Given("That the user is logged using email {string} and password {string}")
+    public void thatTheUserIsLoggedUsingEmailAndPassword(String email, String password) {
+        userAuthService = new UserAuthService();
+        userAuthService.login(email,password,DatabaseService.getConnection(true));
+        assertTrue(userAuthService.isLoggedIn());
+    }
+
+    @When("The user tries to get all of its products")
+    public void theUserTriesToGetAllOfItsProducts() {
+        try {
+            allProductList = Product.getProductsByUserEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all products");
+        }
+    }
+
+    @When("The user tries to get all products from a store by store id {string}")
+    public void theUserTriesToGetAllProductsFromAStoreByStoreId(String id) {
+        try {
+            allProductList = Product.getProductsByStoreId(Integer.parseInt(id),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all products");
+        }
+    }
+
+    @When("The user tries to get all products from a store by Search {string}")
+    public void theUserTriesToGetAllProductsFromAStoreBySearch(String search) {
+        try {
+            allProductList = Product.searchProducts(search,DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Could not get all products");
+        }
+    }
 }
