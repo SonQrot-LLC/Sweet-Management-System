@@ -3,12 +3,10 @@ package sweet.management;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import sweet.management.entities.Feedback;
 import sweet.management.entities.Message;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

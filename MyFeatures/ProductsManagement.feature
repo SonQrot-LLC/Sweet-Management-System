@@ -52,5 +52,29 @@ Feature: Products Management
     Then The discount value is updated for this product
 
 
+    Scenario: Product trying to get all products
+      Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+      When The user tries to get all products
+      Then The products should be shown successfully
 
+  Scenario: User trying to get all products
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all products but there is no connection
+    Then The products should not be shown
+
+  Scenario: User trying to get all products
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all products from a store by store id "1"
+    Then The products should be shown successfully
+
+  Scenario: User trying to get all products
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all products from a store by Search "Milk"
+    Then The products should be shown successfully
+
+
+    Scenario: Store trying to get all of its products
+      Given That the user is logged using email "salam@hawa.com" and password "222"
+      When The user tries to get all of its products
+      Then The products should be shown successfully
 

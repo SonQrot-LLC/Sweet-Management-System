@@ -35,8 +35,8 @@ public class FeedbackManagementStepManagement {
     }
     @When("the user create a new feedback with the correct data")
     public void theUserCreateANewFeedbackWithTheCorrectData() {
-        feedback = new Feedback(userAuthService.getLoggedInUser().getEmail(),1,5,"GOOD PRODUCT");
         try {
+            feedback = new Feedback(userAuthService.getLoggedInUser().getEmail(),1,5,"GOOD PRODUCT",DatabaseService.getConnection(true));
             isCreated = Feedback.createFeedback(feedback,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
