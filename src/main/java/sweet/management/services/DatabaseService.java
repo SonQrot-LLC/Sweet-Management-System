@@ -7,37 +7,9 @@ public class DatabaseService {
     private static final String DATABASE_USER = System.getenv("DATABASE_USER");
     private static final String DATABASE_PASSWORD = System.getenv("DATABASE_PASSWORD");
     private static Connection connection;
-    public static boolean test;
-
-    static {
-
-    }
-
-
-//    public <T> T executeQuery(String query, QueryResultHandler<T> resultHandler) throws SQLException {
-//        try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-//             ResultSet resultSet = preparedStatement.executeQuery()) {
-//            return resultHandler.handle(resultSet);
-//        }
-//    }
-
-//    public static Connection getConnection(boolean connect) {
-//
-//        try {
-//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/SweetManagementSystem", DATABASE_USER, DATABASE_PASSWORD);
-//            if (!connect)
-//                throw new SQLException("Failed to connect to database");
-//            return connection;
-//        } catch (SQLException e) {
-//            return null;
-//        }
-//    }
+    private static boolean test = false;
 
     public static Connection getConnection(boolean connect) {
-//        try {
-
-
-            // Attempt to establish a connection
             try {
                 if (!connect) {
                     return null;
@@ -50,9 +22,6 @@ public class DatabaseService {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
-
-
         return connection;
     }
 
