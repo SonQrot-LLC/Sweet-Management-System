@@ -91,13 +91,13 @@ public class Recipe {
 
     // Static Methods for Database Operations
     public static boolean createRecipe(Recipe recipe, Connection conn) throws SQLException {
-        String sql = "INSERT INTO recipes (user_email, recipe_name, ingredients, instructions, created_at, allergies) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO recipes (recipe_id, user_email, recipe_name, ingredients, instructions, allergies) VALUES (?, ?, ?, ?, ?, ?)";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setString(1, recipe.getUserEmail());
-            stmt.setString(2, recipe.getRecipeName());
-            stmt.setString(3, recipe.getIngredients());
-            stmt.setString(4, recipe.getInstructions());
-            stmt.setTimestamp(5, recipe.getCreatedAt());
+            stmt.setInt(1, recipe.getRecipeId());
+            stmt.setString(2, recipe.getUserEmail());
+            stmt.setString(3, recipe.getRecipeName());
+            stmt.setString(4, recipe.getIngredients());
+            stmt.setString(5, recipe.getInstructions());
             stmt.setString(6, recipe.getAllergies());
         });
     }

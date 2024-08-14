@@ -132,7 +132,7 @@ public class RecipeManagementStepDefinition {
 
     @When("The admin Deletes recipe with ID {string}")
     public void theAdminDeletesRecipeWithID(String ID) {
-        if (ID.equals("6")) {
+        if (ID.equals("7")) {
         addTestRecipe(Integer.parseInt(ID));
         }
         try {
@@ -150,7 +150,12 @@ public class RecipeManagementStepDefinition {
 
     @When("the admin updates recipe with ID {string}")
     public void theAdminUpdatesRecipeWithID(String id) {
-       testRecipe = addTestRecipe(Integer.parseInt(id));
+        try {
+            testRecipe = Recipe.getRecipeById(Integer.parseInt(id),DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail();
+        }
+
     }
     @When("sets the name to {string}")
     public void setsTheNameTo(String name) {
@@ -177,11 +182,6 @@ public class RecipeManagementStepDefinition {
     public void theRecipeWillBeUpdated() {
        assertTrue(updated);
        updated = false;
-        try {
-            Recipe.deleteRecipe(testRecipe.getRecipeId(),DatabaseService.getConnection(true));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -210,10 +210,9 @@ public class RecipeManagementStepDefinition {
     }
 
     public Recipe addTestRecipe(int id){
-        Recipe testRecipe = new Recipe("feedbacktest@gmail.com","test","test","test","test");
+        Recipe testRecipe = new Recipe(id,"feedbacktest@gmail.com","test","test","test",null,"test");
         try {
             Recipe.createRecipe(testRecipe,DatabaseService.getConnection(true));
-            testRecipe.setId(id,DatabaseService.getConnection(true));
             return testRecipe;
         } catch (SQLException e) {
             throw new RuntimeException(e);

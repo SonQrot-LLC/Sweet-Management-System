@@ -127,9 +127,9 @@ public class ProductManagementStepDefinition {
     @When("The user deletes product with ID {string}")
     public void theUserDeletesProductWithID(String id) {
         try {
-            Product.createProduct(productDeleteTest,DatabaseService.getConnection(true));
-            productDeleteTest.setId(Integer.parseInt(id),DatabaseService.getConnection(true));
+            productDeleteTest.setId(Integer.parseInt(id));
             isUpdated = Product.deleteProduct(productDeleteTest.getProductId(),DatabaseService.getConnection(true));
+            Product.createProduct(productDeleteTest,DatabaseService.getConnection(true));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

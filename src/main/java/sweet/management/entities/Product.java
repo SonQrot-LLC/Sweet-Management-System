@@ -121,14 +121,14 @@ public class Product {
 
     // Static Methods for Database Operations
     public static boolean createProduct(Product product, Connection conn) throws SQLException {
-        String sql = "INSERT INTO products (product_name, description, price, stock, discount, created_at, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (product_id,product_name, description, price, stock, discount, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setString(1, product.getProductName());
-            stmt.setString(2, product.getDescription());
-            stmt.setDouble(3, product.getPrice());
-            stmt.setInt(4, product.getStock());
-            stmt.setDouble(5, product.getDiscount()); // Set discount
-            stmt.setTimestamp(6, product.getCreatedAt());
+            stmt.setInt(1, product.getProductId());
+            stmt.setString(2, product.getProductName());
+            stmt.setString(3, product.getDescription());
+            stmt.setDouble(4, product.getPrice());
+            stmt.setInt(5, product.getStock());
+            stmt.setDouble(6, product.getDiscount()); // Set discount
             stmt.setInt(7, product.getStoreId());
             stmt.setString(8, product.getExpiryDate());
         });
@@ -217,14 +217,8 @@ public class Product {
         return DatabaseService.executeUpdate(sql, conn, stmt -> {});
     }
 
-    public  boolean setId(int id,Connection conn) throws SQLException {
-        int oldId = this.productId;
+    public  void setId(int id){
         this.productId = id;
-        String sql = "UPDATE products SET product_id = ? WHERE product_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, id);
-            stmt.setInt(2, oldId);
-        });
     }
 
     public static int nextId(Connection conn) throws SQLException {

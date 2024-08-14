@@ -85,13 +85,12 @@ public class User {
     }
 
     public static void createUser(User user, Connection conn) throws SQLException {
-        String sql = "INSERT INTO users (email, password, role, city, created_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (email, password, role, city) VALUES (?, ?, ?, ?)";
         DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, user.getEmail());
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getRole());
             stmt.setString(4, user.getCity());
-            stmt.setTimestamp(5, user.getCreatedAt());
         });
     }
 

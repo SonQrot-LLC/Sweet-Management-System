@@ -30,7 +30,6 @@ public class UserAuthService {
                     return true;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
                 return false;
             }
         }

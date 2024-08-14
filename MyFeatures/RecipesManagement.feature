@@ -27,12 +27,12 @@ Feature: Recipe Management
 
    Scenario: Admin deletes a Recipe
      Given That the admin is logged in
-     When The admin Deletes recipe with ID "6"
+     When The admin Deletes recipe with ID "7"
      Then The recipe will be deleted
 
    Scenario: Admin updates a Recipe
      Given That the admin is logged in
-     When the admin updates recipe with ID "7"
+     When the admin updates recipe with ID "8"
      And sets the name to "Cupcakes"
      And sets the ingredients to "Wheat and Laveva"
      And sets the instructions to "Bake for 45 minutes"

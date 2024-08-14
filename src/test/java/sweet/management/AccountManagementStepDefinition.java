@@ -10,6 +10,7 @@ import sweet.management.entities.User;
 import sweet.management.entities.UserProfile;
 import sweet.management.services.DatabaseService;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,7 +31,8 @@ public class AccountManagementStepDefinition {
 
     @Given("I log in with username {string} and password {string} and i am a Beneficiary User")
     public void iLogInWithUsernameAndPasswordAndIAmABeneficiaryUser(String email, String pass) {
-        userAuthService.login(email, pass, DatabaseService.getConnection(true));
+        Connection conn = DatabaseService.getConnection(true);
+        userAuthService.login(email, pass,conn );
         assertTrue(userAuthService.isLoggedIn());
         assertTrue(userAuthService.getLoggedInUser().isBeneficiaryUser());
     }

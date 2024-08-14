@@ -7,6 +7,11 @@ public class DatabaseService {
     private static final String DATABASE_USER = System.getenv("DATABASE_USER");
     private static final String DATABASE_PASSWORD = System.getenv("DATABASE_PASSWORD");
     private static Connection connection;
+    public static boolean test;
+
+    static {
+
+    }
 
 
 //    public <T> T executeQuery(String query, QueryResultHandler<T> resultHandler) throws SQLException {
@@ -29,27 +34,27 @@ public class DatabaseService {
 //    }
 
     public static Connection getConnection(boolean connect) {
-        Connection connection = null;
-        try {
-            String url = "jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/SweetManagementSystem?useSSL=true&requireSSL=true";
-            String user = "avnadmin";
-            String password = "AVNS_V48PsTcnluVA-KIvExk";
+//        try {
+
 
             // Attempt to establish a connection
-            connection = DriverManager.getConnection(url, user, password);
-
-            // Check if connection should be verified (if connect is true)
-            if (!connect) {
-                // Simulate a failure condition for demonstration purposes
-                throw new SQLException("Connection verification failed.");
+            try {
+                if (!connect) {
+                    return null;
+                }
+                else if (!test || connection.isClosed()) {
+                    String url = "jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/SweetManagementSystem?useSSL=true&requireSSL=true";
+                    String user = "avnadmin";
+                    String password = "AVNS_V48PsTcnluVA-KIvExk";
+                    connection = DriverManager.getConnection(url, user, password);
+                    test = true;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
 
-        } catch (SQLException e) {
-            // Print the stack trace for debugging
-            e.printStackTrace();
-        }
 
-        // Return the connection (or null if there was an error)
+
         return connection;
     }
 

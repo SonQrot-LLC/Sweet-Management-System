@@ -27,7 +27,7 @@ Feature: Feedback
       Then it wont return feedback list and it will fail
 
 
-  Scenario: Successfully deleting order
+  Scenario: Successfully deleting feedback
     Given that a user is logged in with email "feedbacktest@gmail.com" and password "321"
     When The user deletes a feedback with id "1"
     Then the feedback is deleted successfully
