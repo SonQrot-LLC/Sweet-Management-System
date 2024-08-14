@@ -44,9 +44,7 @@ public class DatabaseService {
                 }
                 else if (!test || connection.isClosed()) {
                     String url = "jdbc:mysql://sweet-managment-system-db-momanani2017-feec.l.aivencloud.com:16046/SweetManagementSystem?useSSL=true&requireSSL=true";
-                    String user = "avnadmin";
-                    String password = "AVNS_V48PsTcnluVA-KIvExk";
-                    connection = DriverManager.getConnection(url, user, password);
+                    connection = DriverManager.getConnection(url, DATABASE_USER, DATABASE_PASSWORD);
                     test = true;
                 }
             } catch (SQLException e) {
