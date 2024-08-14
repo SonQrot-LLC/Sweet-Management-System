@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class User {
     private final String email;
@@ -25,6 +26,7 @@ public class User {
         this.password = password;
         this.role = role;
         this.city = city;
+        this.createdAt = createdAt;
     }
 
     public User(String email, String password, String role, String city) {
@@ -124,9 +126,7 @@ public class User {
         });
     }
 
-    public static boolean updateRole(User user, Connection conn, UserAuthService userAuthService) throws SQLException {
-//        if (!userAuthService.getLoggedInUser().isAdmin()) return false;
-
+    public static boolean updateRole(User user, Connection conn) throws SQLException {
         String sql = "UPDATE users SET role = ? WHERE email = ?";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setString(1, user.getRole());
@@ -146,20 +146,17 @@ public class User {
         try {
             if (conn == null || user == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && !user.getEmail().equals(userAuthService.getLoggedInUser().getEmail()) )) {
                 throw new SQLException("No connection or unauthorized user");
-            }switch (updateType) {
-                case UPDATE_PASSWORD:
-                    return updatePassword(user, conn);
-                case UPDATE_CITY:
-                    return updateCity(user, conn);
-                case UPDATE_ROLE:
-                    return updateRole(user, conn, userAuthService);
-                case DELETE_ACCOUNT:
-                    return deleteUser(user.getEmail(), conn);
-                default:
-                    return false;
             }
+            return switch (updateType) {
+                case UPDATE_PASSWORD -> updatePassword(user, conn);
+                case UPDATE_CITY -> updateCity(user, conn);
+                case UPDATE_ROLE -> updateRole(user, conn);
+                case DELETE_ACCOUNT -> deleteUser(user.getEmail(), conn);
+                default -> false;
+            };
         } catch (SQLException e) {
-            System.out.println("Error updating user: " + e.getMessage());
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to update user");
             return false;
         }
     }

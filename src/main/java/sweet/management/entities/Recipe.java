@@ -1,13 +1,23 @@
 package sweet.management.entities;
 
 import sweet.management.services.DatabaseService;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Recipe {
+    private static final String RECIPE_ID = "recipe_id";
+    private static final String USER_EMAIL = "user_email";
+    private static final String RECIPE_NAME = "recipe_name";
+    private static final String INGREDIENTS_COL = "ingredients";
+    private static final String INSTRUCTIONS_COL = "instructions";
+    private static final String CREATED_AT = "created_at";
+    private static final String ALLERGIES_COL = "allergies";
+    private static final String NO_CONNECTION = "No connection";
     private int recipeId;
-    private String userEmail;
+    private final String userEmail;
     private String recipeName;
     private String ingredients;
     private String instructions;
@@ -34,7 +44,8 @@ public class Recipe {
         try {
             this.recipeId = nextId(DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to connect to database");
         }
         this.userEmail = userEmail;
         this.recipeName = recipeName;
@@ -77,10 +88,6 @@ public class Recipe {
         this.instructions = instructions;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
     public String getAllergies() {
         return allergies;
     }
@@ -103,7 +110,7 @@ public class Recipe {
     }
 
     public static Recipe getRecipeById(int recipeId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM recipes WHERE recipe_id = ?";
+        String sql = "SELECT *" + " FROM recipes WHERE recipe_id = ?";
         if (conn == null) {
             throw new SQLException();
         }
@@ -113,13 +120,13 @@ public class Recipe {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Recipe(
-                            rs.getInt("recipe_id"),
-                            rs.getString("user_email"),
-                            rs.getString("recipe_name"),
-                            rs.getString("ingredients"),
-                            rs.getString("instructions"),
-                            rs.getTimestamp("created_at"),
-                            rs.getString("allergies")
+                            rs.getInt(RECIPE_ID),
+                            rs.getString(USER_EMAIL),
+                            rs.getString(RECIPE_NAME),
+                            rs.getString(INGREDIENTS_COL),
+                            rs.getString(INSTRUCTIONS_COL),
+                            rs.getTimestamp(CREATED_AT),
+                            rs.getString(ALLERGIES_COL)
                     );
                 }
             }
@@ -128,71 +135,63 @@ public class Recipe {
     }
 
     public static boolean updateRecipe(Recipe recipe, Connection conn, int updateType) throws SQLException {
-        String sql = null;
-        switch (updateType) {
-            case UPDATE_RECIPE_NAME:
+        String sql;
+        return switch (updateType) {
+            case UPDATE_RECIPE_NAME -> {
                 sql = "UPDATE recipes SET recipe_name = ? WHERE recipe_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, recipe.getRecipeName());
                     stmt.setInt(2, recipe.getRecipeId());
                 });
-            case UPDATE_INGREDIENTS:
+            }
+            case UPDATE_INGREDIENTS -> {
                 sql = "UPDATE recipes SET ingredients = ? WHERE recipe_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, recipe.getIngredients());
                     stmt.setInt(2, recipe.getRecipeId());
                 });
-            case UPDATE_INSTRUCTIONS:
+            }
+            case UPDATE_INSTRUCTIONS -> {
                 sql = "UPDATE recipes SET instructions = ? WHERE recipe_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, recipe.getInstructions());
                     stmt.setInt(2, recipe.getRecipeId());
                 });
-            case UPDATE_ALLERGIES:
+            }
+            case UPDATE_ALLERGIES -> {
                 sql = "UPDATE recipes SET allergies = ? WHERE recipe_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, recipe.getAllergies());
                     stmt.setInt(2, recipe.getRecipeId());
                 });
-            default:
-                return false;
-        }
+            }
+            default -> false;
+        };
     }
 
     public static boolean deleteRecipe(int recipeId, Connection conn) throws SQLException {
         String sql = "DELETE FROM recipes WHERE recipe_id = ?";
-        boolean status = DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, recipeId);
-        });
-        if (!status){
-            System.out.println("Recipe Not Found!");
-        }
-        else {
-            System.out.println("Recipe Deleted Successfully!");
+        boolean status = DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, recipeId));
+        Logger logger = Logger.getLogger(DatabaseService.class.getName());
+        if (!status) {
+            logger.warning("Recipe Not Found!");
+        } else {
+            logger.warning("Recipe Deleted Successfully!");
         }
 
         return status;
     }
 
-    public static boolean resetIdCounter(Connection conn) throws SQLException {
+    public static void resetIdCounter(Connection conn) throws SQLException {
         String sql = "ALTER TABLE recipes AUTO_INCREMENT = 1;";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {});
-    }
-
-    public  boolean setId(int id, Connection conn) throws SQLException {
-        int oldId = this.recipeId;
-        this.recipeId = id;
-        String sql = "UPDATE recipes SET recipe_id = ? WHERE recipe_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, id);
-            stmt.setInt(2, oldId);
+        DatabaseService.executeUpdate(sql, conn, stmt -> {
         });
     }
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'recipes';";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "sweetmanagementsystem");
@@ -206,29 +205,16 @@ public class Recipe {
     }
 
     public static List<Recipe> getRecipesByUserEmail(String userEmail, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM recipes WHERE user_email = ?";
+        String sql = "SELECT " + "* FROM recipes WHERE user_email = ?";
         List<Recipe> recipes = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userEmail);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Recipe recipe = new Recipe(
-                            rs.getInt("recipe_id"),
-                            rs.getString("user_email"),
-                            rs.getString("recipe_name"),
-                            rs.getString("ingredients"),
-                            rs.getString("instructions"),
-                            rs.getTimestamp("created_at"),
-                            rs.getString("allergies")
-                    );
-                    recipes.add(recipe);
-                }
-            }
+            getRecipeResultSet(recipes, stmt);
         }
         return recipes;
     }
@@ -244,91 +230,64 @@ public class Recipe {
 
 
     public static List<Recipe> searchRecipesByName(String text, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM recipes WHERE recipe_name LIKE ?";
-        List<Recipe> recipes = new ArrayList<>();
-
-        if (conn == null) {
-            throw new SQLException("No connection");
-        }
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + text + "%"); // Using the LIKE pattern for partial matches
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Recipe recipe = new Recipe(
-                            rs.getInt("recipe_id"),
-                            rs.getString("user_email"),
-                            rs.getString("recipe_name"),
-                            rs.getString("ingredients"),
-                            rs.getString("instructions"),
-                            rs.getTimestamp("created_at"),
-                            rs.getString("allergies")
-                    );
-                    recipes.add(recipe);
-                }
-            }
-        }
-        if (recipes.isEmpty()){
-            System.out.println("No recipes found!");
+        String sql = "SELECT" + " * FROM recipes WHERE recipe_name LIKE ?";
+        List<Recipe> recipes = getRecipesList(text, conn, sql);
+        if (recipes.isEmpty()) {
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("RECIPES NOT FOUND!");
         }
         return recipes;
     }
 
     public static List<Recipe> getRecipesWithoutAllergies(String allergy, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM recipes WHERE allergies NOT LIKE ?";
+        String sql = "SELECT *" + " FROM recipes WHERE allergies NOT LIKE ?";
+        return getRecipesList(allergy, conn, sql);
+    }
+
+    private static List<Recipe> getRecipesList(String allergy, Connection conn, String sql) throws SQLException {
         List<Recipe> recipes = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + allergy + "%"); // Using the NOT LIKE pattern to exclude recipes with the specified allergy
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Recipe recipe = new Recipe(
-                            rs.getInt("recipe_id"),
-                            rs.getString("user_email"),
-                            rs.getString("recipe_name"),
-                            rs.getString("ingredients"),
-                            rs.getString("instructions"),
-                            rs.getTimestamp("created_at"),
-                            rs.getString("allergies")
-                    );
-                    recipes.add(recipe);
-                }
-            }
+            getRecipeResultSet(recipes, stmt);
         }
         return recipes;
+    }
+
+    private static void getRecipeResultSet(List<Recipe> recipes, PreparedStatement stmt) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Recipe recipe = new Recipe(
+                        rs.getInt(RECIPE_ID),
+                        rs.getString(USER_EMAIL),
+                        rs.getString(RECIPE_NAME),
+                        rs.getString(INGREDIENTS_COL),
+                        rs.getString(INSTRUCTIONS_COL),
+                        rs.getTimestamp(CREATED_AT),
+                        rs.getString(ALLERGIES_COL)
+                );
+                recipes.add(recipe);
+            }
+        }
     }
 
     public static List<Recipe> getAllRecipes(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM recipes";
+        String sql = "SELECT *" + " FROM recipes";
         List<Recipe> recipes = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Recipe recipe = new Recipe(
-                            rs.getInt("recipe_id"),
-                            rs.getString("user_email"),
-                            rs.getString("recipe_name"),
-                            rs.getString("ingredients"),
-                            rs.getString("instructions"),
-                            rs.getTimestamp("created_at"),
-                            rs.getString("allergies")
-                    );
-                    recipes.add(recipe);
-                }
-            }
+            getRecipeResultSet(recipes, stmt);
         }
         return recipes;
     }
-
 
 
 }

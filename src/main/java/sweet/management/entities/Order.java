@@ -1,11 +1,20 @@
 package sweet.management.entities;
 
 import sweet.management.services.DatabaseService;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Order {
+    private static final String NO_CONNECTION = "connection";
+    private static final String ORDER_ID = "order_id";
+    private static final String USER_EMAIL = "user_email";
+    private static final String STORE_ID = "store_id";
+    private static final String ORDER_STATUS = "order_status";
+    private static final String TOTAL_AMOUNT = "total_amount";
+    private static final String CREATED_AT = "created_at";
     private int orderId;
     private final String userEmail;
     private final int storeId;
@@ -31,7 +40,8 @@ public class Order {
         try {
             this.orderId = nextId(DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to connect to database");
         }
         this.userEmail = userEmail;
         this.storeId = storeId;
@@ -89,9 +99,9 @@ public class Order {
 
 
     public static Order getOrderById(int orderId, Connection conn) throws SQLException {
-        String sql = "SELECT *" +" FROM orders WHERE order_id = ?";
+        String sql = "SELECT *" + " FROM orders WHERE order_id = ?";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -99,12 +109,12 @@ public class Order {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Order(
-                            rs.getInt("order_id"),
-                            rs.getString("user_email"),
-                            rs.getInt("store_id"),
-                            rs.getString("order_status"),
-                            rs.getDouble("total_amount"),
-                            rs.getTimestamp("created_at")
+                            rs.getInt(ORDER_ID),
+                            rs.getString(USER_EMAIL),
+                            rs.getInt(STORE_ID),
+                            rs.getString(ORDER_STATUS),
+                            rs.getDouble(TOTAL_AMOUNT),
+                            rs.getTimestamp(CREATED_AT)
                     );
                 }
             }
@@ -113,36 +123,34 @@ public class Order {
     }
 
     public static boolean updateOrder(Order order, Connection conn, int updateType) throws SQLException {
-        String sql = null;
-        switch (updateType) {
-            case DELETE_ORDER:
+        String sql;
+        return switch (updateType) {
+            case DELETE_ORDER -> {
                 sql = "DELETE FROM orders WHERE order_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
-                    stmt.setInt(1, order.getOrderId());
-                });
-
-            case UPDATE_STATUS:
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, order.getOrderId()));
+            }
+            case UPDATE_STATUS -> {
                 sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, order.getOrderStatus());
                     stmt.setInt(2, order.getOrderId());
                 });
-            case UPDATE_TOTAL_AMOUNT:
+            }
+            case UPDATE_TOTAL_AMOUNT -> {
                 sql = "UPDATE orders SET total_amount = ? WHERE order_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setDouble(1, order.getTotalAmount());
                     stmt.setInt(2, order.getOrderId());
                 });
-
-            default:
-                return false;
-        }
+            }
+            default -> false;
+        };
     }
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT COALESCE(MAX(order_id), 0) + 1 AS next_id FROM orders";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException("No " + NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -156,55 +164,47 @@ public class Order {
 
 
     public static List<Order> getOrdersByStoreId(int storeId, Connection conn) throws SQLException {
-        String sql = "SELECT *" +" FROM orders WHERE store_id = ?";
+        String sql = "SELECT *" + " FROM orders WHERE store_id = ?";
         List<Order> orders = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException("No " + NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, storeId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Order order = new Order(
-                            rs.getInt("order_id"),
-                            rs.getString("user_email"),
-                            rs.getInt("store_id"),
-                            rs.getString("order_status"),
-                            rs.getDouble("total_amount"),
-                            rs.getTimestamp("created_at")
-                    );
-                    orders.add(order);
-                }
-            }
+            getOrdersResultSet(orders, stmt);
         }
         return orders;
     }
 
+    private static void getOrdersResultSet(List<Order> orders, PreparedStatement stmt) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Order order = new Order(
+                        rs.getInt(ORDER_ID),
+                        rs.getString(USER_EMAIL),
+                        rs.getInt(STORE_ID),
+                        rs.getString(ORDER_STATUS),
+                        rs.getDouble(TOTAL_AMOUNT),
+                        rs.getTimestamp(CREATED_AT)
+                );
+                orders.add(order);
+            }
+        }
+    }
+
     public static List<Order> getOrdersByUserEmail(String userEmail, Connection conn) throws SQLException {
-        String sql = "SELECT *" +" FROM orders WHERE user_email = ?";
+        String sql = "SELECT *" + " FROM orders WHERE user_email = ?";
         List<Order> orders = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException("No " + NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userEmail);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Order order = new Order(
-                            rs.getInt("order_id"),
-                            rs.getString("user_email"),
-                            rs.getInt("store_id"),
-                            rs.getString("order_status"),
-                            rs.getDouble("total_amount"),
-                            rs.getTimestamp("created_at")
-                    );
-                    orders.add(order);
-                }
-            }
+            getOrdersResultSet(orders, stmt);
         }
         return orders;
     }

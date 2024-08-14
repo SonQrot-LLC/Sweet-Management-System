@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class UserProfile {
 
@@ -31,9 +32,6 @@ public class UserProfile {
         this.address = address;
     }
 
-//    public UserProfile(String email) {
-//        this.email = email;
-//    }
 
     // Getters and Setters
     public String getEmail() {
@@ -72,17 +70,6 @@ public class UserProfile {
         this.address = address;
     }
 
-//    // Override toString method for easier debugging
-//    @Override
-//    public String toString() {
-//        return "UserProfile{" +
-//                "email='" + email + '\'' +
-//                ", firstName='" + firstName + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                ", phone='" + phone + '\'' +
-//                ", address='" + address + '\'' +
-//                '}';
-//    }
 
     // Function to create a new user profile
     public static void createUserProfile(UserProfile userProfile, Connection conn) throws SQLException {
@@ -97,7 +84,7 @@ public class UserProfile {
     }
 
     public static UserProfile getUserProfileByEmail(String email, Connection conn) throws SQLException {
-        String sql = "SELECT *" +" FROM userprofiles WHERE email = ?";
+        String sql = "SELECT *" + " FROM userprofiles WHERE email = ?";
         if (conn == null)
             throw new SQLException("No connection");
 
@@ -157,7 +144,7 @@ public class UserProfile {
     // Main function to call the appropriate update function based on the parameter
     public static boolean updateUserProfile(UserProfile userProfile, Connection conn, int updateType, UserAuthService userAuthService) {
         try {
-            if (conn == null || userProfile == null || userAuthService == null ||  (!userAuthService.getLoggedInUser().isAdmin() && userAuthService.getLoggedInUserProfile() != null && !userProfile.getEmail().equals(userAuthService.getLoggedInUserProfile().getEmail()) ) ) {
+            if (conn == null || userProfile == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && userAuthService.getLoggedInUserProfile() != null && !userProfile.getEmail().equals(userAuthService.getLoggedInUserProfile().getEmail()))) {
                 throw new SQLException("No connection or unauthorized user");
             }
             switch (updateType) {
@@ -173,7 +160,8 @@ public class UserProfile {
                     return false;
             }
         } catch (SQLException e) {
-            System.out.println("Error updating user profile: " + e.getMessage());
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to update user profile");
             return false;
         }
     }

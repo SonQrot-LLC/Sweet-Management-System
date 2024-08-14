@@ -5,8 +5,19 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Product {
+    private static final String PRODUCT_ID = "product_id";
+    private static final String PRODUCT_NAME = "product_name";
+    private static final String DESCRIPTION_COL = "description";
+    private static final String PRICE_COL = "price";
+    private static final String STOCK_COL = "stock";
+    private static final String DISCOUNT_COL = "discount";
+    private static final String CREATED_AT = "created_at";
+    private static final String STORE_ID = "store_id";
+    private static final String EXPIRY_DATE = "expiry_date";
+    private static final String NO_CONNECTION = "No connection";
     private int productId;
     private String productName;
     private String description;
@@ -41,7 +52,8 @@ public class Product {
         try {
             this.productId = nextId(DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to connect to database");
         }
         this.productName = productName;
         this.description = description;
@@ -120,9 +132,9 @@ public class Product {
     }
 
     // Static Methods for Database Operations
-    public static boolean createProduct(Product product, Connection conn) throws SQLException {
+    public static void createProduct(Product product, Connection conn) throws SQLException {
         String sql = "INSERT INTO products (product_id,product_name, description, price, stock, discount, store_id, expiry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
+        DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setInt(1, product.getProductId());
             stmt.setString(2, product.getProductName());
             stmt.setString(3, product.getDescription());
@@ -135,7 +147,7 @@ public class Product {
     }
 
     public static Product getProductById(int productId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products WHERE product_id = ?";
+        String sql = "SELECT *"+" FROM products WHERE product_id = ?";
         if (conn == null) {
             throw new SQLException();
         }
@@ -145,15 +157,15 @@ public class Product {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Product(
-                            rs.getInt("product_id"),
-                            rs.getString("product_name"),
-                            rs.getString("description"),
-                            rs.getDouble("price"),
-                            rs.getInt("stock"),
-                            rs.getDouble("discount"), // Retrieve discount
-                            rs.getTimestamp("created_at"),
-                            rs.getInt("store_id"),
-                            rs.getString("expiry_date")
+                            rs.getInt(PRODUCT_ID),
+                            rs.getString(PRODUCT_NAME),
+                            rs.getString(DESCRIPTION_COL),
+                            rs.getDouble(PRICE_COL),
+                            rs.getInt(STOCK_COL),
+                            rs.getDouble(DISCOUNT_COL), // Retrieve discount
+                            rs.getTimestamp(CREATED_AT),
+                            rs.getInt(STORE_ID),
+                            rs.getString(EXPIRY_DATE)
                     );
                 }
             }
@@ -162,59 +174,63 @@ public class Product {
     }
 
     public static boolean updateProduct(Product product, Connection conn, int updateType) throws SQLException {
-        String sql = null;
-        switch (updateType) {
-            case UPDATE_NAME:
+        String sql;
+        return switch (updateType) {
+            case UPDATE_NAME -> {
                 sql = "UPDATE products SET product_name = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, product.getProductName());
                     stmt.setInt(2, product.getProductId());
                 });
-            case UPDATE_DESCRIPTION:
+            }
+            case UPDATE_DESCRIPTION -> {
                 sql = "UPDATE products SET description = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, product.getDescription());
                     stmt.setInt(2, product.getProductId());
                 });
-            case UPDATE_PRICE:
+            }
+            case UPDATE_PRICE -> {
                 sql = "UPDATE products SET price = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setDouble(1, product.getPrice());
                     stmt.setInt(2, product.getProductId());
                 });
-            case UPDATE_STOCK:
+            }
+            case UPDATE_STOCK -> {
                 sql = "UPDATE products SET stock = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setInt(1, product.getStock());
                     stmt.setInt(2, product.getProductId());
                 });
-            case UPDATE_EXPIRY_DATE:
+            }
+            case UPDATE_EXPIRY_DATE -> {
                 sql = "UPDATE products SET expiry_date = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setString(1, product.getExpiryDate());
                     stmt.setInt(2, product.getProductId());
                 });
-            case UPDATE_DISCOUNT: // New case for updating discount
+            }
+            case UPDATE_DISCOUNT -> {
                 sql = "UPDATE products SET discount = ? WHERE product_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setDouble(1, product.getDiscount());
                     stmt.setInt(2, product.getProductId());
-                });
-            default:
-                return false;
-        }
+                }); // New case for updating discount
+            }
+            default -> false;
+        };
     }
 
     public static boolean deleteProduct(int productId, Connection conn) throws SQLException {
         String sql = "DELETE FROM products WHERE product_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, productId);
-        });
+        return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, productId));
     }
 
-    public static boolean resetIdCounter(Connection conn) throws SQLException {
+    public static void resetIdCounter(Connection conn) throws SQLException {
         String sql = "ALTER TABLE products AUTO_INCREMENT = 1;";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {});
+        DatabaseService.executeUpdate(sql, conn, stmt -> {
+        });
     }
 
     public  void setId(int id){
@@ -224,7 +240,7 @@ public class Product {
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products';";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "sweetmanagementsystem");
@@ -244,7 +260,7 @@ public class Product {
         List<Product> products = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -254,27 +270,29 @@ public class Product {
             stmt.setString(1, email);
             stmt.setDate(2, Date.valueOf(expiryThresholdDate));
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Product product = new Product(
-                            rs.getInt("product_id"),
-                            rs.getString("product_name"),
-                            rs.getString("description"),
-                            rs.getDouble("price"),
-                            rs.getInt("stock"),
-                            rs.getDouble("discount"), // Retrieve discount
-                            rs.getTimestamp("created_at"),
-                            rs.getInt("store_id"),
-                            rs.getString("expiry_date")
-                    );
-                    products.add(product);
-                }
-            }
+            getProductResultSet(products, stmt);
         }
         return products;
     }
 
-
+    private static void getProductResultSet(List<Product> products, PreparedStatement stmt) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt(PRODUCT_ID),
+                        rs.getString(PRODUCT_NAME),
+                        rs.getString(DESCRIPTION_COL),
+                        rs.getDouble(PRICE_COL),
+                        rs.getInt(STOCK_COL),
+                        rs.getDouble(DISCOUNT_COL), // Retrieve discount
+                        rs.getTimestamp(CREATED_AT),
+                        rs.getInt(STORE_ID),
+                        rs.getString(EXPIRY_DATE)
+                );
+                products.add(product);
+            }
+        }
+    }
 
 
     public static List<Product> getProductsByUserEmail(String email, Connection conn) throws SQLException {
@@ -284,35 +302,20 @@ public class Product {
         List<Product> products = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Product product = new Product(
-                            rs.getInt("product_id"),
-                            rs.getString("product_name"),
-                            rs.getString("description"),
-                            rs.getDouble("price"),
-                            rs.getInt("stock"),
-                            rs.getDouble("discount"),
-                            rs.getTimestamp("created_at"),
-                            rs.getInt("store_id"),
-                            rs.getString("expiry_date")
-                    );
-                    products.add(product);
-                }
-            }
+            getProductResultSet(products, stmt);
         }
         return products;
     }
     public static List<Product> getAllProducts(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products";
+        String sql = "SELECT *"+" FROM products";
         List<Product> products = new ArrayList<>();
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             returnProductsList(stmt, products);
@@ -322,10 +325,10 @@ public class Product {
 
 
     public static List<Product> getProductsByStoreId(int storeId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM products WHERE store_id = ?";
+        String sql = "SELECT "+"*FROM products WHERE store_id = ?";
         List<Product> products = new ArrayList<>();
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, storeId); // Set the store ID in the SQL query
@@ -335,22 +338,7 @@ public class Product {
     }
 
     private static void returnProductsList(PreparedStatement stmt, List<Product> products) throws SQLException {
-        try (ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Product product = new Product(
-                        rs.getInt("product_id"),
-                        rs.getString("product_name"),
-                        rs.getString("description"),
-                        rs.getDouble("price"),
-                        rs.getInt("stock"),
-                        rs.getDouble("discount"),
-                        rs.getTimestamp("created_at"),
-                        rs.getInt("store_id"),
-                        rs.getString("expiry_date")
-                );
-                products.add(product);
-            }
-        }
+        getProductResultSet(products, stmt);
     }
 
     public static List<Product> searchProducts(String searchTerm, Connection conn) throws SQLException {
@@ -359,7 +347,7 @@ public class Product {
         List<Product> products = new ArrayList<>();
 
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         // Prepare the search term for the SQL query
@@ -369,22 +357,7 @@ public class Product {
             stmt.setString(1, formattedSearchTerm);
             stmt.setString(2, formattedSearchTerm);
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Product product = new Product(
-                            rs.getInt("product_id"),
-                            rs.getString("product_name"),
-                            rs.getString("description"),
-                            rs.getDouble("price"),
-                            rs.getInt("stock"),
-                            rs.getDouble("discount"),
-                            rs.getTimestamp("created_at"),
-                            rs.getInt("store_id"),
-                            rs.getString("expiry_date")
-                    );
-                    products.add(product);
-                }
-            }
+            getProductResultSet(products, stmt);
         }
         return products;
     }

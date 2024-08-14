@@ -1,12 +1,13 @@
 package sweet.management.entities;
 
 import sweet.management.services.DatabaseService;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Feedback {
-    // Constants for query types
     public static final String QUERY_BY_EMAIL = "email";
     public static final String QUERY_BY_STORE = "store";
     public static final String QUERY_BY_PRODUCT = "product";
@@ -18,7 +19,7 @@ public class Feedback {
     private final String comment;
     private final Timestamp createdAt;
 
-    // Constructor
+
     public Feedback(int feedbackId, String userEmail, int productId, int rating, String comment, Timestamp createdAt) {
         this.feedbackId = feedbackId;
         this.userEmail = userEmail;
@@ -31,7 +32,10 @@ public class Feedback {
     public Feedback(String userEmail, int productId, int rating, String comment) {
         try {
             this.feedbackId = nextId(DatabaseService.getConnection(true));
-        } catch (SQLException e) {e.printStackTrace();}
+        } catch (SQLException e) {
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("something went wrong when trying to connect to database");
+        }
         this.userEmail = userEmail;
         this.productId = productId;
         this.rating = rating;
@@ -39,7 +43,6 @@ public class Feedback {
         this.createdAt = new Timestamp(System.currentTimeMillis());
     }
 
-    // Getters
     public int getFeedbackId() {
         return feedbackId;
     }
@@ -64,7 +67,6 @@ public class Feedback {
         return createdAt;
     }
 
-    // Static Methods for Database Operations
     public static boolean createFeedback(Feedback feedback, Connection conn) throws SQLException {
         String sql = "INSERT INTO feedback (feedback_id, user_email, product_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         return DatabaseService.executeUpdate(sql, conn, stmt -> {
@@ -79,45 +81,45 @@ public class Feedback {
 
     public static boolean deleteFeedback(int feedbackId, Connection conn) throws SQLException {
         String sql = "DELETE FROM feedback WHERE feedback_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, feedbackId);
-        });
+        return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, feedbackId));
     }
 
     public static List<Feedback> getFeedback(String queryType, String queryValue, Connection conn) throws SQLException {
-        String sql = "";
-        switch (queryType) {
-            case QUERY_BY_EMAIL:
-                sql = "SELECT * FROM feedback WHERE user_email = ?";
-                break;
-            case QUERY_BY_STORE:
+        String sql;
+        if (!queryType.equals(QUERY_BY_EMAIL)) {
+            if (queryType.equals(QUERY_BY_STORE)) {
                 sql = "SELECT f.* FROM feedback f JOIN products p ON f.product_id = p.product_id WHERE p.store_id = ?";
-                break;
-            case QUERY_BY_PRODUCT:
+            } else if (queryType.equals(QUERY_BY_PRODUCT)) {
                 sql = "SELECT * FROM feedback WHERE product_id = ?";
-                break;
-            default:
+            } else {
                 throw new IllegalArgumentException("Invalid query type: " + queryType);
+            }
+        } else {
+            sql = "SELECT * FROM feedback WHERE user_email = ?";
         }
 
         List<Feedback> feedbackList = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, queryValue);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Feedback feedback = new Feedback(
-                            rs.getInt("feedback_id"),
-                            rs.getString("user_email"),
-                            rs.getInt("product_id"),
-                            rs.getInt("rating"),
-                            rs.getString("comment"),
-                            rs.getTimestamp("created_at")
-                    );
-                    feedbackList.add(feedback);
-                }
-            }
+            feedbackGetResults(feedbackList, stmt);
         }
         return feedbackList;
+    }
+
+    private static void feedbackGetResults(List<Feedback> feedbackList, PreparedStatement stmt) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Feedback feedback = new Feedback(
+                        rs.getInt("feedback_id"),
+                        rs.getString("user_email"),
+                        rs.getInt("product_id"),
+                        rs.getInt("rating"),
+                        rs.getString("comment"),
+                        rs.getTimestamp("created_at")
+                );
+                feedbackList.add(feedback);
+            }
+        }
     }
 
     public static int nextId(Connection conn) throws SQLException {
@@ -134,7 +136,7 @@ public class Feedback {
     }
 
     public static List<Feedback> getAllFeedbacks(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM feedback";
+        String sql = "SELECT * " + " FROM feedback";
         List<Feedback> feedbackList = new ArrayList<>();
 
         if (conn == null) {
@@ -142,19 +144,7 @@ public class Feedback {
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Feedback feedback = new Feedback(
-                            rs.getInt("feedback_id"),
-                            rs.getString("user_email"),
-                            rs.getInt("product_id"),
-                            rs.getInt("rating"),
-                            rs.getString("comment"),
-                            rs.getTimestamp("created_at")
-                    );
-                    feedbackList.add(feedback);
-                }
-            }
+            feedbackGetResults(feedbackList, stmt);
         }
         return feedbackList;
     }

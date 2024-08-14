@@ -9,10 +9,12 @@ import java.util.List;
 
 public class ViewService {
 
+    private static final String DATABASE_CONNECTION_IS_NULL = "Database connection is null";
+
     // Retrieve best-selling products
     public List<Product> getBestSellingProducts(Connection conn) throws SQLException {
         if (conn == null) {
-            throw new SQLException("Database connection is null");
+            throw new SQLException(DATABASE_CONNECTION_IS_NULL);
         }
 
         List<Product> bestSellingProducts = new ArrayList<>();
@@ -33,7 +35,7 @@ public class ViewService {
     // Retrieve store profits
     public List<StoreProfit> getStoreProfits(Connection conn) throws SQLException {
         if (conn == null) {
-            throw new SQLException("Database connection is null");
+            throw new SQLException(DATABASE_CONNECTION_IS_NULL);
         }
 
         List<StoreProfit> storeProfits = new ArrayList<>();
@@ -53,7 +55,7 @@ public class ViewService {
     // Retrieve users by city
     public List<UserByCity> getUsersByCity(Connection conn) throws SQLException {
         if (conn == null) {
-            throw new SQLException("Database connection is null");
+            throw new SQLException(DATABASE_CONNECTION_IS_NULL);
         }
 
         List<UserByCity> usersByCity = new ArrayList<>();

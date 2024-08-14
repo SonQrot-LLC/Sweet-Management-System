@@ -5,6 +5,7 @@ import sweet.management.services.DatabaseService;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class OrderItem {
     private int orderItemId;
@@ -29,7 +30,8 @@ public class OrderItem {
         try (Connection conn = DatabaseService.getConnection(true)) {
             this.orderItemId = nextId(conn);
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to connect to database");
         }
         this.orderId = orderId;
         this.productId = productId;
@@ -80,34 +82,33 @@ public class OrderItem {
     }
 
     public static boolean updateOrderItem(OrderItem orderItem, Connection conn, int updateType) throws SQLException {
-        String sql = null;
-        switch (updateType) {
-            case UPDATE_QUANTITY:
+        String sql;
+        return switch (updateType) {
+            case UPDATE_QUANTITY -> {
                 sql = "UPDATE orderitems SET quantity = ? WHERE order_item_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setInt(1, orderItem.getQuantity());
                     stmt.setInt(2, orderItem.getOrderItemId());
                 });
-            case UPDATE_PRICE:
+            }
+            case UPDATE_PRICE -> {
                 sql = "UPDATE orderitems SET price = ? WHERE order_item_id = ?";
-                return DatabaseService.executeUpdate(sql, conn, stmt -> {
+                yield DatabaseService.executeUpdate(sql, conn, stmt -> {
                     stmt.setDouble(1, orderItem.getPrice());
                     stmt.setInt(2, orderItem.getOrderItemId());
                 });
-            default:
-                return false;
-        }
+            }
+            default -> false;
+        };
     }
 
     public static boolean deleteOrderItem(int orderItemId, Connection conn) throws SQLException {
         String sql = "DELETE FROM orderitems WHERE order_item_id = ?";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
-            stmt.setInt(1, orderItemId);
-        });
+        return DatabaseService.executeUpdate(sql, conn, stmt -> stmt.setInt(1, orderItemId));
     }
 
     public static List<OrderItem> getOrderItemsByOrder(int orderId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM orderitems WHERE order_id = ?";
+        String sql = "SELECT" + " * FROM orderitems WHERE order_id = ?";
         List<OrderItem> orderItems = new ArrayList<>();
 
         if (conn == null) {
@@ -131,6 +132,7 @@ public class OrderItem {
         }
         return orderItems;
     }
+
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT COALESCE(MAX(order_item_id), 0) + 1 AS next_id FROM orderitems";
         if (conn == null) {

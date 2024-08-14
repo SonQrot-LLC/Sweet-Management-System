@@ -2,11 +2,19 @@ package sweet.management.entities;
 
 import sweet.management.UserAuthService;
 import sweet.management.services.DatabaseService;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Store {
+    private static final String NO_CONNECTION = "No connection";
+    private static final String STORE_ID_COL = "store_id";
+    private static final String OWNER_EMAIL_COL = "owner_email";
+    private static final String STORE_NAME_COL = "store_name";
+    private static final String BUSINESS_INFO_COL = "business_info";
+    private static final String CREATED_AT_COL = "created_at";
     private final int storeId;
     private final String ownerEmail;
     private String storeName;
@@ -29,7 +37,7 @@ public class Store {
         try {
             this.storeId = nextId(DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            throw new RuntimeException("Error generating next store ID", e);
+            throw new RuntimeException("Something went wrong when trying to connect to database");
         }
         this.ownerEmail = ownerEmail;
         this.storeName = storeName;
@@ -67,9 +75,9 @@ public class Store {
     }
 
     // Additional Methods
-    public static boolean createStore(Store store, Connection conn) throws SQLException {
+    public static void createStore(Store store, Connection conn) throws SQLException {
         String sql = "INSERT INTO stores (store_id, owner_email, store_name, business_info, created_at) VALUES (?, ?, ?, ?, ?)";
-        return DatabaseService.executeUpdate(sql, conn, stmt -> {
+        DatabaseService.executeUpdate(sql, conn, stmt -> {
             stmt.setInt(1, store.getStoreId()); // Include store_id in the insert
             stmt.setString(2, store.getOwnerEmail());
             stmt.setString(3, store.getStoreName());
@@ -80,9 +88,9 @@ public class Store {
 
 
     public static Store getStoreByOwnerEmail(String ownerEmail, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM stores WHERE owner_email = ?";
+        String sql = "SELECT" + " * FROM stores WHERE owner_email = ?";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -90,11 +98,11 @@ public class Store {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Store(
-                            rs.getInt("store_id"),
-                            rs.getString("owner_email"),
-                            rs.getString("store_name"),
-                            rs.getString("business_info"),
-                            rs.getTimestamp("created_at")
+                            rs.getInt(STORE_ID_COL),
+                            rs.getString(OWNER_EMAIL_COL),
+                            rs.getString(STORE_NAME_COL),
+                            rs.getString(BUSINESS_INFO_COL),
+                            rs.getTimestamp(CREATED_AT_COL)
                     );
                 }
             }
@@ -123,18 +131,15 @@ public class Store {
             if (conn == null || store == null || userAuthService == null || (!userAuthService.getLoggedInUser().isAdmin() && !store.getOwnerEmail().equals(userAuthService.getLoggedInUser().getEmail()))) {
                 throw new SQLException("No connection or unauthorized user");
             }
-            switch (updateType) {
-                case UPDATE_STORE_NAME:
-                    return updateStoreName(store, conn);
-                case UPDATE_BUSINESS_INFO:
-                    return updateBusinessInfo(store, conn);
-                case DELETE_STORE:
-                    return deleteStore(store.getStoreId(), conn);
-                default:
-                    return false;
-            }
+            return switch (updateType) {
+                case UPDATE_STORE_NAME -> updateStoreName(store, conn);
+                case UPDATE_BUSINESS_INFO -> updateBusinessInfo(store, conn);
+                case DELETE_STORE -> deleteStore(store.getStoreId(), conn);
+                default -> false;
+            };
         } catch (SQLException e) {
-            System.out.println("Error updating store: " + e.getMessage());
+            Logger logger = Logger.getLogger(DatabaseService.class.getName());
+            logger.warning("Something went wrong when trying to update store");
             return false;
         }
     }
@@ -145,11 +150,10 @@ public class Store {
     }
 
 
-
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT MAX(store_id) AS max_id FROM stores";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -160,10 +164,11 @@ public class Store {
         }
         return 1;
     }
+
     public static Store getStoreById(int storeId, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM stores WHERE store_id = ?";
+        String sql = "SELECT " + "* FROM stores WHERE store_id = ?";
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -171,11 +176,11 @@ public class Store {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Store(
-                            rs.getInt("store_id"),
-                            rs.getString("owner_email"),
-                            rs.getString("store_name"),
-                            rs.getString("business_info"),
-                            rs.getTimestamp("created_at")
+                            rs.getInt(STORE_ID_COL),
+                            rs.getString(OWNER_EMAIL_COL),
+                            rs.getString(STORE_NAME_COL),
+                            rs.getString(BUSINESS_INFO_COL),
+                            rs.getTimestamp(CREATED_AT_COL)
                     );
                 }
             }
@@ -184,20 +189,20 @@ public class Store {
     }
 
     public static List<Store> getAllStores(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM stores";
+        String sql = "SELECT" + " * FROM stores";
         List<Store> stores = new ArrayList<>();
         if (conn == null) {
-            throw new SQLException("No connection");
+            throw new SQLException(NO_CONNECTION);
         }
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 stores.add(new Store(
-                        rs.getInt("store_id"),
-                        rs.getString("owner_email"),
-                        rs.getString("store_name"),
-                        rs.getString("business_info"),
-                        rs.getTimestamp("created_at")
+                        rs.getInt(STORE_ID_COL),
+                        rs.getString(OWNER_EMAIL_COL),
+                        rs.getString(STORE_NAME_COL),
+                        rs.getString(BUSINESS_INFO_COL),
+                        rs.getTimestamp(CREATED_AT_COL)
                 ));
             }
         }
