@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import static sweet.management.services.DatabaseService.getIdValueFromDataBase;
 
 public class Product {
     private static final String PRODUCT_ID = "product_id";
@@ -240,18 +241,7 @@ public class Product {
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products';";
-        if (conn == null) {
-            throw new SQLException(NO_CONNECTION);
-        }
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "sweetmanagementsystem");
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        return 0;
+        return getIdValueFromDataBase(conn, sql);
     }
 
     public static List<Product> getProductsExpiringInLessThan120Days(String email, Connection conn) throws SQLException {

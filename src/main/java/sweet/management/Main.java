@@ -290,7 +290,7 @@ public class Main {
 
     private static void browseRecipesScreen() {
         try {
-            displayRecipesTable(Main.GET_ALL);
+            displayRecipesTable();
             logger.info("Enter any value to return back to the main menu");
             scanner.nextLine();
         } catch (SQLException e) {
@@ -298,15 +298,9 @@ public class Main {
         }
     }
 
-    private static void displayRecipesTable(Integer recipeKey) throws SQLException {
+    private static void displayRecipesTable() throws SQLException {
         List<Recipe> recipes;
-        if (recipeKey == GET_ALL) {
-            recipes = Recipe.getAllRecipes(DatabaseService.getConnection(true));
-        }
-        else if (recipeKey == GET_BY_ID) {
-             recipes = Recipe.getRecipesByUserEmail(userAuthService.getLoggedInUser().getEmail(), DatabaseService.getConnection(true));
-        }
-        else throw new SQLException(INVALID_CHOICE_MESSAGE);
+        recipes = Recipe.getAllRecipes(DatabaseService.getConnection(true));
         // Print table headers
         String headerMessage = String.format("%-10s %-50s %-30s %-40s %-30s %-20s",
                 "ID", "User Email", "Recipe Name", "Ingredients", "Instructions", "Allergies");
@@ -476,6 +470,7 @@ public class Main {
 
         try {
             Product tempProduct = Product.getProductById(productID,DatabaseService.getConnection(true));
+            assert tempProduct != null;
             if (!tempProduct.isAvailable() || tempProduct.getStock() < quantity){
                 logger.info("\nthis Product is not available ("+tempProduct.getStock()+" left in the stock)\n");
                 return;
@@ -550,20 +545,22 @@ public class Main {
             logger.info(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
+        if (logger.isLoggable(Level.INFO)) {
+            String headerMessage = String.format("%-10s %-20s %-10s %-30s %-25s",
+                    "ID", "User Email", "Rating", "Comment", "Created At");
+            logger.info(headerMessage);
 
-        // Display feedback table header
-        logger.info(String.format("%-10s %-20s %-10s %-30s %-25s",
-                "ID", "User Email", "Rating", "Comment", "Created At"));
-
-        // Log feedback details
-        for (Feedback feedback : feedbackList) {
-            logger.info(String.format("%-10d %-20s %-10d %-30s %-25s",
-                    feedback.getFeedbackId(),
-                    feedback.getUserEmail(),
-                    feedback.getRating(),
-                    feedback.getComment(),
-                    feedback.getCreatedAt()));
+            for (Feedback feedback : feedbackList) {
+                String feedbackMessage = String.format("%-10d %-20s %-10d %-30s %-25s",
+                        feedback.getFeedbackId(),
+                        feedback.getUserEmail(),
+                        feedback.getRating(),
+                        feedback.getComment(),
+                        feedback.getCreatedAt());
+                logger.info(feedbackMessage);
+            }
         }
+
     }
 
     private static void addFeedback() {
@@ -611,6 +608,11 @@ public class Main {
                 7. Order Management
                 8. Best selling Item
                 9. Log out""");
+        if (storeOwnerAndSupplierOptions()) return;
+        supplierScreen();
+    }
+
+    private static boolean storeOwnerAndSupplierOptions() {
         int choice = scanner.nextInt();
         scanner.nextLine();
         logger.info("\n");
@@ -625,11 +627,11 @@ public class Main {
             case 8 -> bestSellingProduct();
             case 9 -> {
                 logOut();
-                return;
+                return true;
             }
             default -> logger.warning(INVALID_CHOICE_MESSAGE);
         }
-        supplierScreen();
+        return false;
     }
 
     private static void storeOwnerScreen() {
@@ -645,24 +647,7 @@ public class Main {
                 7. Order Management
                 8. Best selling product
                 9. Log out""");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        logger.info("\n");
-        switch (choice) {
-            case 1 -> manageProductsScreen();
-            case 2 -> discountManagementScreen();
-            case 3 -> monitorSalesScreen();
-            case 4 -> storePreferencesScreen();
-            case 5 -> communicationScreen();
-            case 6 -> accountPreferenceScreen();
-            case 7 -> orderManagementScreen();
-            case 8 -> bestSellingProduct();
-            case 9 -> {
-                logOut();
-                return;
-            }
-            default -> logger.warning(INVALID_CHOICE_MESSAGE);
-        }
+        if (storeOwnerAndSupplierOptions()) return;
         storeOwnerScreen();
     }
 
@@ -672,6 +657,7 @@ public class Main {
         String email = userAuthService.getLoggedInStore().getOwnerEmail();
         try {
             Store store = Store.getStoreByOwnerEmail(email,DatabaseService.getConnection(true));
+            assert store != null;
             orders = Order.getOrdersByStoreId(store.getStoreId(),DatabaseService.getConnection(true));
         } catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
@@ -718,6 +704,7 @@ public class Main {
         scanner.nextLine();
         try {
             order = Order.getOrderById(id,DatabaseService.getConnection(true));
+            assert order != null;
             order.setOrderStatus(status);
             Order.updateOrder(order,DatabaseService.getConnection(true),Order.UPDATE_STATUS);
         } catch (SQLException e) {
@@ -742,17 +729,20 @@ public class Main {
                 throw new SQLException();
 
             orderItems = OrderItem.getOrderItemsByOrder(id,DatabaseService.getConnection(true));
-            if(!orderItems.isEmpty())
-                logger.info(String.format("%-25s %-30s %-30s %-20s ",
-                        "Item ID", ITEM_NAME, "Quantity", "Total Amount"));
+            if (logger.isLoggable(Level.INFO) && !orderItems.isEmpty()) {
+                String headerMessage = String.format("%-25s %-30s %-30s %-20s ",
+                        "Item ID", ITEM_NAME, "Quantity", "Total Amount");
+                logger.info(headerMessage);
 
-            for(OrderItem orderItem: orderItems){
-                logger.info(String.format("%-25s %-30s %-30s %-20s ",
-                        orderItem.getProductId(),
-                        Product.getProductById(orderItem.getProductId(),DatabaseService.getConnection(true)).getProductName(),
-                        orderItem.getQuantity(),
-                        orderItem.getPrice()
-                ));
+                for (OrderItem orderItem : orderItems) {
+                    String productName = Objects.requireNonNull(Product.getProductById(orderItem.getProductId(), DatabaseService.getConnection(true))).getProductName();
+                    String orderItemMessage = String.format("%-25s %-30s %-30s %-20s ",
+                            orderItem.getProductId(),
+                            productName,
+                            orderItem.getQuantity(),
+                            orderItem.getPrice());
+                    logger.info(orderItemMessage);
+                }
             }
             logger.info("\n");
 
@@ -769,17 +759,23 @@ public class Main {
         List<ViewService.Product> products;
         try {
             products = service.getBestSellingProducts(DatabaseService.getConnection(true));
-            if (!products.isEmpty()) {
-                logger.info(String.format("%-25s %-30s %-25s %-20s ",
-                        "ID", ITEM_NAME, STORE_NAME, "Quantity Sold"));
-                for (ViewService.Product  product: products) {
-                    if(Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getOwnerEmail().equals(email))
-                        logger.info(String.format("%-25s %-30s %-25s %-20s",
+            if (logger.isLoggable(Level.INFO) && !products.isEmpty()) {
+                String headerMessage = String.format("%-26s %-30s %-25s %-20s ",
+                        "ID", ITEM_NAME, STORE_NAME, "Quantity Sold");
+                logger.info(headerMessage);
+
+                for (ViewService.Product product : products) {
+                    String storeName = Objects.requireNonNull(Store.getStoreById(product.getStoreId(), DatabaseService.getConnection(true))).getStoreName();
+                    String ownerEmail = Objects.requireNonNull(Store.getStoreById(product.getStoreId(), DatabaseService.getConnection(true))).getOwnerEmail();
+
+                    if (ownerEmail.equals(email)) {
+                        String productMessage = String.format("%-26s %-30s %-25s %-20s",
                                 product.getProductId(),
                                 product.getProductName(),
-                                Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getStoreName(),
-                                product.getTotalQuantitySold()
-                        ));
+                                storeName,
+                                product.getTotalQuantitySold());
+                        logger.info(productMessage);
+                    }
                 }
             }
 
@@ -794,19 +790,25 @@ public class Main {
         try {
             String email = userAuthService.getLoggedInUser().getEmail();
             profits = service.getStoreProfits(DatabaseService.getConnection(true));
-        if (!profits.isEmpty()){
-        logger.info(String.format("%-25s %-30s %-20s",
-                STORE_ID,"Name", "Total Profits"));
-            for (ViewService.StoreProfit profit: profits) {
-                if(Store.getStoreById(profit.getStoreId(),DatabaseService.getConnection(true)).getOwnerEmail().equals(email))
-                    logger.info(String.format("%-25s %-30s %-20s",
-                            profit.getStoreId(),
-                            profit.getStoreName(),
-                            profit.getTotalProfit()
-                    ));
+        if (!profits.isEmpty() && logger.isLoggable(Level.INFO)) {
+                String headerMessage = String.format("%-27s %-30s %-20s",
+                        STORE_ID, "Name", "Total Profits");
+                logger.info(headerMessage);
+
+                for (ViewService.StoreProfit profit : profits) {
+                    String storeName = Objects.requireNonNull(Store.getStoreById(profit.getStoreId(), DatabaseService.getConnection(true))).getStoreName();
+                    String ownerEmail = Objects.requireNonNull(Store.getStoreById(profit.getStoreId(), DatabaseService.getConnection(true))).getOwnerEmail();
+
+                    if (ownerEmail.equals(email)) {
+                        String profitMessage = String.format("%-27s %-30s %-20s",
+                                profit.getStoreId(),
+                                storeName,
+                                profit.getTotalProfit());
+                        logger.info(profitMessage);
+                    }
+                }
             }
 
-        }
 
         }
         catch (SQLException e) {
@@ -836,11 +838,11 @@ public class Main {
 
     }
     public static void editAccountPreferences(String email){
-        User user = null;
+        User user;
         int choice;
-        String role = null;
+        String role;
         try {
-            role = User.getUserByEmail(email, DatabaseService.getConnection(true)).getRole();
+            role = Objects.requireNonNull(User.getUserByEmail(email, DatabaseService.getConnection(true))).getRole();
         } catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
@@ -856,7 +858,7 @@ public class Main {
         logger.info("Enter City");
         String city = scanner.nextLine();
         try {
-            if (!User.getUserByEmail(email,DatabaseService.getConnection(true)).isBeneficiaryUser()) {
+            if (!Objects.requireNonNull(User.getUserByEmail(email, DatabaseService.getConnection(true))).isBeneficiaryUser()) {
                 logger.info("""
                         Chose role:
                         1. Store Owner
@@ -873,6 +875,7 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
+        assert user != null;
         user.setPassword(password);
         user.setCity(city);
         user.setRole(role);
@@ -895,6 +898,7 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
+        assert store != null;
         logger.info("Store Name: "+store.getStoreName()+"    Business Information: "+store.getBusinessInfo());
         logger.info("\n");
         logger.info("""
@@ -965,13 +969,18 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-10s %-30s %-10s",
-                "ID", CONTENT, "Date Sent"));
-        for(Message message : messages) {
-            logger.info(String.format("%-10s %-30s %-10s",
-                    message.getMessageId(),
-                    message.getContent(),
-                    message.getCreatedAt()));
+        if (logger.isLoggable(Level.INFO)) {
+            String headerMessage = String.format("%-10s %-30s %-10s",
+                    "ID", CONTENT, "Date Sent");
+            logger.info(headerMessage);
+
+            for (Message message : messages) {
+                String messageDetails = String.format("%-10s %-30s %-10s",
+                        message.getMessageId(),
+                        message.getContent(),
+                        message.getCreatedAt());
+                logger.info(messageDetails);
+            }
         }
     }
 
@@ -983,15 +992,21 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-10s %-25s %-30s %-10s",
-                "ID", "Receiver", CONTENT, "Date Sent"));
-        for(Message message : messages) {
-            logger.info(String.format("%-10s %-25s %-30s %-10s",
-                    message.getMessageId(),
-                    message.getReceiverEmail(),
-                    message.getContent(),
-                    message.getCreatedAt()));
+        if (logger.isLoggable(Level.INFO)) {
+            String headerMessage = String.format("%-12s %-25s %-30s %-10s",
+                    "ID", "Receiver", CONTENT, "Date Sent");
+            logger.info(headerMessage);
+
+            for (Message message : messages) {
+                String messageDetails = String.format("%-12s %-25s %-30s %-10s",
+                        message.getMessageId(),
+                        message.getReceiverEmail(),
+                        message.getContent(),
+                        message.getCreatedAt());
+                logger.info(messageDetails);
+            }
         }
+
     }
 
 
@@ -1003,18 +1018,20 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        if(!messages.isEmpty()) {
-            logger.info(String.format("%-10s %-25s %-30s %-10s",
-                    "ID", "Sender", CONTENT, "Date Received"));
-            for(Message message : messages) {
-                logger.info(String.format("%-10s %-25s %-30s %-10s",
+        if (logger.isLoggable(Level.INFO) && !messages.isEmpty()) {
+            String headerMessage = String.format("%-10s %-25s %-30s %-10s",
+                    "ID", "Sender", CONTENT, "Date Received");
+            logger.info(headerMessage);
+
+            for (Message message : messages) {
+                String messageDetails = String.format("%-10s %-25s %-30s %-10s",
                         message.getMessageId(),
                         message.getSenderEmail(),
                         message.getContent(),
-                        message.getCreatedAt()));
+                        message.getCreatedAt());
+                logger.info(messageDetails);
             }
         }
-
 
         logger.info("""
                 Please enter your choice:
@@ -1040,7 +1057,7 @@ public class Main {
         logger.info("Enter reply");
         String reply = scanner.nextLine();
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail(),Message.getMessageById(DatabaseService.getConnection(true),id).getSenderEmail(),reply);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),userAuthService.getLoggedInUser().getEmail(), Objects.requireNonNull(Message.getMessageById(DatabaseService.getConnection(true), id)).getSenderEmail(),reply);
         } catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
@@ -1055,7 +1072,7 @@ public class Main {
         logger.info("Enter message to send");
         String message = scanner.nextLine();
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail(),recipient,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),userAuthService.getLoggedInUser().getEmail(),recipient,message);
         } catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
@@ -1071,17 +1088,23 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
-                "ID", "Name", PRICE, STOCK, EXPIRY_DATE, DISCOUNT));
-        for (Product product : products) {
-            logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
-                    product.getProductId(),
-                    product.getProductName(),
-                    product.getPrice() + "$",
-                    product.getStock(),
-                    product.getExpiryDate(),
-                    product.getDiscount()));
+        if (logger.isLoggable(Level.INFO)) {
+            String headerMessage = String.format("%-11s %-15s %-10s %-10s %-25s %-10s",
+                    "ID", "Name", PRICE, STOCK, EXPIRY_DATE, DISCOUNT);
+            logger.info(headerMessage);
+
+            for (Product product : products) {
+                String productDetails = String.format("%-11s %-15s %-10s %-10s %-25s %-10s",
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getPrice() + "$",
+                        product.getStock(),
+                        product.getExpiryDate(),
+                        product.getDiscount());
+                logger.info(productDetails);
+            }
         }
+
         logger.info("""
                 Please enter your choice:
                 1. Edit discount value
@@ -1109,16 +1132,19 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
-                "ID", "Name", PRICE, STOCK, EXPIRY_DATE, DISCOUNT));
-        for (Product product : products) {
+        if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
-                    product.getProductId(),
-                    product.getProductName(),
-                    product.getPrice() + "$",
-                    product.getStock(),
-                    product.getExpiryDate(),
-                    product.getDiscount()));
+                    "ID", "Name", PRICE, STOCK, EXPIRY_DATE, DISCOUNT));
+
+            for (Product product : products) {
+                logger.info(String.format("%-10s %-15s %-10s %-10s %-25s %-10s",
+                        product.getProductId(),
+                        product.getProductName(),
+                        product.getPrice() + "$",
+                        product.getStock(),
+                        product.getExpiryDate(),
+                        product.getDiscount()));
+            }
         }
 
         editDiscountScreen();
@@ -1136,6 +1162,7 @@ public class Main {
             product = Product.getProductById(productID,DatabaseService.getConnection(true));
             logger.info("Enter discount value: ");
             String discount = scanner.nextLine();
+            assert product != null;
             product.setDiscount(Double.parseDouble(discount));
             updated = Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_DISCOUNT);
     }
@@ -1159,21 +1186,22 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        if(!products.isEmpty()) {
-            logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s",
-                    "ID", "Name", "Description", PRICE, STOCK, "Date added", EXPIRY_DATE, DISCOUNT));
-            for (Product product : products) {
+        if(!products.isEmpty() && logger.isLoggable(Level.INFO)) {
                 logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s",
-                        product.getProductId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        product.getPrice() + "$",
-                        product.getStock(),
-                        product.getCreatedAt(),
-                        product.getExpiryDate(),
-                        product.getDiscount()));
+                        "ID", "Name", "Description", PRICE, STOCK, "Date added", EXPIRY_DATE, DISCOUNT));
+
+                for (Product product : products) {
+                    logger.info(String.format("%-10s %-15s %-20s %-10s %-10s %-25s %-25s %-10s",
+                            product.getProductId(),
+                            product.getProductName(),
+                            product.getDescription(),
+                            product.getPrice() + "$",
+                            product.getStock(),
+                            product.getCreatedAt(),
+                            product.getExpiryDate(),
+                            product.getDiscount()));
+                }
             }
-        }
 
 
         if(userAuthService.getLoggedInUser().isStoreOwner()) {
@@ -1218,7 +1246,7 @@ public class Main {
         logger.info("Enter expiry date: ");
         String expiryDate = scanner.nextLine();
         try {
-            storeID = Store.getStoreByOwnerEmail(userAuthService.getLoggedInUser().getEmail(),DatabaseService.getConnection(true)).getStoreId();
+            storeID = Objects.requireNonNull(Store.getStoreByOwnerEmail(userAuthService.getLoggedInUser().getEmail(), DatabaseService.getConnection(true))).getStoreId();
         } catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
@@ -1262,6 +1290,7 @@ public class Main {
          product = Product.getProductById(productID,DatabaseService.getConnection(true));
         logger.info("Enter name: ");
         String name = scanner.nextLine();
+        assert product != null;
         product.setProductName(name);
         Product.updateProduct(product,DatabaseService.getConnection(true),Product.UPDATE_NAME);
         logger.info("Enter description: ");
@@ -1398,20 +1427,23 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-25s %-30s %-20s",
-                STORE_ID, STORE_NAME, "Total Profits"));
-        for (ViewService.StoreProfit profit: profits) {
+        if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("%-25s %-30s %-20s",
-                    profit.getStoreId(),
-                    profit.getStoreName(),
-                    profit.getTotalProfit()
-            ));
+                    STORE_ID, STORE_NAME, "Total Profits"));
+
+            for (ViewService.StoreProfit profit : profits) {
+                logger.info(String.format("%-25s %-30s %-20s",
+                        profit.getStoreId(),
+                        profit.getStoreName(),
+                        profit.getTotalProfit()));
+            }
         }
+
     }
 
     private static void manageRecipesScreen() {
         try {
-            displayRecipesTable(GET_ALL);
+            displayRecipesTable();
             logger.info("""
                     Please enter your choice:
                     1. Add a Recipe
@@ -1425,7 +1457,10 @@ public class Main {
                 case 1 -> publishRecipesScreen();
                 case 2 -> updateRecipesScreen();
                 case 3 -> deleteRecipesScreen();
-                case 4 -> determineScreenAfterLogin();
+                case 4 -> {
+                    determineScreenAfterLogin();
+                    return;
+                }
                 default -> logger.warning(INVALID_CHOICE_MESSAGE);
             }
         } catch (SQLException e) {
@@ -1439,7 +1474,7 @@ public class Main {
         logger.info("Please enter the id of the Recipe : \n");
         int recipeID = scanner.nextInt();
         scanner.nextLine();
-        Recipe recipe = null;
+        Recipe recipe;
         try{
             recipe = Recipe.getRecipeById(recipeID,DatabaseService.getConnection(true));
             if (recipe==null)
@@ -1464,7 +1499,7 @@ public class Main {
     private static void updateRecipesScreen() {
         logger.info("Please enter the id of the Recipe : \n");
         int recipeID = scanner.nextInt();
-        Recipe recipe = null;
+        Recipe recipe;
         scanner.nextLine();
         try{
             recipe = Recipe.getRecipeById(recipeID,DatabaseService.getConnection(true));
@@ -1510,16 +1545,23 @@ public class Main {
         try {
             products = service.getBestSellingProducts(DatabaseService.getConnection(true));
 
-        logger.info(String.format("%-25s %-30s %-25s %-20s ",
-                "ID", ITEM_NAME, STORE_NAME, "Quantity Sold"));
-        for (ViewService.Product  product: products) {
-            logger.info(String.format("%-25s %-30s %-25s %-20s",
-                    product.getProductId(),
-                    product.getProductName(),
-                    Store.getStoreById(product.getStoreId(),DatabaseService.getConnection(true)).getStoreName(),
-                    product.getTotalQuantitySold()
-                    ));
-        }
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("%-25s %-30s %-25s %-20s",
+                        "ID", ITEM_NAME, STORE_NAME, "Quantity Sold"));
+
+                for (ViewService.Product product : products) {
+                    Store store = Store.getStoreById(product.getStoreId(), DatabaseService.getConnection(true));
+                    if (logger.isLoggable(Level.INFO)) {
+                        assert store != null;
+                        logger.info(String.format("%-25s %-30s %-25s %-20s",
+                                product.getProductId(),
+                                product.getProductName(),
+                                store.getStoreName(),
+                                product.getTotalQuantitySold()));
+                    }
+                }
+            }
+
         }
         catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
@@ -1535,13 +1577,16 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-25s %-15s %-20s",
-                "Email","Password", "City"));
-        for (User  user: users) {
+        if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("%-25s %-15s %-20s",
-                    user.getEmail(),
-                    user.getPassword(),
-                    user.getCity()));
+                    "Email", "Password", "City"));
+
+            for (User user : users) {
+                logger.info(String.format("%-25s %-15s %-20s",
+                        user.getEmail(),
+                        user.getPassword(),
+                        user.getCity()));
+            }
         }
         logger.info("""
                 Please enter your choice:
@@ -1582,11 +1627,16 @@ public class Main {
             return;
         }
         if(!usersByCity.isEmpty()){
-            logger.info(String.format("%-20s %-15s ",
-                    "City", "User Count"));
-        for(ViewService.UserByCity user : usersByCity){
-            logger.info(String.format("%-20s %-15s ",user.getCityName(), String.valueOf(user.getUserCount())));
-        }
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info(String.format("%-20s %-15s",
+                        "City", "User Count"));
+            }
+            if (logger.isLoggable(Level.INFO)) {
+                for (ViewService.UserByCity user : usersByCity) {
+                    logger.info(String.format("%-20s %-15s",
+                            user.getCityName(), (user.getUserCount())));
+                }
+            }
         }
     }
 
@@ -1598,14 +1648,16 @@ public class Main {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
             return;
         }
-        logger.info(String.format("%-25s %-30s %-15s %-20s",
-                "Email", "Role", "Password", "City"));
-        for (User  user: users) {
+        if (logger.isLoggable(Level.INFO)) {
             logger.info(String.format("%-25s %-30s %-15s %-20s",
-                    user.getEmail(),
-                    user.getRole(),
-                    user.getPassword(),
-                    user.getCity()));
+                    "Email", "Role", "Password", "City"));
+            for (User user : users) {
+                logger.info(String.format("%-25s %-30s %-15s %-20s",
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getPassword(),
+                        user.getCity()));
+            }
         }
         logger.info("""
                 Please enter your choice:

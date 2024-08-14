@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static sweet.management.services.DatabaseService.getIdValueFromDataBase;
+
 public class Recipe {
     private static final String RECIPE_ID = "recipe_id";
     private static final String USER_EMAIL = "user_email";
@@ -190,19 +192,10 @@ public class Recipe {
 
     public static int nextId(Connection conn) throws SQLException {
         String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'recipes';";
-        if (conn == null) {
-            throw new SQLException(NO_CONNECTION);
-        }
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "sweetmanagementsystem");
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        return 0;
+        return getIdValueFromDataBase(conn, sql);
     }
+
+
 
     public static List<Recipe> getRecipesByUserEmail(String userEmail, Connection conn) throws SQLException {
         String sql = "SELECT " + "* FROM recipes WHERE user_email = ?";

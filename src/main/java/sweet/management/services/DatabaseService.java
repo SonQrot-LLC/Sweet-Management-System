@@ -1,6 +1,4 @@
 package sweet.management.services;
-
-
 import java.sql.*;
 
 public class DatabaseService {
@@ -23,6 +21,21 @@ public class DatabaseService {
                 throw new RuntimeException(e);
             }
         return connection;
+
+    }
+    public static int getIdValueFromDataBase(Connection conn, String sql) throws SQLException {
+        if (conn == null) {
+            throw new SQLException("NO_CONNECTION");
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "sweetmanagementsystem");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
     }
 
 
