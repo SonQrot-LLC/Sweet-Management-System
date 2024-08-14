@@ -65,13 +65,36 @@ Feature: AccountManagement
     When I delete a store
     Then Store is deleted
 
+  Scenario:  Store Owner trying to delete the store
+    Given I log in with username "mahmood@outlook.com" and password "777" and i am a store owner
+    When I delete a store and its not connected
+    Then Store is not deleted
+
+
   Scenario:  store Owner trying to update invalid update
     Given I log in with username "mahmood@outlook.com" and password "777" and i am a store owner
     When I chose an invalid store updateType
     Then Update fails
 
+  Scenario: store Owner is trying to  retrieve all stores
+    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a user
+    When I try to retrieve all stores
+    Then All stores should be returned
 
+  Scenario: store Owner is trying to  retrieve all stores
+    Given I log in with username "ahmad123@gmail.com" and password "777" and i am a user
+    When I try to retrieve all stores and the connection is null
+    Then All stores should not be returned
 
+  Scenario: Admin retrieves users with a specific role
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get users with flag 1
+    Then Users with roles 'store_owner', 'raw_material_supplier', and 'beneficiary_user' should be shown
+
+  Scenario: Admin tries to get users but there is no connection
+    Given that the admin is logged in with email "admin@gmail.com" and password "123"
+    When The admin tries to get users with flag 2 but there is no connection
+    Then No users should be shown
 
 
 

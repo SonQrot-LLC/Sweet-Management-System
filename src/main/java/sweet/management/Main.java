@@ -1781,8 +1781,8 @@ public class Main {
                 String storeName = scanner.nextLine();
                 logger.info("Enter Business Info: ");
                 String storeInfo = scanner.nextLine();
-                Store store = new Store(email,storeName,storeInfo);
                 try {
+                    Store store = new Store(email,storeName,storeInfo);
                     Store.createStore(store,DatabaseService.getConnection(true));
                 } catch (SQLException e) {
                     logger.warning(SOMETHING_WENT_WRONG_MESSAGE);

@@ -11,15 +11,21 @@ import sweet.management.services.DatabaseService;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AccountManagementStepDefinition {
     UserAuthService userAuthService;
     UserProfile userp;
     User user;
     Store store;
+    int storeIdToBeDeleted;
+    int storeIdToNotBeDeleted;
+    Store storeObjectFields;
+    List<Store> storesToBeReturned;
+    List<User> usersToBeReturned;
     boolean isUpdated;
 
     public AccountManagementStepDefinition() {
@@ -113,7 +119,7 @@ public class AccountManagementStepDefinition {
             User.createUser(user, DatabaseService.getConnection(true));
             UserProfile.createUserProfile(userp, DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Account is not deleted");
         }
     }
 
@@ -133,6 +139,7 @@ public class AccountManagementStepDefinition {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        assert user != null;
         user.setRole(string);
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_ROLE, userAuthService);
     }
@@ -153,9 +160,11 @@ public class AccountManagementStepDefinition {
     public void iUpdatePasswordTo(String email, String newPassword) {
         try {
             user = User.getUserByEmail(email, DatabaseService.getConnection(true));
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        assert user != null;
         user.setPassword(newPassword);
         isUpdated = false;
     }
@@ -214,6 +223,7 @@ public class AccountManagementStepDefinition {
     @When("I delete a store")
     public void iDeleteAStore() {
         store = userAuthService.getLoggedInStore();
+        storeIdToBeDeleted = store.getStoreId();
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.DELETE_STORE, userAuthService);
     }
 
@@ -221,12 +231,37 @@ public class AccountManagementStepDefinition {
     public void storeIsDeleted() {
         assertTrue(isUpdated);
         try {
+
+            assertNull(Store.getStoreById(storeIdToBeDeleted,DatabaseService.getConnection(true)));
             Store addNewStore = new Store("mahmood@outlook.com","to be deleted", "testing deleting function");
             Store.createStore(addNewStore,DatabaseService.getConnection(true));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            fail("Store Is Deleted Exception");
         }
 
+    }
+
+    @When("I delete a store and its not connected")
+    public void iDeleteAStoreAndItsNotConnected() {
+        store = userAuthService.getLoggedInStore();
+        storeIdToNotBeDeleted = store.getStoreId();
+        isUpdated = Store.updateStore(store,null,Store.DELETE_STORE, userAuthService);
+    }
+    @Then("Store is not deleted")
+    public void storeIsNotDeleted() {
+        assertFalse(isUpdated);
+        try
+        {
+            storeObjectFields = Store.getStoreById(storeIdToNotBeDeleted,DatabaseService.getConnection(true));
+
+
+            assertNull(Store.getStoreById(storeIdToNotBeDeleted,null));
+        }
+        catch (Exception e)
+        {
+            System.err.println("Expected SQLException caught while verifying store deletion: " + e.getMessage());
+            assertTrue(e.getMessage().contains("No connection"));
+        }
     }
 
     @When("I chose an invalid store updateType")
@@ -235,4 +270,90 @@ public class AccountManagementStepDefinition {
         store.setStoreName("test");
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),10, userAuthService);
     }
+
+    @Given("I log in with username {string} and password {string} and i am a user")
+    public void iLogInWithUsernameAndPasswordAndIAmAUser(String email, String password) {
+        userAuthService.login(email, password, DatabaseService.getConnection(true));
+        assertTrue(userAuthService.isLoggedIn());
+        assertTrue(userAuthService.getLoggedInUser().isBeneficiaryUser());
+        isUpdated = false;
+
+    }
+
+    @When("I try to retrieve all stores")
+    public void iTryToRetrieveAllStores() {
+        try {
+
+            storesToBeReturned = Store.getAllStores(DatabaseService.getConnection(true));
+        }
+        catch (Exception e)
+        {
+            fail("Stores are Not Retrieved Exception");
+            storesToBeReturned = Collections.emptyList();
+
+        }
+
+    }
+
+    @Then("All stores should be returned")
+    public void allStoresShouldBeReturned()
+    {
+        isUpdated = storesToBeReturned != null && !storesToBeReturned.isEmpty();
+        assertTrue(isUpdated);
+    }
+
+    @When("I try to retrieve all stores and the connection is null")
+    public void iTryToRetrieveAllStoresAndTheConnectionIsNull() {
+        try {
+
+            storesToBeReturned = Store.getAllStores(null);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Expected SQLException caught: " + e.getMessage());
+            assertTrue(e.getMessage().contains("No connection"));
+            storesToBeReturned = Collections.emptyList();
+        }
+
+    }
+
+    @Then("All stores should not be returned")
+    public void allStoresShouldNotBeReturned() {
+        isUpdated = storesToBeReturned != null && !storesToBeReturned.isEmpty();
+        assertFalse(isUpdated);
+    }
+    @When("The admin tries to get users with flag {int}")
+    public void theAdminTriesToGetUsersWithFlag(int flag) {
+        try {
+            usersToBeReturned = User.getUsersByFlag(flag, DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            fail("Exception occurred while retrieving users: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        }
+    }
+
+    @Then("Users with roles 'store_owner', 'raw_material_supplier', and 'beneficiary_user' should be shown")
+    public void usersWithRolesShouldBeShown() {
+        assertNotNull(usersToBeReturned);
+        assertFalse(usersToBeReturned.isEmpty());
+    }
+
+    @When("The admin tries to get users with flag {int} but there is no connection")
+    public void theAdminTriesToGetUsersWithFlagButNoConnection(int flag) {
+        try {
+            usersToBeReturned = User.getUsersByFlag(flag, null);
+        } catch (SQLException e) {
+            System.err.println("Expected SQLException due to null connection: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Expected IllegalArgumentException: " + e.getMessage());
+            usersToBeReturned = Collections.emptyList();
+        }
+    }
+
+    @Then("No users should be shown")
+    public void noUsersShouldBeShown() {
+        assertTrue(usersToBeReturned.isEmpty());
+    }
+
 }
