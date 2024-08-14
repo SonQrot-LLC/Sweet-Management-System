@@ -37,6 +37,11 @@ public class LoginSignupStepDefinition {
     @Then("User successfully log in")
     public void userSuccessfullyLogIn() {
         assertTrue(userAuthService.isLoggedIn());
+        System.out.println(userAuthService.getLoggedInUser().getEmail());
+        System.out.println(userAuthService.getLoggedInUser().getCity());
+        System.out.println(userAuthService.getLoggedInUser().getPassword());
+        System.out.println(userAuthService.getLoggedInUser().getRole());
+        System.out.println(userAuthService.getLoggedInUser().getCreatedAt());
     }
 
 
