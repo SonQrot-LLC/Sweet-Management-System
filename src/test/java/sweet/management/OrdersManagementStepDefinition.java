@@ -29,13 +29,10 @@ public class OrdersManagementStepDefinition {
     boolean isUpdatedOrderItem;
     OrderItem orderItemToBeUpdated;
     OrderItem orderItemToBeDeleted;
-    List<OrderItem> orderItemsList;
-
 
 
     public OrdersManagementStepDefinition() {
        userAuthService = new UserAuthService();
-
 
     }
 
@@ -96,7 +93,7 @@ public class OrdersManagementStepDefinition {
     @When("The user deletes order with ID {string}")
     public void theUserDeletesOrderWithID(String id) {
         try {
-            orderToBeDeleted = new Order(4000, "order.user@gmail.com", 2, "pending", 0.1, new Timestamp(System.currentTimeMillis()));
+            orderToBeDeleted = new Order(Integer.parseInt(id), "order.user@gmail.com", 2, "pending", 0.1, new Timestamp(System.currentTimeMillis()));
             assertTrue(Order.createOrder(orderToBeDeleted,DatabaseService.getConnection(true)));
             isUpdatedOrder  = Order.updateOrder(orderToBeDeleted,DatabaseService.getConnection(true),Order.DELETE_ORDER);
             assertTrue(isUpdatedOrder);
@@ -257,4 +254,28 @@ public class OrdersManagementStepDefinition {
         assertFalse(isUpdatedOrderItem);
     }
 
+    @When("The user try to  get orders by user email {string} but there is no connection")
+    public void theUserTryToGetOrdersByUserEmailButThereIsNoConnection(String email)  {
+        ordersList = null;
+        try {
+            ordersList = Order.getOrdersByUserEmail(email, DatabaseService.getConnection(false));
+        } catch (SQLException e) {
+            System.out.println("Could not get orders by user email: " + email);
+        }
+    }
+
+    @Then("it should return an exceptions")
+    public void itShouldReturnAnExceptions() {
+        assertNull(ordersList);
+    }
+
+    @When("The user try to  get orders by store id {string} but there is no connection")
+    public void theUserTryToGetOrdersByStoreIdButThereIsNoConnection(String id) {
+        try {
+            ordersList = null;
+            ordersList = Order.getOrdersByStoreId(Integer.parseInt(id),DatabaseService.getConnection(false));
+        }catch (SQLException e) {
+            System.out.println("Could not get orders by user id: " + id);
+        }
+    }
 }

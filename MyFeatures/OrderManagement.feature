@@ -29,6 +29,10 @@ Feature: Order Management
     Then it should return the orders without exceptions
     When The user try to  get orders by user email "order.user@gmail.com"
     Then it should return the orders without exceptions
+    When The user try to  get orders by user email "order.user@gmail.com" but there is no connection
+    Then it should return an exceptions
+    When The user try to  get orders by store id "2" but there is no connection
+    Then it should return an exceptions
 
 
   Scenario: An order to a product is created

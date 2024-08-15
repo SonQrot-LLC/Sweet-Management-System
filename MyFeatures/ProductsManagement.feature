@@ -58,21 +58,30 @@ Feature: Products Management
       When The user tries to get all products
       Then The products should be shown successfully
 
-  Scenario: User trying to get all products
+  Scenario: User trying to get all products but there is no connection
     Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
     When The user tries to get all products but there is no connection
     Then The products should not be shown
 
-  Scenario: User trying to get all products
+  Scenario: User trying to get all products by store id
     Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
     When The user tries to get all products from a store by store id "1"
     Then The products should be shown successfully
 
-  Scenario: User trying to get all products
+  Scenario: User trying to get all products by store id but there is no connection
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all products from a store by store id "1" but there is no connection
+    Then The products should not be shown
+
+  Scenario: User trying to get all products by search
     Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
     When The user tries to get all products from a store by Search "Milk"
     Then The products should be shown successfully
 
+  Scenario: User trying to get all products by search and there is no connection
+    Given That the user is logged in with a user "ahmad123@gmail.com" and password "777"
+    When The user tries to get all products from a store by Search "Milk" but there is no connection
+    Then The products should not be shown
 
     Scenario: Store trying to get all of its products
       Given That the user is logged using email "salam@hawa.com" and password "222"

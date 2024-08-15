@@ -25,7 +25,7 @@ public class Product {
     private double price;
     private int stock;
     private double discount; // New field for discount
-    private final Timestamp createdAt;
+    private Timestamp createdAt;
     private final int storeId;
     private String expiryDate;
 
@@ -35,19 +35,7 @@ public class Product {
     public static final int UPDATE_STOCK = 4;
     public static final int UPDATE_EXPIRY_DATE = 5;
     public static final int UPDATE_DISCOUNT = 6; // New constant for updating discount
-
-    // Constructor
-    public Product(int productId, String productName, String description, double price, int stock, double discount, Timestamp createdAt, int storeId, String expiryDate) {
-        this.productId = productId;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-        this.discount = discount; // Initialize discount
-        this.storeId = storeId;
-        this.expiryDate = expiryDate;
-        this.createdAt = createdAt;
-    }
+    
 
     public Product(String productName, String description, String price, String stock, String discount, int storeId, String expiryDate) {
         try {
@@ -127,6 +115,10 @@ public class Product {
         this.expiryDate = expiryDate;
     }
 
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
     // Additional Methods
     public boolean isAvailable() {
         return this.stock > 0;
@@ -158,17 +150,7 @@ public class Product {
             stmt.setInt(1, productId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Product(
-                            rs.getInt(PRODUCT_ID),
-                            rs.getString(PRODUCT_NAME),
-                            rs.getString(DESCRIPTION_COL),
-                            rs.getDouble(PRICE_COL),
-                            rs.getInt(STOCK_COL),
-                            rs.getDouble(DISCOUNT_COL), // Retrieve discount
-                            rs.getTimestamp(CREATED_AT),
-                            rs.getInt(STORE_ID),
-                            rs.getString(EXPIRY_DATE)
-                    );
+                    return getProductFromDataBase(rs);
                 }
             }
         }
@@ -269,20 +251,24 @@ public class Product {
     private static void getProductResultSet(List<Product> products, PreparedStatement stmt) throws SQLException {
         try (ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Product product = new Product(
-                        rs.getInt(PRODUCT_ID),
-                        rs.getString(PRODUCT_NAME),
-                        rs.getString(DESCRIPTION_COL),
-                        rs.getDouble(PRICE_COL),
-                        rs.getInt(STOCK_COL),
-                        rs.getDouble(DISCOUNT_COL), // Retrieve discount
-                        rs.getTimestamp(CREATED_AT),
-                        rs.getInt(STORE_ID),
-                        rs.getString(EXPIRY_DATE)
-                );
-                products.add(product);
+                products.add(getProductFromDataBase(rs));
             }
         }
+    }
+
+    private static Product getProductFromDataBase(ResultSet rs) throws SQLException {
+        Product product = new Product(
+                rs.getString(PRODUCT_NAME),
+                rs.getString(DESCRIPTION_COL),
+                String.valueOf(rs.getDouble(PRICE_COL)),
+                String.valueOf(rs.getInt(STOCK_COL)),
+                String.valueOf(rs.getDouble(DISCOUNT_COL)), // Retrieve discount
+                rs.getInt(STORE_ID),
+                rs.getString(EXPIRY_DATE)
+        );
+        product.setId(rs.getInt(PRODUCT_ID));
+        product.setCreatedAt(rs.getTimestamp(CREATED_AT));
+        return product;
     }
 
 

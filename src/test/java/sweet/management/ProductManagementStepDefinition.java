@@ -298,4 +298,22 @@ public class ProductManagementStepDefinition {
         System.out.println("Created at: " + productToBeAdded.getCreatedAt());
 
     }
+
+    @When("The user tries to get all products from a store by Search {string} but there is no connection")
+    public void theUserTriesToGetAllProductsFromAStoreBySearchButThereIsNoConnection(String search) {
+        try {
+            allProductList = Product.searchProducts(search,DatabaseService.getConnection(false));
+        } catch (SQLException e) {
+            System.out.println("Could not get all products");
+        }
+    }
+
+    @When("The user tries to get all products from a store by store id {string} but there is no connection")
+    public void theUserTriesToGetAllProductsFromAStoreByStoreIdButThereIsNoConnection(String id) {
+        try {
+            allProductList = Product.getProductsByStoreId(Integer.parseInt(id),DatabaseService.getConnection(false));
+        } catch (SQLException e) {
+            System.out.println("Could not get all products");
+        }
+    }
 }
