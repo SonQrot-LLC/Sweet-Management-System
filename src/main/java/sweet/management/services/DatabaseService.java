@@ -11,7 +11,7 @@ public class DatabaseService {
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    public static Connection getConnection(boolean connect) {
+    public static Connection getConnection(boolean connect) throws SQLException{
             try {
                 if (!connect) {
                     return null;
@@ -22,7 +22,7 @@ public class DatabaseService {
                     test = true;
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new SQLException(e);
             }
         return connection;
 

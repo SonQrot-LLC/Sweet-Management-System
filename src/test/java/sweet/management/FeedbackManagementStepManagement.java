@@ -7,6 +7,7 @@ import org.junit.Assert;
 import sweet.management.entities.Feedback;
 import sweet.management.services.DatabaseService;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class FeedbackManagementStepManagement {
 
 
     @Given("that a user is logged in with email {string} and password {string}")
-    public void thatAUserIsLoggedInWithEmailAndPassword(String email, String password) {
+    public void thatAUserIsLoggedInWithEmailAndPassword(String email, String password) throws SQLException {
         Assert.assertTrue(userAuthService.login(email,password, DatabaseService.getConnection(true)));
         Assert.assertTrue(userAuthService.isLoggedIn());
         isCreated = false;
@@ -95,11 +96,17 @@ public class FeedbackManagementStepManagement {
 
     @When("the user requests feedback for {string} number {string}")
     public void theUserRequestsFeedbackForNumber(String typeString, String phone) {
+        Connection connection = null;
         try {
-            List<Feedback> feedbacks = Feedback.getFeedback(typeString, phone, DatabaseService.getConnection(true));
+            connection = DatabaseService.getConnection(true);
+        } catch (SQLException e) {
+            System.out.println("Connection failed");
+        }
+        try {
+            List<Feedback> feedbacks = Feedback.getFeedback(typeString, phone,connection);
             assertNotNull(feedbacks);
             fail("Expected SQLException was not thrown");
-        } catch (IllegalArgumentException | SQLException e) {
+        } catch (SQLException | IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Invalid query type:"));
         }
     }
@@ -110,7 +117,7 @@ public class FeedbackManagementStepManagement {
     }
 
     @Given("that the admin is logged in with email {string} and password {string}")
-    public void thatTheAdminIsLoggedInWithEmailAndPassword(String email, String password) {
+    public void thatTheAdminIsLoggedInWithEmailAndPassword(String email, String password) throws SQLException {
         userAuthService = new UserAuthService();
         userAuthService.login(email,password, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());

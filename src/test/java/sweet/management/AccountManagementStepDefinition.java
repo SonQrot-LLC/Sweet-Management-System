@@ -35,7 +35,7 @@ public class AccountManagementStepDefinition {
     }
 
     @Given("I log in with username {string} and password {string} and i am a Beneficiary User")
-    public void iLogInWithUsernameAndPasswordAndIAmABeneficiaryUser(String email, String pass) {
+    public void iLogInWithUsernameAndPasswordAndIAmABeneficiaryUser(String email, String pass) throws SQLException {
         Connection conn = DatabaseService.getConnection(true);
         userAuthService.login(email, pass,conn );
         assertTrue(userAuthService.isLoggedIn());
@@ -43,25 +43,25 @@ public class AccountManagementStepDefinition {
     }
 
     @When("I update my first name to {string}")
-    public void iUpdateMyFirstNameTo(String firstName) {
+    public void iUpdateMyFirstNameTo(String firstName) throws SQLException {
         userp.setFirstName(firstName);
         assertTrue(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(true), UserProfile.UPDATE_FIRST_NAME, userAuthService));
     }
 
     @When("I update my last name to {string}")
-    public void iUpdateMyLastNameTo(String lastName) {
+    public void iUpdateMyLastNameTo(String lastName) throws SQLException{
         userp.setLastName(lastName);
         assertTrue(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(true), UserProfile.UPDATE_LAST_NAME, userAuthService));
     }
 
     @When("I update my address to {string}")
-    public void iUpdateMyAddressTo(String address) {
+    public void iUpdateMyAddressTo(String address) throws SQLException{
         userp.setAddress(address);
         assertTrue(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(true), UserProfile.UPDATE_ADDRESS, userAuthService));
     }
 
     @When("I update my phone number to {string}")
-    public void iUpdateMyPhoneNumberTo(String phone) {
+    public void iUpdateMyPhoneNumberTo(String phone) throws SQLException{
         userp.setPhone(phone);
         assertTrue(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(true), UserProfile.UPDATE_PHONE, userAuthService));
     }
@@ -72,7 +72,7 @@ public class AccountManagementStepDefinition {
     }
 
     @When("I chose an invalid updateType")
-    public void iChoseAnInvalidUpdateType() {
+    public void iChoseAnInvalidUpdateType() throws SQLException{
         isUpdated = UserProfile.updateUserProfile(userp, DatabaseService.getConnection(true), 10, userAuthService);
     }
 
@@ -82,7 +82,7 @@ public class AccountManagementStepDefinition {
     }
 
     @Given("I log in with username {string} and password {string}")
-    public void iLogInWithUsernameAndPassword(String email, String pass) {
+    public void iLogInWithUsernameAndPassword(String email, String pass)throws SQLException {
         userAuthService.login(email, pass, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
         assertTrue(userAuthService.getLoggedInUser().isBeneficiaryUser());
@@ -91,24 +91,24 @@ public class AccountManagementStepDefinition {
     }
 
     @When("I update my password to {string}")
-    public void iUpdateMyPasswordTo(String pass) {
+    public void iUpdateMyPasswordTo(String pass)throws SQLException {
         user.setPassword(pass);
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_PASSWORD, userAuthService);
     }
 
     @When("I update my city to {string}")
-    public void iUpdateMyCityTo(String city) {
+    public void iUpdateMyCityTo(String city) throws SQLException{
         user.setCity(city);
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_CITY, userAuthService);
     }
 
     @When("I chose an invalid account updateType")
-    public void iChoseAnInvalidAccountUpdateType() {
+    public void iChoseAnInvalidAccountUpdateType() throws SQLException {
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), 10 , userAuthService);
     }
 
     @When("I delete account")
-    public void iDeleteAccount() {
+    public void iDeleteAccount() throws SQLException{
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.DELETE_ACCOUNT, userAuthService);
     }
 
@@ -124,7 +124,7 @@ public class AccountManagementStepDefinition {
     }
 
     @Given("I log in with username {string} and password {string} and i am an Admin")
-    public void iLogInWithUsernameAndPasswordAndIAmAnAdmin(String email, String password) {
+    public void iLogInWithUsernameAndPasswordAndIAmAnAdmin(String email, String password) throws SQLException{
         // Write code here that turns the phrase above into concrete actions
         userAuthService.login(email, password, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
@@ -136,12 +136,13 @@ public class AccountManagementStepDefinition {
     public void iUpdateSomeoneSRoleTo(String string) {
         try {
             user = User.getUserByEmail("momanani2017@gmail.com", DatabaseService.getConnection(true));
+            assert user != null;
+            user.setRole(string);
+            isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_ROLE, userAuthService);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        assert user != null;
-        user.setRole(string);
-        isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_ROLE, userAuthService);
+
     }
     @Then("The role is Updated")
     public void theRoleIsUpdated() {
@@ -149,7 +150,7 @@ public class AccountManagementStepDefinition {
     }
 
     @Given("I log in with username {string} and password {string} and i am not an Admin")
-    public void iLogInWithUsernameAndPasswordAndIAmNotAnAdmin(String email, String pass) {
+    public void iLogInWithUsernameAndPasswordAndIAmNotAnAdmin(String email, String pass)  throws SQLException{
         userAuthService.login(email, pass, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
         assertFalse(userAuthService.getLoggedInUser().isAdmin());
@@ -171,13 +172,13 @@ public class AccountManagementStepDefinition {
 
 
     @When("I give valid updates and something went wrong with sql")
-    public void iGiveValidUpdatesAndSomethingWentWrongWithSql() {
+    public void iGiveValidUpdatesAndSomethingWentWrongWithSql() throws SQLException {
         user.setPassword("password");
         isUpdated = User.updateUser(user, DatabaseService.getConnection(false), User.UPDATE_PASSWORD, userAuthService);
     }
 
     @When("I update nonexistent user in the DB role to  {string}")
-    public void iUpdateNonexistentUserInTheDBRoleTo(String string) {
+    public void iUpdateNonexistentUserInTheDBRoleTo(String string) throws SQLException {
         user = new User("test@gmail.com","pass","admin","Lebanon");
         user.setRole(string);
         isUpdated = User.updateUser(user, DatabaseService.getConnection(true), User.UPDATE_ROLE, userAuthService);
@@ -185,14 +186,14 @@ public class AccountManagementStepDefinition {
 
 
     @When("I update my last name to {string} and there is sql connection")
-    public void iUpdateMyLastNameToAndThereIsSqlConnection(String lastName) {
+    public void iUpdateMyLastNameToAndThereIsSqlConnection(String lastName) throws SQLException {
         userp.setLastName(lastName);
         assertFalse(UserProfile.updateUserProfile(userp, DatabaseService.getConnection(false), UserProfile.UPDATE_LAST_NAME, userAuthService));
 
     }
 
     @Given("I log in with username {string} and password {string} and i am a store owner")
-    public void iLogInWithUsernameAndPasswordAndIAmAStoreOwner(String email, String password) {
+    public void iLogInWithUsernameAndPasswordAndIAmAStoreOwner(String email, String password) throws SQLException {
         userAuthService.login(email, password, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
         assertTrue(userAuthService.getLoggedInUser().isStoreOwner());
@@ -200,28 +201,28 @@ public class AccountManagementStepDefinition {
     }
 
     @When("I update my store name to {string}")
-    public void iUpdateMyStoreNameTo(String storeName) {
+    public void iUpdateMyStoreNameTo(String storeName) throws SQLException {
         store = userAuthService.getLoggedInStore();
         store.setStoreName(storeName);
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_STORE_NAME, userAuthService);
     }
 
     @And("I update my info to {string}")
-    public void iUpdateMyInfoTo(String info) {
+    public void iUpdateMyInfoTo(String info) throws SQLException {
         store = userAuthService.getLoggedInStore();
         store.setBusinessInfo(info);
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_BUSINESS_INFO, userAuthService);
     }
 
     @When("I update my store name to {string} and there is sql connection")
-    public void iUpdateMyStoreNameToAndThereIsSqlConnection(String storeName) {
+    public void iUpdateMyStoreNameToAndThereIsSqlConnection(String storeName) throws SQLException {
         store = userAuthService.getLoggedInStore();
         store.setStoreName(storeName);
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(false),Store.UPDATE_STORE_NAME, userAuthService);
     }
 
     @When("I delete a store")
-    public void iDeleteAStore() {
+    public void iDeleteAStore() throws SQLException {
         store = userAuthService.getLoggedInStore();
         storeIdToBeDeleted = store.getStoreId();
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),Store.DELETE_STORE, userAuthService);
@@ -265,14 +266,14 @@ public class AccountManagementStepDefinition {
     }
 
     @When("I chose an invalid store updateType")
-    public void iChoseAnInvalidStoreUpdateType() {
+    public void iChoseAnInvalidStoreUpdateType() throws SQLException {
         store = userAuthService.getLoggedInStore();
         store.setStoreName("test");
         isUpdated = Store.updateStore(store,DatabaseService.getConnection(true),10, userAuthService);
     }
 
     @Given("I log in with username {string} and password {string} and i am a user")
-    public void iLogInWithUsernameAndPasswordAndIAmAUser(String email, String password) {
+    public void iLogInWithUsernameAndPasswordAndIAmAUser(String email, String password) throws SQLException{
         userAuthService.login(email, password, DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
         assertTrue(userAuthService.getLoggedInUser().isBeneficiaryUser());

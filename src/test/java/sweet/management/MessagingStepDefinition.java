@@ -7,6 +7,7 @@ import sweet.management.entities.Message;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +22,7 @@ public class MessagingStepDefinition {
     }
 
     @Given("That Customer with email {string} is logged in")
-    public void thatCustomerWithEmailIsLoggedIn(String email) {
+    public void thatCustomerWithEmailIsLoggedIn(String email) throws SQLException {
         userAuthService.login(email,"321", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
         assertTrue(userAuthService.isLoggedIn());
@@ -31,7 +32,7 @@ public class MessagingStepDefinition {
     @When("The Customer sends a message {string} to owner with email {string}")
     public void theCustomerSendsAMessageToOwnerWithEmail(String message, String receiver) {
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),loggedInUser.getEmail(),receiver,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),loggedInUser.getEmail(),receiver,message);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -60,7 +61,7 @@ public class MessagingStepDefinition {
 
 
     @Given("The owner with email {string}  is logged in")
-    public void theOwnerWithEmailIsLoggedIn(String email) {
+    public void theOwnerWithEmailIsLoggedIn(String email) throws SQLException{
         userAuthService.login(email,"123", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
         assertTrue(userAuthService.isLoggedIn());
@@ -84,7 +85,7 @@ public class MessagingStepDefinition {
 
 
     @Given("The supplier with email {string}  is logged in")
-    public void theSupplierWithEmailIsLoggedIn(String email) {
+    public void theSupplierWithEmailIsLoggedIn(String email) throws SQLException{
         userAuthService.login(email,"123", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
         assertTrue(userAuthService.isLoggedIn());

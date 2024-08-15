@@ -38,7 +38,7 @@ public class OrdersManagementStepDefinition {
 
 
     @Given("User is logged in with email {string} and password {string}")
-    public void userIsLoggedInWithEmailAndPassword(String email, String password) {
+    public void userIsLoggedInWithEmailAndPassword(String email, String password) throws SQLException {
         assertTrue(userAuthService.login(email,password, DatabaseService.getConnection(true)));
         assertTrue(userAuthService.isLoggedIn());
     }

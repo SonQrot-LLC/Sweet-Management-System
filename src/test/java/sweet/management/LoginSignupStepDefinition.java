@@ -29,7 +29,7 @@ public class LoginSignupStepDefinition {
     }
 
     @When("The information is valid email is {string} and password is {string}")
-    public void theInformationIsValidEmailIsAndPasswordIs(String email, String password) {
+    public void theInformationIsValidEmailIsAndPasswordIs(String email, String password) throws SQLException{
         assertTrue(userAuthService.login(email, password, DatabaseService.getConnection(true)));
 
     }
@@ -46,7 +46,7 @@ public class LoginSignupStepDefinition {
 
 
     @When("The information is valid email is {string} and password is {string} something went wrong with the sql")
-    public void theInformationIsValidEmailIsAndPasswordIsSomethingWentWrongWithTheSql(String email, String password) {
+    public void theInformationIsValidEmailIsAndPasswordIsSomethingWentWrongWithTheSql(String email, String password) throws SQLException {
         assertFalse(userAuthService.login(email, password, DatabaseService.getConnection(false)));
     }
 
@@ -57,26 +57,26 @@ public class LoginSignupStepDefinition {
 
 
     @When("the email is invalid email is {string} and password is {string}")
-    public void theEmailIsInvalidEmailIsAndPasswordIs(String email, String password) {
+    public void theEmailIsInvalidEmailIsAndPasswordIs(String email, String password) throws SQLException {
         userAuthService.login(email, password, DatabaseService.getConnection(true));
 
     }
 
 
     @When("the password is invalid email is {string} and password is {string}")
-    public void thePasswordIsInvalidEmailIsAndPasswordIs(String email, String password) {
+    public void thePasswordIsInvalidEmailIsAndPasswordIs(String email, String password) throws SQLException {
         userAuthService.login(email, password, DatabaseService.getConnection(true));
     }
 
     @When("the information is invalid, email is {string} and password is {string}")
-    public void theInformationIsInvalidEmailIsAndPasswordIs(String email, String password) {
+    public void theInformationIsInvalidEmailIsAndPasswordIs(String email, String password) throws SQLException {
         userAuthService.login(email, password, DatabaseService.getConnection(true));
     }
 
     //----------------------------Sign up------------------------------------------
 
     @When("the information exists, the email is {string}")
-    public void theInformationExistsTheEmailIs(String email) {
+    public void theInformationExistsTheEmailIs(String email) throws SQLException {
         assertFalse(userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(true)));
     }
 
@@ -86,12 +86,12 @@ public class LoginSignupStepDefinition {
     }
 
     @When("the email {string} format is incorrect")
-    public void theEmailFormatIsIncorrect(String email) {
+    public void theEmailFormatIsIncorrect(String email) throws SQLException {
         userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(true));
     }
 
     @When("the email format is correct and the email {string} does not exist in the database")
-    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabase(String email) {
+    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabase(String email) throws SQLException {
         assertTrue(userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(true)));
     }
 
@@ -107,13 +107,13 @@ public class LoginSignupStepDefinition {
 
 
     @When("the email format is correct and the email {string} does not exist in the database but there is a problem in dataBase connection")
-    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButThereIsAProblemInDataBaseConnection(String email) {
+    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButThereIsAProblemInDataBaseConnection(String email) throws SQLException {
         assertFalse(userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(false)));
 
     }
 
     @Given("that the user is logged in")
-    public void thatTheUserIsLoggedIn() {
+    public void thatTheUserIsLoggedIn() throws SQLException {
         boolean loggedin;
         loggedin = userAuthService.login("momanani2017@gmail.com", "777", DatabaseService.getConnection(true));
         assertTrue(loggedin);
@@ -121,7 +121,7 @@ public class LoginSignupStepDefinition {
     }
 
     @When("The information is  email is {string} and password is {string}")
-    public void theInformationIsEmailIsAndPasswordIs(String email, String password) {
+    public void theInformationIsEmailIsAndPasswordIs(String email, String password) throws SQLException{
         loggedInUsingAnotherAccount = userAuthService.login(email, password, DatabaseService.getConnection(true));
 
     }
@@ -132,7 +132,7 @@ public class LoginSignupStepDefinition {
     }
 
     @When("the email format is correct and the email {string} does not exist in the database but the user is logged in")
-    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButTheUserIsLoggedIn(String email) {
+    public void theEmailFormatIsCorrectAndTheEmailDoesNotExistInTheDatabaseButTheUserIsLoggedIn(String email) throws SQLException {
         singedUpUsingAnotherAccount = userAuthService.signUp(email, "777", "admin", "Tulkarm", DatabaseService.getConnection(true));
     }
 
@@ -142,7 +142,7 @@ public class LoginSignupStepDefinition {
     }
 
     @When("the email is null")
-    public void theEmailIsNull() {
+    public void theEmailIsNull() throws SQLException{
         assertFalse(userAuthService.signUp(null, "777", "admin", "Tulkarm", DatabaseService.getConnection(true)));
     }
 

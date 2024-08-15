@@ -22,13 +22,13 @@ public class ViewDataStepDefinition {
     private boolean retrievalFailed;
 
     @Given("the database connection is established")
-    public void theDatabaseConnectionIsEstablished() {
+    public void theDatabaseConnectionIsEstablished() throws SQLException {
         conn = DatabaseService.getConnection(true);
         viewService = new ViewService();
     }
 
     @Given("the database connection is established with a bad connection")
-    public void theDatabaseConnectionIsEstablishedWithABadConnection() {
+    public void theDatabaseConnectionIsEstablishedWithABadConnection() throws SQLException {
         conn = DatabaseService.getConnection(false);  // Simulate a bad connection
         viewService = new ViewService();
     }

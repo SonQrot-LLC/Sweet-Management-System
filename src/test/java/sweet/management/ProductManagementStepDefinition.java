@@ -22,7 +22,7 @@ public class ProductManagementStepDefinition {
     List<Product> discountList;
     List<Product> allProductList;
 
-    public ProductManagementStepDefinition() {
+    public ProductManagementStepDefinition() throws SQLException {
         userAuthService = new UserAuthService();
         userAuthService.login("salam@hawa.com","222", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
@@ -216,7 +216,7 @@ public class ProductManagementStepDefinition {
     }
 
     @Given("That the user is logged in with a user {string} and password {string}")
-    public void thatTheUserIsLoggedInWithAUserAndPassword(String email, String password) {
+    public void thatTheUserIsLoggedInWithAUserAndPassword(String email, String password) throws SQLException{
         userAuthService = new UserAuthService();
         userAuthService.login(email,password,DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());
@@ -252,7 +252,7 @@ public class ProductManagementStepDefinition {
     }
 
     @Given("That the user is logged using email {string} and password {string}")
-    public void thatTheUserIsLoggedUsingEmailAndPassword(String email, String password) {
+    public void thatTheUserIsLoggedUsingEmailAndPassword(String email, String password) throws SQLException {
         userAuthService = new UserAuthService();
         userAuthService.login(email,password,DatabaseService.getConnection(true));
         assertTrue(userAuthService.isLoggedIn());

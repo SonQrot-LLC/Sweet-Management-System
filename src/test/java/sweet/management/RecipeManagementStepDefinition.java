@@ -23,7 +23,7 @@ public class RecipeManagementStepDefinition {
     boolean updated;
     Recipe testRecipe;
 
-    public RecipeManagementStepDefinition() {
+    public RecipeManagementStepDefinition() throws SQLException {
         userAuthService = new UserAuthService();
         userAuthService.login("feedbacktest@gmail.com","321", DatabaseService.getConnection(true));
         loggedInUser = userAuthService.getLoggedInUser();
@@ -135,7 +135,7 @@ public class RecipeManagementStepDefinition {
     }
 
     @Given("That the admin is logged in")
-    public void thatTheAdminIsLoggedIn() {
+    public void thatTheAdminIsLoggedIn() throws SQLException {
       assertTrue(adminLogin().isAdmin());
     }
 
@@ -210,18 +210,17 @@ public class RecipeManagementStepDefinition {
         }
     }
 
-    public User adminLogin(){
+    public User adminLogin() throws SQLException{
         UserAuthService adminAuthService = new UserAuthService();
         adminAuthService.login("admin@gmail.com","123", DatabaseService.getConnection(true));
         return adminAuthService.getLoggedInUser();
 
     }
 
-    public Recipe addTestRecipe(int id){
+    public void addTestRecipe(int id){
         Recipe tempRecipe = new Recipe(id,"feedbacktest@gmail.com","test","test","test",null,"test");
         try {
             Recipe.createRecipe(tempRecipe,DatabaseService.getConnection(true));
-            return tempRecipe;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

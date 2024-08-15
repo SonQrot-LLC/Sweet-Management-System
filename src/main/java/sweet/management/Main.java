@@ -255,10 +255,16 @@ public class Main {
         userProfile.setAddress(address);
         userProfile.setPhone(phone);
 
-        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_FIRST_NAME,userAuthService);
-        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_LAST_NAME,userAuthService);
-        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_ADDRESS,userAuthService);
-        UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_PHONE,userAuthService);
+
+        try {
+            UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_ADDRESS,userAuthService);
+            UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_FIRST_NAME,userAuthService);
+            UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_LAST_NAME,userAuthService);
+            UserProfile.updateUserProfile(userProfile,DatabaseService.getConnection(true),UserProfile.UPDATE_PHONE,userAuthService);
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+            return;
+        }
 
         if(!userAuthService.getLoggedInUser().isAdmin()){
             userAuthService.getLoggedInUserProfile().setFirstName(firstName);
@@ -879,9 +885,14 @@ public class Main {
         user.setPassword(password);
         user.setCity(city);
         user.setRole(role);
-        User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_CITY,userAuthService);
-        User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_PASSWORD,userAuthService);
-        User.updateUser(user,DatabaseService.getConnection(true),User.UPDATE_ROLE,userAuthService);
+        try {
+            User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_CITY,userAuthService);
+            User.updateUser(user, DatabaseService.getConnection(true),User.UPDATE_PASSWORD,userAuthService);
+            User.updateUser(user,DatabaseService.getConnection(true),User.UPDATE_ROLE,userAuthService);
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+            return;
+        }
         if(!userAuthService.getLoggedInUser().isAdmin()){
             userAuthService.getLoggedInUser().setRole(role);
             userAuthService.getLoggedInUser().setCity(city);
@@ -931,8 +942,12 @@ public class Main {
         String businessInfo = scanner.nextLine();
         Objects.requireNonNull(store).setStoreName(storeName);
         store.setBusinessInfo(businessInfo);
-        Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_STORE_NAME,userAuthService);
-        Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_BUSINESS_INFO,userAuthService);
+        try {
+            Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_STORE_NAME,userAuthService);
+            Store.updateStore(store,DatabaseService.getConnection(true),Store.UPDATE_BUSINESS_INFO,userAuthService);
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
     }
 
     public static void communicationScreen(){
@@ -1710,7 +1725,12 @@ public class Main {
         String email = scanner.nextLine();
         logger.info("Enter your password: ");
         String password = scanner.nextLine();
-        userAuthService.login(email,password, DatabaseService.getConnection(true));
+        try {
+            userAuthService.login(email,password, DatabaseService.getConnection(true));
+        } catch (SQLException e) {
+            logger.warning("Login failed!");
+            return;
+        }
         if (userAuthService.isLoggedIn())
             logger.info("You are logged in!");
         else{
@@ -1757,8 +1777,13 @@ public class Main {
     }
         logger.info("Enter your city: ");
         String city = scanner.nextLine();
+        try {
             userAuthService.signUp(email,password,role,city,DatabaseService.getConnection(true));
-            if (userAuthService.getLoggedInUser().isBeneficiaryUser()){
+        } catch (SQLException e) {
+            logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+            return;
+        }
+        if (userAuthService.getLoggedInUser().isBeneficiaryUser()){
                 logger.info("Enter your first name: ");
                 String firstName = scanner.nextLine();
                 logger.info("Enter your last name: ");
