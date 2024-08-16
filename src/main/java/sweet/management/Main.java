@@ -27,6 +27,7 @@ public class Main {
     private static final String CONTENT = "Content";
     private static final String DELETED_SUCCESSFULLY = "Deleted successfully!";
     private static final String ENTER_USER_EMAIL = "Enter User Email";
+    private static final String NOTIFICATION_ID = "Notification ID";
     static Logger logger;
     static Scanner scanner = new Scanner(System.in);
     static  UserAuthService userAuthService = new UserAuthService();
@@ -395,14 +396,16 @@ public class Main {
                 1. Purchase a product
                 2. View feedbacks of a product
                 3. search for a product
-                4. Return to the main menu""");
+                4. Request a special product
+                5. Return to the main menu""");
         int choice = scanner.nextInt();
         scanner.nextLine();
         switch (choice) {
             case 1 -> purchaseProductScreen();
             case 2 -> viewFeedbacksOfProduct();
             case 3 -> searchForProduct();
-            case 4 -> {
+            case 4 -> requestSpecialProduct();
+            case 5 -> {
                 storeId = 0;
                 determineScreenAfterLogin();
                 return true;
@@ -534,6 +537,21 @@ public class Main {
         }
         viewFeedbacksOfProduct();
     }
+    private static void requestSpecialProduct() {
+        logger.info("Enter the recipient's email:");
+        String recipientEmail = scanner.nextLine();
+
+        logger.info("Enter the special request message:");
+        String message = scanner.nextLine();
+
+        String senderEmail = userAuthService.getLoggedInUser().getEmail();
+
+        try {
+            Notification.insertNotification(Objects.requireNonNull(DatabaseService.getConnection(true)), recipientEmail, senderEmail, message);
+        } catch (SQLException e) {
+            logger.warning("Something went wrong while sending the notification.");
+        }
+    }
 
     private static void displayFeedback(int feedbackKey) {
         List<Feedback> feedbackList;
@@ -613,7 +631,8 @@ public class Main {
                 6. Account preference
                 7. Order Management
                 8. Best selling Item
-                9. Log out""");
+                9. Check all Notifications
+                10. Log out""");
         if (storeOwnerAndSupplierOptions()) return;
         supplierScreen();
     }
@@ -631,7 +650,8 @@ public class Main {
             case 6 -> accountPreferenceScreen();
             case 7 -> orderManagementScreen();
             case 8 -> bestSellingProduct();
-            case 9 -> {
+            case 9 -> checkNotifications();
+            case 10 -> {
                 logOut();
                 return true;
             }
@@ -652,7 +672,8 @@ public class Main {
                 6. Account preference
                 7. Order Management
                 8. Best selling product
-                9. Log out""");
+                9. Check all Notifications
+                10. Log out""");
         if (storeOwnerAndSupplierOptions()) return;
         storeOwnerScreen();
     }
@@ -819,6 +840,35 @@ public class Main {
         }
         catch (SQLException e) {
             logger.warning(SOMETHING_WENT_WRONG_MESSAGE);
+        }
+    }
+    public static void checkNotifications()
+    {
+        String ownerEmail = userAuthService.getLoggedInUser().getEmail();
+        List<Notification> notifications;
+        if (logger.isLoggable(Level.INFO)) {
+        try {
+            notifications = Notification.getNotificationsByUserEmail(DatabaseService.getConnection(true), ownerEmail);
+                logger.info(String.format("Retrieved %d notifications for owner.", notifications.size()));
+
+            for (Notification notification : notifications) {
+                logger.info("Notification ID: " + notification.getNotificationId());
+                logger.info("Message: " + notification.getMessage());
+                logger.info("Read: " + notification.isRead());
+                logger.info("Created At: " + notification.getCreatedAt());
+            }
+
+            Scanner scanner = new Scanner(System.in);
+            logger.info("Enter the ID of the notification to mark as read:");
+            int notificationId = scanner.nextInt();
+            logger.info("User selected notification ID " + notificationId + " to mark as read.");
+
+            Notification.markNotificationAsRead(Objects.requireNonNull(DatabaseService.getConnection(true)), notificationId);
+                logger.info(NOTIFICATION_ID + notificationId + " marked as read.");
+
+        } catch (SQLException e) {
+            logger.warning("Error while checking notifications: " + e.getMessage());
+        }
         }
     }
 

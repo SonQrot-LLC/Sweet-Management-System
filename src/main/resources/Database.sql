@@ -206,3 +206,4 @@ ALTER TABLE Discounts ADD CONSTRAINT Discounts_ibfk_1 FOREIGN KEY (product_id) R
 
 
 ALTER TABLE Stores ADD CONSTRAINT unique_owner_email UNIQUE (owner_email);
+

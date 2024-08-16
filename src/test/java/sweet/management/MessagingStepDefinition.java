@@ -4,9 +4,11 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import sweet.management.entities.Message;
+import sweet.management.entities.Notification;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
@@ -15,6 +17,10 @@ public class MessagingStepDefinition {
     UserAuthService userAuthService;
     User loggedInUser;
     Message messageToBeDisplayed;
+    Notification notificationToBeDisplayed;
+    List<Notification> userNotifications;
+
+
 
 
     public MessagingStepDefinition() {
@@ -47,7 +53,7 @@ public class MessagingStepDefinition {
     @When("The Customer sends a message {string} to supplier with email {string}")
     public void theCustomerSendsAMessageToSupplierWithEmail(String message, String receiver) {
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),loggedInUser.getEmail(),receiver,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),loggedInUser.getEmail(),receiver,message);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +77,7 @@ public class MessagingStepDefinition {
     @When("the owner reply with {string} to message received from user with email {string}")
     public void theOwnerReplyWithToMessageReceivedFromUserWithEmail(String message, String receiver) {
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),loggedInUser.getEmail(),receiver,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),loggedInUser.getEmail(),receiver,message);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -95,7 +101,7 @@ public class MessagingStepDefinition {
     @When("the supplier reply with {string} to message received from user with email {string}")
     public void theSupplierReplyWithToMessageReceivedFromUserWithEmail(String message, String receiver) {
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),loggedInUser.getEmail(),receiver,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),loggedInUser.getEmail(),receiver,message);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -106,7 +112,7 @@ public class MessagingStepDefinition {
     @When("the user reply with {string} to message received from owner with email {string}")
     public void theUserReplyWithToMessageReceivedFromOwnerWithEmail(String message, String receiver) {
         try {
-            Message.insertMessage(DatabaseService.getConnection(true),loggedInUser.getEmail(),receiver,message);
+            Message.insertMessage(Objects.requireNonNull(DatabaseService.getConnection(true)),loggedInUser.getEmail(),receiver,message);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -198,5 +204,109 @@ public class MessagingStepDefinition {
         assertNull("The message does not exist",messageToBeDisplayed);
     }
 
+    @Given("That the user with email {string} is logged in")
+    public void thatUserWithEmailIsLoggedIn(String email) throws SQLException {
+        userAuthService.login(email,"321", DatabaseService.getConnection(true));
+        loggedInUser = userAuthService.getLoggedInUser();
+        assertTrue(userAuthService.isLoggedIn());
+    }
+
+    @When("The user makes a special request to the email {string} and  the message {string}")
+    public void theUserMakesASpecialRequestToTheEmailAndTheMessage(String receiverEmail, String message) {
+        try {
+            Notification.insertNotification(Objects.requireNonNull(DatabaseService.getConnection(true)), receiverEmail, userAuthService.getLoggedInUser().getEmail(), message);
+        } catch (SQLException e) {
+            System.out.println("Exception happened while sending a notification.");
+        }
+    }
+
+
+
+    @Then("A notification is made")
+    public void aNotificationIsMade() {
+        try {
+            notificationToBeDisplayed = Notification.getNotificationsByUserEmail(
+                    DatabaseService.getConnection(true), "order.store@gmail.com").get(0);
+
+            assertNotNull(notificationToBeDisplayed);
+            assertEquals("order.store@gmail.com", notificationToBeDisplayed.getUserEmail());
+            assertEquals("I want to request a juicer cake", notificationToBeDisplayed.getMessage());
+        } catch (SQLException e) {
+            fail("Could not verify the notification.");
+        }
+    }
+
+    @Given("The user with email {string} is logged in")
+    public void theUserWithEmailIsLoggedIn(String email) throws SQLException {
+        userAuthService.login(email, "567", DatabaseService.getConnection(true));
+        loggedInUser = userAuthService.getLoggedInUser();
+        assertTrue(userAuthService.isLoggedIn());
+    }
+
+    @When("The user checks all their notifications")
+    public void theUserChecksAllTheirNotifications() {
+        try {
+            userNotifications = Notification.getNotificationsByUserEmail(DatabaseService.getConnection(true), loggedInUser.getEmail());
+        } catch (SQLException e) {
+            System.out.println("Exception caught while checking notifications");
+        }
+    }
+
+    @Then("All notifications for {string} are displayed")
+    public void allNotificationsForAreDisplayed(String email) {
+        assertFalse(userNotifications.isEmpty());
+        for (Notification notification : userNotifications) {
+            assert(notification.getUserEmail().equals(email));
+            System.out.println("Notification ID: " + notification.getNotificationId());
+            System.out.println("Message: " + notification.getMessage());
+            System.out.println("Read: " + notification.isRead());
+            System.out.println("Created At: " + notification.getCreatedAt());
+        }
+    }
+    @When("The user checks his notifications")
+    public void theUserChecksHisNotifications() {
+        try {
+            userNotifications = Notification.getNotificationsByUserEmail(DatabaseService.getConnection(true), loggedInUser.getEmail());
+            assertNotNull(userNotifications);
+            assertFalse(userNotifications.isEmpty());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @When("The user marks the notification with ID {string} as read")
+    public void theUserMarksTheNotificationWithIDAsRead(String notificationId) {
+        try {
+            Notification.markNotificationAsRead(Objects.requireNonNull(DatabaseService.getConnection(true)), Integer.parseInt(notificationId));
+            notificationToBeDisplayed = Notification.getNotificationById(DatabaseService.getConnection(true), Integer.parseInt(notificationId));
+            assert notificationToBeDisplayed != null;
+            assertTrue(notificationToBeDisplayed.isRead());
+        } catch (SQLException e) {
+            fail("Could not mark the notification with ID " + notificationId + " as read");
+        }
+    }
+
+    @Then("The notification with ID {string} should be marked as read")
+    public void theNotificationWithIDShouldBeMarkedAsRead(String notificationId) {
+        assertNotNull(notificationToBeDisplayed);
+        assertTrue(notificationToBeDisplayed.isRead());
+        System.out.println(notificationId);
+    }
+
+    @When("The user deletes the notification with ID {string}")
+    public void theUserDeletesTheNotificationWithID(String notificationId) {
+        try {
+            Notification.deleteNotificationById(Objects.requireNonNull(DatabaseService.getConnection(true)), Integer.parseInt(notificationId));
+            notificationToBeDisplayed = Notification.getNotificationById(DatabaseService.getConnection(true), Integer.parseInt(notificationId));
+        } catch (SQLException e) {
+            fail("Could not delete the notification with ID " + notificationId);
+        }
+    }
+
+    @Then("The notification with ID {string} should no longer exist")
+    public void theNotificationWithIDShouldNoLongerExist(String notificationId) {
+        System.out.println(notificationId);
+        assertNull(notificationToBeDisplayed);
+    }
 
 }

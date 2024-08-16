@@ -49,3 +49,25 @@ Feature: Messaging
   Given That Customer with email "order.user@gmail.com" is logged in
   When The user tries to get a message by invalid id "5000"
   Then The message wont be shown
+
+  Scenario: Beneficiary user orders a special request
+   Given That the user with email "order.user@gmail.com" is logged in
+   When The user makes a special request to the email "order.store@gmail.com" and  the message "I want to request a juicer cake"
+   Then A notification is made
+
+ Scenario: User checks all notifications
+  Given The user with email "order.store@gmail.com" is logged in
+  When The user checks all their notifications
+  Then All notifications for "order.store@gmail.com" are displayed
+
+ Scenario: User marks a notification as read
+  Given The user with email "order.store@gmail.com" is logged in
+  When The user checks his notifications
+  And The user marks the notification with ID "1" as read
+  Then The notification with ID "1" should be marked as read
+
+ Scenario: User deletes a notification
+  Given The user with email "order.store@gmail.com" is logged in
+  When The user checks his notifications
+  And The user deletes the notification with ID "2"
+  Then The notification with ID "2" should no longer exist
