@@ -309,4 +309,29 @@ public class MessagingStepDefinition {
         assertNull(notificationToBeDisplayed);
     }
 
+    @When("The user checks his unread notifications")
+    public void theUserChecksHisUnreadNotifications() {
+        try {
+            int unreadCount = Notification.getUnreadNotificationCount(DatabaseService.getConnection(true), loggedInUser.getEmail());
+            System.out.println("Unread notifications count: " + unreadCount);
+            assertTrue(unreadCount >= 0);
+        } catch (SQLException e) {
+            fail("Could not retrieve unread notifications count for user " + loggedInUser.getEmail());
+        }
+    }
+
+    @Then("Number of unread notifications should be returned")
+    public void numberOfUnreadNotificationsShouldBeReturned() {
+        try {
+            int unreadCount = Notification.getUnreadNotificationCount(DatabaseService.getConnection(true), loggedInUser.getEmail());
+            System.out.println("Number of unread notifications: " + unreadCount);
+        } catch (SQLException e) {
+            fail("Could not retrieve unread notifications count.");
+        }
+    }
+
+
+
+
+
 }

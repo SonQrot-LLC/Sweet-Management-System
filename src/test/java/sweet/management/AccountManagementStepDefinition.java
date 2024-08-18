@@ -284,7 +284,6 @@ public class AccountManagementStepDefinition {
     @When("I try to retrieve all stores")
     public void iTryToRetrieveAllStores() {
         try {
-
             storesToBeReturned = Store.getAllStores(DatabaseService.getConnection(true));
         }
         catch (Exception e)
@@ -320,6 +319,7 @@ public class AccountManagementStepDefinition {
 
     @Then("All stores should not be returned")
     public void allStoresShouldNotBeReturned() {
+
         isUpdated = storesToBeReturned != null && !storesToBeReturned.isEmpty();
         assertFalse(isUpdated);
     }
@@ -356,5 +356,7 @@ public class AccountManagementStepDefinition {
     public void noUsersShouldBeShown() {
         assertTrue(usersToBeReturned.isEmpty());
     }
+
+
 
 }

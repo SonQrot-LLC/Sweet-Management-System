@@ -620,8 +620,13 @@ public class Main {
 
 
     private static void supplierScreen() {
-        logger.info("Supplier Screen");
-        logger.info("""
+
+        try {
+            int unreadNotifications = Notification.getUnreadNotificationCount(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail());
+
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info("Supplier Screen");
+            logger.info(String.format("""
                 Please enter your choice:
                 1. Manage Materials
                 2. Discount Management
@@ -631,11 +636,19 @@ public class Main {
                 6. Account preference
                 7. Order Management
                 8. Best selling Item
-                9. Check all Notifications
-                10. Log out""");
+                9. Check all Notifications (%d)
+                10. Log out"""
+                    , unreadNotifications));
+        }
+
+        } catch (SQLException e) {
+            logger.warning("Error while retrieving notification count: " + e.getMessage());
+        }
+
         if (storeOwnerAndSupplierOptions()) return;
         supplierScreen();
     }
+
 
     private static boolean storeOwnerAndSupplierOptions() {
         int choice = scanner.nextInt();
@@ -661,8 +674,11 @@ public class Main {
     }
 
     private static void storeOwnerScreen() {
-        logger.info("Store Owner Screen");
-        logger.info("""
+        try {
+            int unreadNotifications = Notification.getUnreadNotificationCount(DatabaseService.getConnection(true),userAuthService.getLoggedInUser().getEmail());
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info("Store Owner Screen");
+            logger.info(String.format("""
                 Please enter your choice:
                 1. Manage Products
                 2. Discount Management
@@ -672,11 +688,17 @@ public class Main {
                 6. Account preference
                 7. Order Management
                 8. Best selling product
-                9. Check all Notifications
-                10. Log out""");
+                9. Check all Notifications (%d)
+                10. Log out""", unreadNotifications));
+        }
+
         if (storeOwnerAndSupplierOptions()) return;
         storeOwnerScreen();
+        } catch (SQLException e) {
+            logger.warning("Error while retrieving notification count: " + e.getMessage());
+        }
     }
+
 
 
     private static void orderManagementScreen() {
@@ -865,7 +887,26 @@ public class Main {
 
             Notification.markNotificationAsRead(Objects.requireNonNull(DatabaseService.getConnection(true)), notificationId);
                 logger.info(NOTIFICATION_ID + notificationId + " marked as read.");
+            logger.info("""
+                Do you want to delete a notification?
+                1. Yes
+                2. No
+                """);
 
+            int choice = scanner.nextInt();
+
+            if (choice == 1) {
+                logger.info("Enter the ID of the notification to delete:");
+                int deleteNotificationId = scanner.nextInt();
+
+                Notification notificationToDelete = Notification.getNotificationById(DatabaseService.getConnection(true), deleteNotificationId);
+                if (notificationToDelete != null) {
+                    Notification.deleteNotificationById(Objects.requireNonNull(DatabaseService.getConnection(true)), deleteNotificationId);
+                    logger.info("Notification ID " + deleteNotificationId + " deleted successfully.");
+                } else {
+                    logger.warning("Notification ID " + deleteNotificationId + " does not exist.");
+                }
+            }
         } catch (SQLException e) {
             logger.warning("Error while checking notifications: " + e.getMessage());
         }

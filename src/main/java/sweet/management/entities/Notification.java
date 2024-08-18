@@ -112,4 +112,17 @@ public class Notification {
             statement.executeUpdate();
         }
     }
+
+    public static int getUnreadNotificationCount(Connection connection, String userEmail) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM notifications WHERE user_email = ? AND is_read = 0";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, userEmail);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        }
+        return 0;
+    }
+
 }

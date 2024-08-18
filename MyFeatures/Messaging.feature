@@ -71,3 +71,9 @@ Feature: Messaging
   When The user checks his notifications
   And The user deletes the notification with ID "2"
   Then The notification with ID "2" should no longer exist
+
+  Scenario:
+   Given The user with email "order.store@gmail.com" is logged in
+   When The user checks his unread notifications
+   Then Number of unread notifications should be returned
+
