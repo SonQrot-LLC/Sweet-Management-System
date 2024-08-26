@@ -7,6 +7,8 @@ import sweet.management.entities.Message;
 import sweet.management.entities.Notification;
 import sweet.management.entities.User;
 import sweet.management.services.DatabaseService;
+
+import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -215,7 +217,7 @@ public class MessagingStepDefinition {
     public void theUserMakesASpecialRequestToTheEmailAndTheMessage(String receiverEmail, String message) {
         try {
             Notification.insertNotification(Objects.requireNonNull(DatabaseService.getConnection(true)), receiverEmail, userAuthService.getLoggedInUser().getEmail(), message);
-        } catch (SQLException e) {
+        } catch (SQLException | MessagingException exception) {
             System.out.println("Exception happened while sending a notification.");
         }
     }

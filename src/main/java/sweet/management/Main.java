@@ -3,6 +3,7 @@ package sweet.management;
 import sweet.management.entities.*;
 import sweet.management.services.DatabaseService;
 
+import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
@@ -550,7 +551,7 @@ public class Main {
 
         try {
             Notification.insertNotification(Objects.requireNonNull(DatabaseService.getConnection(true)), recipientEmail, senderEmail, message);
-        } catch (SQLException e) {
+        } catch (SQLException | MessagingException exception) {
             logger.warning("Something went wrong while sending the notification.");
         }
     }

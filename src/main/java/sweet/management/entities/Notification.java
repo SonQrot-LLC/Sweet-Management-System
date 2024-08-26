@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 
 public class Notification {
@@ -51,7 +51,7 @@ public class Notification {
     }
 
 
-    public static void insertNotification(Connection connection, String userEmail, String senderEmail, String message) throws SQLException {
+    public static void insertNotification(Connection connection, String userEmail, String senderEmail, String message) throws SQLException, MessagingException {
         String sql = "INSERT INTO notifications (user_email, sender_email, message, is_read) VALUES (?, ?, ?, 0)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, userEmail);
@@ -60,9 +60,6 @@ public class Notification {
             statement.executeUpdate();
 
             sendEmail(userEmail, senderEmail, message);
-        } catch (MessagingException e) {
-            Logger logger = Logger.getLogger(Notification.class.getName());
-            logger.warning("Failed to send email: " + e.getMessage());
         }
     }
 
