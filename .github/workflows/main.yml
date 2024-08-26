@@ -42,5 +42,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           DATABASE_PASSWORD: AVNS_V48PsTcnluVA-KIvExk
           DATABASE_USER: avnadmin
+          GMAIL_PASSWORD: jiee yimu bgpc yjpt
 
         run: mvn -B jacoco:prepare-agent test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SonQrot-LLC_Sweet-Management-System -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
