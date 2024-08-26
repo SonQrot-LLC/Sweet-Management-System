@@ -1,8 +1,13 @@
 package sweet.management.entities;
 
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+
 
 public class Notification {
     public static final String NOTIFICATION_ID = "notification_id";
@@ -10,7 +15,7 @@ public class Notification {
     public static final String MESSAGE_COLUMN = "message";
     public static final String IS_READ = "is_read";
     public static final String CREATED_AT = "created_at";
-
+    private static final String GMAIL_PASSWORD = System.getenv("GMAIL_PASSWORD");
     private final int notificationId;
     private final String userEmail;
     private final String message;
@@ -53,11 +58,42 @@ public class Notification {
             statement.setString(2, senderEmail);
             statement.setString(3, message);
             statement.executeUpdate();
+
+            sendEmail(userEmail, senderEmail, message);
+        } catch (MessagingException e) {
+            Logger logger = Logger.getLogger(Notification.class.getName());
+            logger.warning("Failed to send email: " + e.getMessage());
         }
     }
 
+    private static void sendEmail(String recipientEmail, String senderEmail, String messageContent) throws MessagingException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
 
-    // Get a notification by its ID
+        String username = "toostronkm@gmail.com";
+
+
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, GMAIL_PASSWORD);
+            }
+        });
+
+        javax.mail.Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(username));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+        message.setSubject("Special Request Notification from " + senderEmail);
+        message.setText("You have a new special request from " + senderEmail + ":\n\n" + messageContent);
+
+        Transport.send(message);
+    }
+
+
     public static Notification getNotificationById(Connection connection, int notificationId) throws SQLException {
         String sql = "SELECT * "+" FROM notifications WHERE notification_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -76,7 +112,6 @@ public class Notification {
         return null;
     }
 
-    // Get all notifications for a specific user by their email
     public static List<Notification> getNotificationsByUserEmail(Connection connection, String userEmail) throws SQLException {
         String sql = "SELECT * "+" FROM notifications WHERE user_email = ?";
         List<Notification> notifications = new ArrayList<>();
@@ -96,7 +131,6 @@ public class Notification {
         return notifications;
     }
 
-    // Mark a notification as read by its ID
     public static void markNotificationAsRead(Connection connection, int notificationId) throws SQLException {
         String sql = "UPDATE notifications SET is_read = 1 WHERE notification_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

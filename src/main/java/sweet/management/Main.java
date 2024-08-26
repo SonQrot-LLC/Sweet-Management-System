@@ -546,6 +546,8 @@ public class Main {
 
         String senderEmail = userAuthService.getLoggedInUser().getEmail();
 
+
+
         try {
             Notification.insertNotification(Objects.requireNonNull(DatabaseService.getConnection(true)), recipientEmail, senderEmail, message);
         } catch (SQLException e) {
@@ -866,12 +868,14 @@ public class Main {
     }
     public static void checkNotifications()
     {
+
         String ownerEmail = userAuthService.getLoggedInUser().getEmail();
         List<Notification> notifications;
         if (logger.isLoggable(Level.INFO)) {
         try {
             notifications = Notification.getNotificationsByUserEmail(DatabaseService.getConnection(true), ownerEmail);
-                logger.info(String.format("Retrieved %d notifications for owner.", notifications.size()));
+            logger.info(String.format("Retrieved %d notifications for owner.", notifications.size()));
+
 
             for (Notification notification : notifications) {
                 logger.info("Notification ID: " + notification.getNotificationId());
@@ -881,8 +885,14 @@ public class Main {
             }
 
             Scanner scanner = new Scanner(System.in);
-            logger.info("Enter the ID of the notification to mark as read:");
+            logger.info("""
+                Enter the ID of the notification to mark as read:
+                Enter (0) to exit
+                """);
+            
             int notificationId = scanner.nextInt();
+            if (notificationId == 0) return;
+
             logger.info("User selected notification ID " + notificationId + " to mark as read.");
 
             Notification.markNotificationAsRead(Objects.requireNonNull(DatabaseService.getConnection(true)), notificationId);

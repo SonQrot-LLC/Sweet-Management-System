@@ -52,7 +52,7 @@ Feature: Messaging
 
   Scenario: Beneficiary user orders a special request
    Given That the user with email "order.user@gmail.com" is logged in
-   When The user makes a special request to the email "order.store@gmail.com" and  the message "I want to request a juicer cake"
+   When The user makes a special request to the email "momanani2017@gmail.com" and  the message "I want to request a juicer cake"
    Then A notification is made
 
  Scenario: User checks all notifications
@@ -72,8 +72,12 @@ Feature: Messaging
   And The user deletes the notification with ID "2"
   Then The notification with ID "2" should no longer exist
 
-  Scenario:
+  Scenario: User reading a notification
    Given The user with email "order.store@gmail.com" is logged in
    When The user checks his unread notifications
    Then Number of unread notifications should be returned
 
+# Scenario: User checks unread notifications with a null database connection
+#  Given The user with email "order.store@gmail.com" is logged in
+#  When The user checks his unread notifications and the connection is null
+#  Then The number of unread notifications should not be returned

@@ -8,6 +8,6 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(features = "MyFeatures", monochrome = true, snippets = SnippetType.CAMELCASE,
         glue = {"sweet.management"})
-public class AcceptanceTest {
+public class    AcceptanceTest {
 
 }
